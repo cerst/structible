@@ -38,3 +38,19 @@ lazy val doc = (project in file("doc"))
     // this project is not supposed to be used externally, so don't publish
     skip in publish := true
   )
+
+lazy val jsoniterScala = (project in file("jsoniter-scala"))
+  .dependsOn(core)
+  .enablePlugins(GitBranchPrompt, GitVersioning)
+  .settings(
+    libraryDependencies ++= Dependencies.jsoniterScalaLibraries,
+    name := "structible-jsoniter-scala"
+  )
+
+lazy val quill = (project in file("quill"))
+  .dependsOn(core)
+  .enablePlugins(GitBranchPrompt, GitVersioning)
+  .settings(
+    libraryDependencies ++= Dependencies.quillLibraries,
+    name := "structible-quill"
+  )
