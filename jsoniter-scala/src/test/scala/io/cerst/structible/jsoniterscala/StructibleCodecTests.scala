@@ -2,51 +2,43 @@ package io.cerst.structible.jsoniterscala
 
 import com.github.plokhotnyuk.jsoniter_scala.core._
 import com.github.plokhotnyuk.jsoniter_scala.macros._
-import enumeratum._
 import io.cerst.structible.Structible
 import utest._
 
-import scala.collection.immutable
+final case class Device(id: Device.Id, model: String)
 
-sealed trait Gender extends EnumEntry
+object Device {
 
-object Gender extends Enum[Gender] {
+  final case class Id(value: Int) {
+    require(value >= 0)
+  }
 
-  case object Male extends Gender
+  object Id {
 
-  case object Female extends Gender
+    implicit val structibleForDeviceId: Structible[Int, Id] =
+      Structible.instanceUnsafe(apply, _.value)
 
-  override def values: immutable.IndexedSeq[Gender] = findValues
+    implicit val codecForDeviceId: JsonValueCodec[Id] = StructibleCodec.int
+  }
 
-  implicit val structibleForGender: Structible[String, Gender] =
-    Structible(withName, _.entryName)
-
-  implicit val codecForGender: JsonCodec[Gender] = StructibleCodec.string
 }
 
-final case class DeviceId(value: Int)
+final case class User(name: User.Name, devices: Seq[Device])
 
-object DeviceId {
+object User {
 
-  implicit val structibleForDeviceId: Structible[Int, DeviceId] =
-    Structible(apply, _.value)
+  final case class Name(value: String) {
+    require(value.nonEmpty)
+  }
 
-  implicit val codecForDeviceId: JsonValueCodec[DeviceId] = StructibleCodec.int
+  object Name {
+    implicit val structibleForUserName: Structible[String, Name] =
+      Structible.instanceUnsafe(apply, _.value)
+
+    implicit val codecForUsername: JsonCodec[Name] = StructibleCodec.string
+  }
+
 }
-
-final case class Username(value: String)
-
-object Username {
-
-  implicit val structibleForUserName: Structible[String, Username] =
-    Structible(apply, _.value)
-
-  implicit val codecForUsername: JsonCodec[Username] = StructibleCodec.string
-}
-
-final case class Device(id: DeviceId, model: String)
-
-final case class User(name: Username, devices: Seq[Device], gender: Gender)
 
 object StructibleCodecTests extends TestSuite {
 
@@ -58,16 +50,15 @@ object StructibleCodecTests extends TestSuite {
 
       val json = writeToArray(
         User(
-          name = Username("John"),
-          devices = Seq(Device(id = DeviceId(2), model = "iPhone X")),
-          gender = Gender.Male
+          name = User.Name("John"),
+          devices = Seq(Device(id = Device.Id(2), model = "iPhone X"))
         )
       )
 
       println(new String(json, "UTF-8"))
 
       val user = readFromArray[User](
-        """{"name":"John","devices":[{"id":-1,"model":"HTC One X"}],"gender":"Male"}"""
+        """{"name":"John","devices":[{"id":1,"model":"HTC One X"}]}"""
           .getBytes("UTF-8")
       )
 

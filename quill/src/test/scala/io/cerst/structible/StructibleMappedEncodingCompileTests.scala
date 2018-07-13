@@ -11,14 +11,13 @@ object StructibleMappedEncodingCompileTests {
 
   import TestContext._
 
-  final case class PersonId(underlying: Int) {
-    require(underlying >= 0, "PersonId must be >= 0")
-    // assume require here
+  final case class PersonId(value: Int) {
+    require(value >= 0, "PersonId must be >= 0")
   }
 
   object PersonId {
     implicit val structibleForPersonId: Structible[Int, PersonId] =
-      Structible(apply, _.underlying)
+      Structible.instanceUnsafe(apply, _.value)
   }
 
   final case class Person(id: PersonId, name: String)

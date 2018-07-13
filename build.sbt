@@ -6,6 +6,14 @@ lazy val root = (project in file("."))
     skip in publish := true
   )
 
+lazy val configs = (project in file("configs"))
+  .dependsOn(core)
+  .enablePlugins(GitBranchPrompt, GitVersioning)
+  .settings(
+    libraryDependencies ++= Dependencies.configsLibraries,
+    name := "structible-configs"
+  )
+
 lazy val core = (project in file("core"))
   .enablePlugins(GitBranchPrompt, GitVersioning)
   .settings(
@@ -21,7 +29,10 @@ lazy val doc = (project in file("doc"))
     // trigger dump-license-report in all other projects and rename the output
     // (paradox uses the first heading as link name in '@@@index' containers AND cannot handle variables in links)
     (mappings in Compile) in paradoxMarkdownToHtml ++= Seq(
+      (configs / dumpLicenseReport).value / ((configs / licenseReportTitle).value + ".md") -> "licenses/configs.md",
       (core / dumpLicenseReport).value / ((core / licenseReportTitle).value + ".md") -> "licenses/core.md",
+      (jsoniterScala / dumpLicenseReport).value / ((jsoniterScala / licenseReportTitle).value + ".md") -> "licenses/jsoniter-scala.md",
+      (quill / dumpLicenseReport).value / ((quill / licenseReportTitle).value + ".md") -> "licenses/quill.md",
       dumpLicenseReport.value / (licenseReportTitle.value + ".md") -> "licenses/doc.md"
     ),
     // trigger test compilation in projects which contain snippets to be shown in the documentation

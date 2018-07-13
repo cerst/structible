@@ -2,42 +2,82 @@ package io.cerst.structible
 
 import scala.util.control.NonFatal
 
-trait Constructible[P, W] {
+/**
+  * @tparam C Common type
+  * @tparam R Refined type
+  */
+trait Constructible[C, R] {
 
-  def constructSafe(p: P): Either[String, W]
+  def constructSafe(c: C): Either[String, R]
 
-  def constructUnsafe(p: P): W
+  def constructUnsafe(c: C): R
 
 }
 
-trait Destructible[W, P] {
+/**
+  * @tparam C Common type
+  * @tparam R Refined type
+  */
+trait Destructible[C, R] {
 
-  def destruct(w: W): P
+  def destruct(r: R): C
 }
 
-trait Structible[P, W] extends Constructible[P, W] with Destructible[W, P]
+/**
+  * @tparam C Common type
+  * @tparam R Refined type
+  */
+trait Structible[C, R] extends Constructible[C, R] with Destructible[C, R]
 
 object Structible {
 
-  def summon[P,W](implicit structible: Structible[P,W]): Structible[P, W] = structible
+  def apply[P, W](implicit structible: Structible[P, W]): Structible[P, W] =
+    structible
 
-  def apply[P, W](_constructUnsafe: P => W,
-                  _destruct: W => P): Structible[P, W] = {
+  /**
+    * Creates a structible based on the provided functions.<br/>
+    * <i>constructSafe</i> is derived using <i>try constructUnsafe catch</i>
+    */
+  def instanceUnsafe[C, R](constrUnsafe: C => R,
+                           destr: R => C): Structible[C, R] = {
 
-    new Structible[P, W] {
+    new Structible[C, R] {
 
-      override def constructSafe(p: P): Either[String, W] = {
+      override def destruct(r: R): C = destr(r)
+
+      override def constructSafe(c: C): Either[String, R] = {
         try {
-          Right(_constructUnsafe(p))
+          Right(constrUnsafe(c))
         } catch {
           case NonFatal(cause) =>
             Left(cause.getMessage)
         }
       }
 
-      override def constructUnsafe(p: P): W = _constructUnsafe(p)
+      override def constructUnsafe(c: C): R = constrUnsafe(c)
 
-      override def destruct(w: W): P = _destruct(w)
     }
   }
+
+  /**
+    * Creates a structible based on the provided functions.<br/>
+    * <i>constructUnsafe</i> is derived by throwing an <i>IllegalArgumentException</i> in case the former yields <i>Left</i>.
+    */
+  def instanceSafe[C, R](constrSafe: C => Either[String, R],
+                         destr: R => C): Structible[C, R] = {
+
+    new Structible[C, R] {
+      override def destruct(r: R): C = destr(r)
+
+      override def constructSafe(c: C): Either[String, R] = constrSafe(c)
+
+      override def constructUnsafe(c: C): R = {
+        constrSafe(c) fold (
+          error => throw new IllegalArgumentException(error),
+          identity
+        )
+      }
+    }
+  }
+
 }

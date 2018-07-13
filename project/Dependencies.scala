@@ -5,7 +5,7 @@ object Dependencies {
   val resolvers: Seq[Resolver] = Seq()
 
   object Version {
-    val Enumeratum = "1.5.13"
+    val Configs = "0.4.4"
     val JsoniterScala = "0.29.2"
     val Quill = "2.5.4"
     val UTest = "0.6.4"
@@ -14,8 +14,8 @@ object Dependencies {
   // comment licenses for dependencies using the SPDX short identifier (see e.g. https://opensource.org/licenses/Apache-2.0)
   // rationale: double check the license when adding a new library avoid having to remove a problematic one later on when it is in use and thus hard to remove
   object Library {
-    // MIT
-    val Enumeratum = "com.beachape" %% "enumeratum" % Version.Enumeratum
+    // Apache-2.0
+    val Configs = "com.github.kxbmap" %% "configs" % Version.Configs
     // MIT
     val JsoniterScalaCore = "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-core" % Version.JsoniterScala
     // MIT
@@ -28,10 +28,12 @@ object Dependencies {
     val UTest = "com.lihaoyi" %% "utest" % Version.UTest
   }
 
+  val configsLibraries: Seq[ModuleID] =
+    Seq(Library.Configs % Provided, Library.UTest % Test)
+
   val coreLibraries: Seq[ModuleID] = Seq()
 
   val jsoniterScalaLibraries: Seq[ModuleID] = Seq(
-    Library.Enumeratum % Test,
     Library.JsoniterScalaCore % Provided,
     Library.JsoniterScalaMacros % Provided,
     Library.UTest % Test

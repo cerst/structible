@@ -1,20 +1,20 @@
 package io.cerst.structible.quill
 
-import io.cerst.structible.Structible
+import io.cerst.structible.{Constructible, Destructible}
 import io.getquill.MappedEncoding
 
 trait StructibleMappedEncoding {
 
-  implicit def encodeStructible[P, W](
-    implicit structible: Structible[P, W]
-  ): MappedEncoding[W, P] = {
-    MappedEncoding(structible.destruct)
+  implicit def encodeStructible[C, R](
+    implicit destructible: Destructible[C, R]
+  ): MappedEncoding[R, C] = {
+    MappedEncoding(destructible.destruct)
   }
 
-  implicit def decodeStructible[P, W](
-    implicit structible: Structible[P, W]
-  ): MappedEncoding[P, W] = {
-    MappedEncoding(structible.constructUnsafe)
+  implicit def decodeStructible[C, R](
+    implicit constructible: Constructible[C, R]
+  ): MappedEncoding[C, R] = {
+    MappedEncoding(constructible.constructUnsafe)
   }
 
 }
