@@ -3,7 +3,7 @@ package io.cerst.structible.jsoniterscala
 import com.github.plokhotnyuk.jsoniter_scala.core.{JsonCodec, JsonReader, JsonWriter}
 import io.cerst.structible.Structible
 
-object StructibleCodec {
+object StructibleJsonCodec {
 
   // ==========================================================================
   // BOOLEAN

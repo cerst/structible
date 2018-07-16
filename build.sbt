@@ -18,7 +18,8 @@ lazy val core = (project in file("core"))
   .enablePlugins(GitBranchPrompt, GitVersioning)
   .settings(
     libraryDependencies ++= Dependencies.coreLibraries,
-    name := "structible"
+    name := "structible",
+    testFrameworks += new TestFramework("utest.runner.Framework")
   )
 
 lazy val doc = (project in file("doc"))
