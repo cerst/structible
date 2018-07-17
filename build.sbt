@@ -6,6 +6,14 @@ lazy val root = (project in file("."))
     skip in publish := true
   )
 
+lazy val akkaHttp = (project in file("akka-http"))
+  .dependsOn(core)
+  .enablePlugins(GitBranchPrompt, GitVersioning)
+  .settings(
+    libraryDependencies ++= Dependencies.akkaHttpLibraries,
+    name := "structible-akka-http"
+  )
+
 lazy val configs = (project in file("configs"))
   .dependsOn(core)
   .enablePlugins(GitBranchPrompt, GitVersioning)

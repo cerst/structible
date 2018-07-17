@@ -1,3 +1,4 @@
+import ModuleIDSyntax.toModuleIDSyntax
 import sbt._
 
 object Dependencies {
@@ -5,6 +6,8 @@ object Dependencies {
   val resolvers: Seq[Resolver] = Seq()
 
   object Version {
+    val Akka = "2.5.14"
+    val AkkaHttp = "10.1.3"
     val Configs = "0.4.4"
     val JsoniterScala = "0.29.2"
     val Quill = "2.5.4"
@@ -14,6 +17,11 @@ object Dependencies {
   // comment licenses for dependencies using the SPDX short identifier (see e.g. https://opensource.org/licenses/Apache-2.0)
   // rationale: double check the license when adding a new library avoid having to remove a problematic one later on when it is in use and thus hard to remove
   object Library {
+    // Apache-2.0
+    val AkkaStreamTestki = "com.typesafe.akka" %% "akka-stream-testkit" % Version.Akka
+    // Apache-2.0
+    val AkkaHttp = "com.typesafe.akka" %% "akka-http" % Version.AkkaHttp
+
     // Apache-2.0
     val Configs = "com.github.kxbmap" %% "configs" % Version.Configs
     // MIT
@@ -27,6 +35,13 @@ object Dependencies {
     // MIT
     val UTest = "com.lihaoyi" %% "utest" % Version.UTest
   }
+
+  val akkaHttpLibraries: Seq[ModuleID] =
+    Seq(
+      Library.AkkaStreamTestki % Test,
+      Library.AkkaHttp % (Provided, Test),
+      Library.UTest
+    )
 
   val configsLibraries: Seq[ModuleID] =
     Seq(Library.Configs % Provided, Library.UTest % Test)
