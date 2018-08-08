@@ -36,24 +36,24 @@ object Dependencies {
     val UTest = "com.lihaoyi" %% "utest" % Version.UTest
   }
 
-  val akkaHttpLibraries: Seq[ModuleID] =
+  val `akka-http`: Seq[ModuleID] =
     Seq(
       Library.AkkaStreamTestki % Test,
       Library.AkkaHttp % (Provided, Test),
       Library.UTest
     )
 
-  val configsLibraries: Seq[ModuleID] =
+  val configs: Seq[ModuleID] =
     Seq(Library.Configs % Provided, Library.UTest % Test)
 
-  val coreLibraries: Seq[ModuleID] = Seq()
+  val core: Seq[ModuleID] = Seq()
 
-  val jsoniterScalaLibraries: Seq[ModuleID] = Seq(
+  val `jsoniter-scala`: Seq[ModuleID] = Seq(
     Library.JsoniterScalaCore % Provided,
     Library.JsoniterScalaMacros % Provided,
     Library.UTest % Test
   )
 
-  val quillLibraries: Seq[ModuleID] =
+  val quill: Seq[ModuleID] =
     Seq(Library.QuillCore % Provided, Library.QuillJdbc % Test)
 }

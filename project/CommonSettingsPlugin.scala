@@ -17,7 +17,7 @@ object CommonSettingsPlugin extends CommonSettingsPluginTpl {
         HeaderLicense.MIT(startYear.value.get.toString, organizationName.value)
       ),
       licenses += "MIT" -> url("https://opensource.org/licenses/MIT"),
-      organization := "io.cerst",
+      organization := "com.github.cerst",
       organizationName := "Constantin Gerstberger",
       resolvers ++= Dependencies.resolvers,
       startYear := Some(2018)
