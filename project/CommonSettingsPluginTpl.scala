@@ -11,6 +11,8 @@ import scala.collection.immutable.Seq
 
 trait CommonSettingsPluginTpl extends AutoPlugin {
 
+  lazy val versionToFile = taskKey[Unit]("Print the version into /target/version-to-file/version")
+
   override def trigger: PluginTrigger = allRequirements
 
   protected def tplProjectSettingsPlus(additional: Def.Setting[_]*) = {
@@ -30,7 +32,11 @@ trait CommonSettingsPluginTpl extends AutoPlugin {
   )
 
   private def scalaSettings: Seq[Def.Setting[_]] = Seq(
-    scalaVersion := "2.12.6"
+    scalaVersion := "2.12.6",
+      versionToFile := {
+      val file = target.value / "version-to-file" / "version"
+      IO.write(file, version.value)
+    }
   )
 
   // these settings are based on: http://tpolecat.github.io/2017/04/25/scalac-flags.html
