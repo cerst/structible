@@ -21,47 +21,45 @@
 
 package com.github.cerst.structible.configs
 
-import com.github.cerst.structible.Structible
+import com.github.cerst.structible.core.Structible
 import com.typesafe.config.ConfigFactory
 import configs.Configs
 import configs.syntax._
 import utest._
 
-sealed trait Random
+final case class Device(id: DeviceId, model: String)
 
-final case class Device(id: Device.Id, model: String)
+final case class DeviceId private (value: Int) extends AnyVal
 
-object Device {
+object DeviceId {
 
-  final case class Id(value: Int) {
+  implicit val structibleForDeviceId: Structible[Int, DeviceId] = Structible.instanceUnsafe(apply, _.value)
+
+  implicit val configsForDeviceId: Configs[DeviceId] = StructibleConfigs[Int, DeviceId]
+
+  def apply(value: Int): DeviceId = {
     require(value >= 0)
-  }
-
-  object Id {
-    implicit val structibleForDeviceId: Structible[Int, Id] =
-      Structible.instanceUnsafe(apply, _.value)
-
-    implicit val configsForDeviceId: Configs[Id] = StructibleConfigs[Int, Id]
+    new DeviceId(value)
   }
 
 }
 
-final case class User(name: User.Name, devices: Seq[Device])
+final case class UserName private (value: String) extends AnyVal
 
-object User {
+object UserName {
 
-  final case class Name(value: String) {
+  implicit val structibleForUserName: Structible[String, UserName] = Structible.instanceUnsafe(apply, _.value)
+
+  implicit val configsForUserName: Configs[UserName] = StructibleConfigs[String, UserName]
+
+  def apply(value: String): UserName = {
     require(value.nonEmpty)
-  }
-
-  object Name {
-    implicit val structibleForUserName: Structible[String, Name] =
-      Structible.instanceUnsafe(apply, _.value)
-
-    implicit val configsForUserName: Configs[Name] = StructibleConfigs[String, Name]
+    new UserName(value)
   }
 
 }
+
+final case class User(name: UserName, devices: Seq[Device])
 
 object StructibleConfigsTests extends TestSuite {
 
@@ -81,8 +79,9 @@ object StructibleConfigsTests extends TestSuite {
           |}
         """.stripMargin)
 
-      val user = config.get[User]("user").value
-      println(user)
+      val actualUser = config.get[User]("user").value
+      val expectedUser = User(name = UserName("John"), devices = Seq(Device(DeviceId(1), "HTC One X")))
+      assert(actualUser == expectedUser)
     }
 
   }

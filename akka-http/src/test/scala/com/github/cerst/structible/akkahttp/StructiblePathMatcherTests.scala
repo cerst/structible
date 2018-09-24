@@ -21,57 +21,55 @@
 
 package com.github.cerst.structible.akkahttp
 
-import akka.actor.ActorSystem
-import akka.http.scaladsl.unmarshalling.{Unmarshal, Unmarshaller}
-import akka.stream.{ActorMaterializer, Materializer}
-import akka.testkit.TestKit
-import com.github.cerst.structible.akkahttp.testutil.{NegDouble, NonEmptyString, OddInt, PosLong}
+import akka.http.scaladsl.model.StatusCodes
+import akka.http.scaladsl.server.Directives._
+import akka.http.scaladsl.server.PathMatcher1
+import com.github.cerst.structible.akkahttp.testutil._
 import utest._
 
-import scala.concurrent.Await
-import scala.concurrent.duration._
+object StructiblePathMatcherTests extends RouteTestSuite {
 
-object StructibleUnmarshallerTests extends TestSuite {
-
-  implicit val actorSystem: ActorSystem = ActorSystem("StructibleUnmarshallerTests")
-  implicit val materializer: Materializer = ActorMaterializer()
-
-  override def utestAfterAll(): Unit = {
-    TestKit.shutdownActorSystem(actorSystem)
-    super.utestAfterAll()
-  }
-
-  private def test[R](marshallable: (String, R),
-                      unmarshallable: String)(implicit unmarshaller: Unmarshaller[String, R]): Unit = {
-
-    val shouldSucceed = Await.result(Unmarshal(marshallable._1).to[R], 3.seconds)
-    assert(shouldSucceed == marshallable._2)
-
-    intercept[IllegalArgumentException] {
-      val _ = Await.result(Unmarshal(unmarshallable).to[R], 3.seconds)
+  private def test[R](pathMatcher1: PathMatcher1[R], matchable: (String, R), unmatchable: String): Unit = {
+    val route = path(pathMatcher1) { refined =>
+      validate(refined == matchable._2, "PathMatcher yielded unexpected value") {
+        complete(StatusCodes.OK)
+      }
     }
-    ()
 
+    Get(s"/${matchable._1}") ~> route ~> check {
+      assert(status == StatusCodes.OK)
+    }
+
+    Get(s"/$unmatchable") ~> route ~> check {
+      assert(!handled)
+    }
   }
 
   override val tests: Tests = Tests {
 
     "double" - {
-      test("-1" -> NegDouble(-1), "0")
+      test(NegDouble.pm, "-0.3" -> NegDouble(-0.3D), "0.3")
     }
 
-    "int" - {
-      test("1" -> OddInt(1), "2")
+    "int from hex-string" - {
+      test(OddInt.hexIntPm, "b" -> OddInt(11), "a")
     }
 
-    "long" - {
-      test("3" -> PosLong(3), "0")
+    "int from string" - {
+      test(OddInt.intPm, "1" -> OddInt(1), "0")
+    }
+
+    "long from hex-string" - {
+      test(PosLong.hexLongPm, "f" -> PosLong(15), "0")
+    }
+
+    "long from string" - {
+      test(PosLong.longPm, "1" -> PosLong(1), "0")
     }
 
     "string" - {
-      test("<non-empty>" -> NonEmptyString("<non-empty>"), "")
+      test(NonEmptyString.pm, "a" -> NonEmptyString("a"), "")
     }
 
   }
-
 }

@@ -19,16 +19,20 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.github.cerst.structible.quill
+package com.github.cerst.structible.akkahttp.testutil
 
-import com.github.cerst.structible.core.{Constructible, Destructible}
-import io.getquill.MappedEncoding
+import akka.http.scaladsl.testkit.{RouteTest, TestFrameworkInterface}
+import utest.TestSuite
 
-object StructibleMappedEncoding {
+abstract class RouteTestSuite extends TestSuite with TestFrameworkInterface with RouteTest {
 
-  def encode[C, R](implicit destructible: Destructible[C, R]): MappedEncoding[R, C] = MappedEncoding(destructible.destruct)
+  override def failTest(msg: String): Nothing = {
+    throw new RuntimeException("RouteTest failed:" + msg)
+  }
 
-  def decode[C, R](implicit constructible: Constructible[C, R]): MappedEncoding[C, R] =
-    MappedEncoding(constructible.constructUnsafe)
+  override def utestAfterAll(): Unit = {
+    cleanUp()
+    super.utestAfterAll()
+  }
 
 }

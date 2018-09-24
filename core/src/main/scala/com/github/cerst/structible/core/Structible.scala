@@ -19,9 +19,21 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.github.cerst.structible
+package com.github.cerst.structible.core
 
 import scala.util.control.NonFatal
+
+/**
+  * Captures a problem raised when calling [[com.github.cerst.structible.core.Constructible#constructUnsafe Constructible.constructUnsafe]]
+  */
+final class ConstructException private (cause: Option[Throwable], message: Option[String])
+    extends Exception(message.orNull, cause.orNull)
+
+object ConstructException {
+  def apply(cause: Option[Throwable], message: Option[String]): ConstructException = {
+    new ConstructException(cause, message)
+  }
+}
 
 /**
   * @tparam C Common type
@@ -31,6 +43,7 @@ trait Constructible[C, R] {
 
   def constructSafe(c: C): Either[String, R]
 
+  @throws[ConstructException]
   def constructUnsafe(c: C): R
 
 }
@@ -56,11 +69,17 @@ object Structible {
     structible
 
   /**
-    * Creates a structible based on the provided functions.<br/>
-    * <i>constructSafe</i> is derived using <i>try constructUnsafe catch</i>
+    * Creates a structible based on the provided functions.
+    *
+    * @param constrUnsafe If this throws,
+    *                     <ul>
+    *                       <li><i>constructSafe</i> returns a [[scala.util.Left$ Left]] containing the message of the exception</li>
+    *                       <li><i>constructUnsafe</i> re-throws any non-fatal exception wrapped in a [[com.github.cerst.structible.core.ConstructException ConstructException]]</li>
+    *                     </ul>
+    *
     */
-  def instanceUnsafe[C, R](constrUnsafe: C => R,
-                           destr: R => C): Structible[C, R] = {
+  // parameter names have been abbreviated to not conflict with method names below (which would set-up a recursive call)
+  def instanceUnsafe[C, R](constrUnsafe: C => R, destr: R => C): Structible[C, R] = {
 
     new Structible[C, R] {
 
@@ -75,17 +94,28 @@ object Structible {
         }
       }
 
-      override def constructUnsafe(c: C): R = constrUnsafe(c)
+      override def constructUnsafe(c: C): R = {
+        try {
+          constrUnsafe(c)
+        } catch {
+          case NonFatal(cause) =>
+            throw ConstructException(Some(cause), None)
+        }
+      }
 
     }
   }
 
   /**
-    * Creates a structible based on the provided functions.<br/>
-    * <i>constructUnsafe</i> is derived by throwing an <i>IllegalArgumentException</i> in case the former yields <i>Left</i>.
+    * Creates a structible based on the provided functions.
+    *
+    * @param constrSafe If this returns [[scala.util.Left$ Left]],
+    *                   <ul>
+    *                     <li><i>constructUnsafe</i> throws a [[com.github.cerst.structible.core.ConstructException ConstructException]] having the value of the former as its <i>message</i></li>
+    *                   </ul>
     */
-  def instanceSafe[C, R](constrSafe: C => Either[String, R],
-                         destr: R => C): Structible[C, R] = {
+  // parameter names have been abbreviated to not conflict with method names below (which would set-up a recursive call)
+  def instanceSafe[C, R](constrSafe: C => Either[String, R], destr: R => C): Structible[C, R] = {
 
     new Structible[C, R] {
       override def destruct(r: R): C = destr(r)
@@ -94,7 +124,7 @@ object Structible {
 
       override def constructUnsafe(c: C): R = {
         constrSafe(c) fold (
-          error => throw new IllegalArgumentException(error),
+          error => throw ConstructException(None, Some(error)),
           identity
         )
       }

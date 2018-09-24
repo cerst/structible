@@ -11,22 +11,27 @@ SBT_STAGE_TASKS="\
 ;core/headerCreate
 ;core/test;headerCreate
 ;core/test
+;core/doc
 ;akka-http/clean
 ;akka-http/headerCreate
 ;akka-http/test:headerCreate
 ;akka-http/test
+;akka-http/doc
 ;configs/clean
 ;configs/headerCreate
 ;configs/test:headerCreate
 ;configs/test
+;configs/doc
 ;jsoniter-scala/clean
 ;jsoniter-scala/headerCreate
 ;jsoniter-scala/test:headerCreate
 ;jsoniter-scala/test
+;jsoniter-scala/doc
 ;quill/clean
 ;quill/headerCreate
 ;quill/test:headerCreate
 ;quill/test
+;quill/doc
 ;doc/clean
 ;doc/paradox"
 
@@ -36,13 +41,24 @@ SBT_PUBLISH_TASKS="\
 
 
 
-stage() {
+echo_success() {
     echo "" \
-    && echo "===================" \
-    && echo "Run Sbt stage tasks" \
-    && echo "${SBT_STAGE_TASKS}" \
-    && echo "===================" \
-    && ( cd ${PROJECT_ROOT_ABS_PATH} && sbt --warn ${SBT_STAGE_TASKS} )
+    && echo "=================" \
+    && echo "Publish succeeded" \
+    && echo "================="
+}
+
+git_ensure_master_branch() {
+    echo "==========================="
+    echo "Ensure Git branch is master"
+    echo "==========================="
+    GIT_BRANCH=$(git symbolic-ref --short HEAD)
+    if [[ ${GIT_BRANCH} -ne "master" ]]; then
+        echo "You must be on Git branch 'master' to publish"
+        exit 1
+    else
+        echo "Ok"
+    fi
 }
 
 readAndConfirmVersion() {
@@ -53,16 +69,15 @@ readAndConfirmVersion() {
     && while true; do
         read yn
             case ${yn} in
-                [Yy]* ) echo "Publish not yet implemented" && exit 1; break;;
+                [Yy]* ) break;;
                 [Nn]* ) echo "Aborted" && exit 0;;
                 * ) echo "Please answer yes or no.";;
             esac
     done
-
 }
 
 # TODO: clone the gh-pages repo, put the doc in it and push
-publish() {
+sbt_run_publish_tasks() {
     echo "" \
     && echo "=====================" \
     && echo "Run Sbt publish tasks" \
@@ -71,11 +86,16 @@ publish() {
     && $( cd ${PROJECT_ROOT_ABS_PATH} && sbt --warn ${SBT_PUBLISH_TASKS} )
 }
 
-echo_success() {
+sbt_run_stage_stage_tasks() {
     echo "" \
-    && echo "=================" \
-    && echo "Publish succeeded" \
-    && echo "================="
+    && echo "===================" \
+    && echo "Run Sbt stage tasks" \
+    && echo "${SBT_STAGE_TASKS}" \
+    && echo "===================" \
+    && ( cd ${PROJECT_ROOT_ABS_PATH} && sbt --warn ${SBT_STAGE_TASKS} )
 }
 
-stage && readAndConfirmVersion
+sbt_run_stage_stage_tasks \
+    && readAndConfirmVersion \
+    && git_ensure_master_branch \
+    && (echo "Publish not yet implemented" && exit 1)

@@ -20,14 +20,14 @@
  */
 
 package com.github.cerst.structible
+
+import com.github.cerst.structible.core.Structible
 import com.github.cerst.structible.quill.StructibleMappedEncoding
 import io.getquill._
 
 object StructibleMappedEncodingCompileTests {
 
-  object TestContext
-      extends MysqlJdbcContext(SnakeCase, "configPrefix")
-      with StructibleMappedEncoding
+  object TestContext extends MysqlJdbcContext(SnakeCase, "configPrefix")
 
   import TestContext._
 
@@ -36,8 +36,11 @@ object StructibleMappedEncodingCompileTests {
   }
 
   object PersonId {
-    implicit val structibleForPersonId: Structible[Int, PersonId] =
-      Structible.instanceUnsafe(apply, _.value)
+    implicit val structibleForPersonId: Structible[Int, PersonId] = Structible.instanceUnsafe(apply, _.value)
+
+    implicit val decodeForPersonId: MappedEncoding[Int, PersonId] = StructibleMappedEncoding.decode
+
+    implicit val encodeForPersonId: MappedEncoding[PersonId, Int] = StructibleMappedEncoding.encode
   }
 
   final case class Person(id: PersonId, name: String)

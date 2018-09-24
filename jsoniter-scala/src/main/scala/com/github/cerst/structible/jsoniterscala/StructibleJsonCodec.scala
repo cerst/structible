@@ -23,8 +23,9 @@ package com.github.cerst.structible.jsoniterscala
 
 import java.util.UUID
 
-import com.github.cerst.structible.Structible
+import com.github.cerst.structible.core.Structible
 import com.github.plokhotnyuk.jsoniter_scala.core.{JsonCodec, JsonReader, JsonWriter}
+
 object StructibleJsonCodec {
 
   // ==========================================================================
