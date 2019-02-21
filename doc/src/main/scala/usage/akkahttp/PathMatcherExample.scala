@@ -19,37 +19,34 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.github.cerst.structible
+package usage.akkahttp
 
+// #example
+import akka.http.scaladsl.server.Directives._
+import akka.http.scaladsl.server.{PathMatcher1, Route}
+import com.github.cerst.structible.akkahttp.ops._
 import com.github.cerst.structible.core.Structible
-import io.getquill._
-import com.github.cerst.structible.quill.ops._
 
-object StructibleMappedEncodingCompileTests {
+object PathMatcherExample {
 
-  object TestContext extends MysqlJdbcContext(SnakeCase, "configPrefix")
-
-  import TestContext._
-
-  final case class PersonId(value: Int) {
-    require(value >= 0, "PersonId must be >= 0")
+  final case class PersonId(value: Long) {
+    require(value >= 0, s"PersonId must be non-negative (got: '$value')")
   }
 
   object PersonId {
-    private val structible: Structible[Int, PersonId] = Structible.instanceUnsafe(apply, _.value)
 
-    implicit val decodeForPersonId: MappedEncoding[Int, PersonId] = structible.toDecode
+    private val structible: Structible[Long, PersonId] = Structible.instanceUnsafe(PersonId.apply, _.value)
 
-    implicit val encodeForPersonId: MappedEncoding[PersonId, Int] = structible.toEncode
+    // not declare as implicit because you usually call patch matchers explicitly within the Akka routing Dsl
+    val pathMatcher: PathMatcher1[PersonId] = structible.toPathMatcher
+
   }
 
-  final case class Person(id: PersonId, name: String)
-
-  def findById(personId: PersonId): List[Person] = {
-    run(quote {
-      query[Person]
-        .filter(_.id == lift(personId))
-    })
+  val route: Route = {
+    path("persons" / PersonId.pathMatcher) { personId =>
+      complete(personId.toString)
+    }
   }
 
 }
+// #example

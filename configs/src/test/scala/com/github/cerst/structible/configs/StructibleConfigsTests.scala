@@ -21,47 +21,48 @@
 
 package com.github.cerst.structible.configs
 
+import com.github.cerst.structible.configs.ops._
 import com.github.cerst.structible.core.Structible
 import com.typesafe.config.ConfigFactory
 import configs.Configs
 import configs.syntax._
 import utest._
 
-final case class Device(id: DeviceId, model: String)
-
-final case class DeviceId private (value: Int) extends AnyVal
-
-object DeviceId {
-
-  implicit val structibleForDeviceId: Structible[Int, DeviceId] = Structible.instanceUnsafe(apply, _.value)
-
-  implicit val configsForDeviceId: Configs[DeviceId] = StructibleConfigs[Int, DeviceId]
-
-  def apply(value: Int): DeviceId = {
-    require(value >= 0)
-    new DeviceId(value)
-  }
-
-}
-
-final case class UserName private (value: String) extends AnyVal
-
-object UserName {
-
-  implicit val structibleForUserName: Structible[String, UserName] = Structible.instanceUnsafe(apply, _.value)
-
-  implicit val configsForUserName: Configs[UserName] = StructibleConfigs[String, UserName]
-
-  def apply(value: String): UserName = {
-    require(value.nonEmpty)
-    new UserName(value)
-  }
-
-}
-
-final case class User(name: UserName, devices: Seq[Device])
-
 object StructibleConfigsTests extends TestSuite {
+
+  final case class Device(id: DeviceId, model: String)
+
+  final case class DeviceId private (value: Int) extends AnyVal
+
+  object DeviceId {
+
+    private val structible: Structible[Int, DeviceId] = Structible.instanceUnsafe(apply, _.value)
+
+    implicit val configsForDeviceId: Configs[DeviceId] = structible.toConfigs
+
+    def apply(value: Int): DeviceId = {
+      require(value >= 0)
+      new DeviceId(value)
+    }
+
+  }
+
+  final case class UserName private (value: String) extends AnyVal
+
+  object UserName {
+
+    private val structible: Structible[String, UserName] = Structible.instanceUnsafe(apply, _.value)
+
+    implicit val configsForUserName: Configs[UserName] = structible.toConfigs
+
+    def apply(value: String): UserName = {
+      require(value.nonEmpty)
+      new UserName(value)
+    }
+
+  }
+
+  final case class User(name: UserName, devices: Seq[Device])
 
   override val tests: Tests = Tests {
 

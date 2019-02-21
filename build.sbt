@@ -1,17 +1,29 @@
+def publishSettings(enabled: Boolean): Seq[Def.Setting[_]] = {
+  if (!enabled) {
+    Seq(skip in publish := true)
+  } else {
+    // refined as needed for publishing
+    // publishTo := ???
+    Seq()
+  }
+}
+
+// TODO: set-up publish
+
 lazy val root = (project in file("."))
+  .aggregate(`akka-http`, configs, core, doc, `jsoniter-scala`, quill)
   .enablePlugins(GitBranchPrompt, GitVersioning)
-  .settings(
-    name := "structible-root",
-    // this project is not supposed to be used externally, so don't publish
-    skip in publish := true
-  )
+  // root intentionally does not contain any code, so don't publish
+  .settings(publishSettings(enabled = false))
+  .settings(name := "structible-root")
 
 lazy val `akka-http` = (project in file("akka-http"))
   .dependsOn(core)
   .enablePlugins(GitBranchPrompt, GitVersioning)
   .settings(
     libraryDependencies ++= Dependencies.`akka-http`,
-    name := "structible-akka-http"
+    name := "structible-akka-http",
+    testFrameworks += new TestFramework("utest.runner.Framework")
   )
 
 lazy val configs = (project in file("configs"))
@@ -19,7 +31,8 @@ lazy val configs = (project in file("configs"))
   .enablePlugins(GitBranchPrompt, GitVersioning)
   .settings(
     libraryDependencies ++= Dependencies.configs,
-    name := "structible-configs"
+    name := "structible-configs",
+    testFrameworks += new TestFramework("utest.runner.Framework")
   )
 
 lazy val core = (project in file("core"))
@@ -31,9 +44,13 @@ lazy val core = (project in file("core"))
   )
 
 lazy val doc = (project in file("doc"))
+  .dependsOn(`akka-http`, configs, core, `jsoniter-scala`, quill)
   .enablePlugins(GitBranchPrompt, GitVersioning, ParadoxPlugin)
+  // doc/src contains example code only to embedded in the documentation, so don't publish
+  .settings(publishSettings(enabled = false))
   // all these settings are only relevant to the "doc" project which is why they are not defined in CommonSettingsPlugin.scala
   .settings(
+    libraryDependencies ++= Dependencies.doc,
     name := "structible-doc",
     // trigger dump-license-report in all other projects and rename the output
     // (paradox uses the first heading as link name in '@@@index' containers AND cannot handle variables in links)
@@ -45,19 +62,22 @@ lazy val doc = (project in file("doc"))
       (`jsoniter-scala` / dumpLicenseReport).value / ((`jsoniter-scala` / licenseReportTitle).value + ".md") -> "licenses/jsoniter-scala.md",
       (quill / dumpLicenseReport).value / ((quill / licenseReportTitle).value + ".md") -> "licenses/quill.md"
     ),
-    // trigger test compilation in projects which contain snippets to be shown in the documentation
-    // rationale: manage documentation source code where it can be compiled (e.g. <project>/src/test/paradox) but does not end up in published artifacts
+    // trigger code compilation of example code
     paradox in Compile := {
-      val _ = (core / compile in Test).value
+      val _ = (compile in Compile).value
       (paradox in Compile).value
     },
     // properties to be accessible from within the documentation
     paradoxProperties ++= Map(
+      "group" -> organization.value,
+      "name.akka-http" -> (`akka-http` / name).value,
+      "name.configs" -> (configs / name).value,
+      "name.core" -> (core / name).value,
+      "name.jsoniter-scala" -> (`jsoniter-scala` / name).value,
+      "name.quill" -> (quill / name).value,
       "version" -> version.value
     ),
-    paradoxTheme := Some(builtinParadoxTheme("generic")),
-    // this project is not supposed to be used externally, so don't publish
-    skip in publish := true
+    paradoxTheme := Some(builtinParadoxTheme("generic"))
   )
 
 lazy val `jsoniter-scala` = (project in file("jsoniter-scala"))
@@ -65,7 +85,8 @@ lazy val `jsoniter-scala` = (project in file("jsoniter-scala"))
   .enablePlugins(GitBranchPrompt, GitVersioning)
   .settings(
     libraryDependencies ++= Dependencies.`jsoniter-scala`,
-    name := "structible-jsoniter-scala"
+    name := "structible-jsoniter-scala",
+    testFrameworks += new TestFramework("utest.runner.Framework")
   )
 
 lazy val quill = (project in file("quill"))
@@ -73,5 +94,6 @@ lazy val quill = (project in file("quill"))
   .enablePlugins(GitBranchPrompt, GitVersioning)
   .settings(
     libraryDependencies ++= Dependencies.quill,
-    name := "structible-quill"
+    name := "structible-quill",
+    testFrameworks += new TestFramework("utest.runner.Framework")
   )

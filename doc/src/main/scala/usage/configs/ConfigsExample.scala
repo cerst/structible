@@ -19,37 +19,31 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.github.cerst.structible
+package usage.configs
 
+// #example
+import com.github.cerst.structible.configs.ops._
 import com.github.cerst.structible.core.Structible
-import io.getquill._
-import com.github.cerst.structible.quill.ops._
+import com.typesafe.config.Config
+import configs._
+import configs.syntax._
 
-object StructibleMappedEncodingCompileTests {
+object ConfigsExample {
 
-  object TestContext extends MysqlJdbcContext(SnakeCase, "configPrefix")
-
-  import TestContext._
-
-  final case class PersonId(value: Int) {
-    require(value >= 0, "PersonId must be >= 0")
+  final case class PersonId(value: Long) {
+    require(value >= 0, s"PersonId must be non-negative (got: '$value')")
   }
 
   object PersonId {
-    private val structible: Structible[Int, PersonId] = Structible.instanceUnsafe(apply, _.value)
 
-    implicit val decodeForPersonId: MappedEncoding[Int, PersonId] = structible.toDecode
+    private val structible: Structible[Long, PersonId] = Structible.instanceUnsafe(PersonId.apply, _.value)
 
-    implicit val encodeForPersonId: MappedEncoding[PersonId, Int] = structible.toEncode
+    implicit val configsForPersonId: Configs[PersonId] = structible.toConfigs
   }
 
-  final case class Person(id: PersonId, name: String)
-
-  def findById(personId: PersonId): List[Person] = {
-    run(quote {
-      query[Person]
-        .filter(_.id == lift(personId))
-    })
+  def readFromConfig(config: Config, path: String): Result[PersonId] = {
+    config.get[PersonId](path)
   }
 
 }
+// #example

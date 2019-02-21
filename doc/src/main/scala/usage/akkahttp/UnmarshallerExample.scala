@@ -19,17 +19,34 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.github.cerst.structible.configs
+package usage.akkahttp
 
-import com.github.cerst.structible.core.Constructible
-import configs.Configs
+// #example
+import akka.http.scaladsl.unmarshalling.{Unmarshal, Unmarshaller}
+import akka.stream.Materializer
+import com.github.cerst.structible.akkahttp.ops._
+import com.github.cerst.structible.core.Structible
 
-object StructibleConfigs {
+import scala.concurrent.{ExecutionContext, Future}
 
-  def apply[C: Configs, R](implicit constructible: Constructible[C, R]): Configs[R] = {
-    Configs from { (config, path) =>
-      Configs[C].get(config, path) map constructible.constructUnsafe
-    }
+object UnmarshallerExample {
+
+  final case class PersonId(value: Long) {
+    require(value >= 0, s"PersonId must be non-negative (got: '$value')")
+  }
+
+  object PersonId {
+
+    private val structible: Structible[Long, PersonId] = Structible.instanceUnsafe(PersonId.apply, _.value)
+
+    implicit val unmarshallerForPersonId: Unmarshaller[String, PersonId] = structible.toUnmarshaller
+
+  }
+
+  // this works seamlessly for e.g. HttpResponse.entity instead of String
+  def toPersonId(input: String)(implicit ec: ExecutionContext, mat: Materializer): Future[PersonId] = {
+    Unmarshal(input).to[PersonId]
   }
 
 }
+// #example

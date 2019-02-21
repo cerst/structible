@@ -19,17 +19,42 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.github.cerst.structible.akkahttp
+package usage.quill
 
-import akka.http.scaladsl.unmarshalling.Unmarshaller
-import com.github.cerst.structible.core.Constructible
+// #example
+import com.github.cerst.structible.core.Structible
+import com.github.cerst.structible.quill.ops._
+import io.getquill.{MappedEncoding, PostgresJdbcContext, SnakeCase}
 
-object StructibleUnmarshaller {
+object MappedEncodingExample {
 
-  def apply[C, R]() (implicit constructible: Constructible[C, R],
-                  unmarshaller: Unmarshaller[String, C]): Unmarshaller[String, R] = {
+  final case class PersonId(value: Long) {
+    require(value >= 0, s"PersonId must be non-negative (got: '$value')")
+  }
 
-    unmarshaller map constructible.constructUnsafe
+  object PersonId {
+
+    private val structible: Structible[Long, PersonId] = Structible.instanceUnsafe(PersonId.apply, _.value)
+
+    implicit val decodeForPersonId: MappedEncoding[Long, PersonId] = structible.toDecode
+
+    implicit val encodeForPersonId: MappedEncoding[PersonId, Long] = structible.toEncode
+
+  }
+
+  final case class Person(personId: PersonId)
+
+  // this specific context is solely for demonstration - any works
+  object TestContext extends PostgresJdbcContext(SnakeCase, "configPrefix")
+
+  import TestContext._
+
+  def findPersonById(personId: PersonId): List[Person] = {
+    run(quote {
+      query[Person]
+        .filter(_.personId == lift(personId))
+    })
   }
 
 }
+// #example

@@ -19,37 +19,18 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.github.cerst.structible
+package com.github.cerst.structible.quill
 
-import com.github.cerst.structible.core.Structible
-import io.getquill._
-import com.github.cerst.structible.quill.ops._
+import com.github.cerst.structible.core.{Constructible, Destructible}
 
-object StructibleMappedEncodingCompileTests {
+object ops {
 
-  object TestContext extends MysqlJdbcContext(SnakeCase, "configPrefix")
-
-  import TestContext._
-
-  final case class PersonId(value: Int) {
-    require(value >= 0, "PersonId must be >= 0")
+  implicit def toConstructibleQuillOps[C, R](constructible: Constructible[C, R]): ConstructibleQuillOps[C, R] = {
+    new ConstructibleQuillOps(constructible)
   }
 
-  object PersonId {
-    private val structible: Structible[Int, PersonId] = Structible.instanceUnsafe(apply, _.value)
-
-    implicit val decodeForPersonId: MappedEncoding[Int, PersonId] = structible.toDecode
-
-    implicit val encodeForPersonId: MappedEncoding[PersonId, Int] = structible.toEncode
-  }
-
-  final case class Person(id: PersonId, name: String)
-
-  def findById(personId: PersonId): List[Person] = {
-    run(quote {
-      query[Person]
-        .filter(_.id == lift(personId))
-    })
+  implicit def toDestructibleQuillOps[C, R](destructible: Destructible[C, R]): DestructibleQuillOps[C, R] = {
+    new DestructibleQuillOps(destructible)
   }
 
 }

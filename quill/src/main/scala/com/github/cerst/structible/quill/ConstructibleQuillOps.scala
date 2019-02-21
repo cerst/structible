@@ -19,37 +19,15 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.github.cerst.structible
+package com.github.cerst.structible.quill
 
-import com.github.cerst.structible.core.Structible
-import io.getquill._
-import com.github.cerst.structible.quill.ops._
+import com.github.cerst.structible.core.Constructible
+import io.getquill.MappedEncoding
 
-object StructibleMappedEncodingCompileTests {
+final class ConstructibleQuillOps[C, R](val constructible: Constructible[C, R]) extends AnyVal {
 
-  object TestContext extends MysqlJdbcContext(SnakeCase, "configPrefix")
-
-  import TestContext._
-
-  final case class PersonId(value: Int) {
-    require(value >= 0, "PersonId must be >= 0")
-  }
-
-  object PersonId {
-    private val structible: Structible[Int, PersonId] = Structible.instanceUnsafe(apply, _.value)
-
-    implicit val decodeForPersonId: MappedEncoding[Int, PersonId] = structible.toDecode
-
-    implicit val encodeForPersonId: MappedEncoding[PersonId, Int] = structible.toEncode
-  }
-
-  final case class Person(id: PersonId, name: String)
-
-  def findById(personId: PersonId): List[Person] = {
-    run(quote {
-      query[Person]
-        .filter(_.id == lift(personId))
-    })
+  def toDecode: MappedEncoding[C, R] = {
+    MappedEncoding(constructible.constructUnsafe)
   }
 
 }

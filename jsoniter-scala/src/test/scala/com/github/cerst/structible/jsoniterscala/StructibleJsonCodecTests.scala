@@ -24,6 +24,7 @@ package com.github.cerst.structible.jsoniterscala
 import java.nio.charset.StandardCharsets.UTF_8
 
 import com.github.cerst.structible.core.Structible
+import com.github.cerst.structible.jsoniterscala.ops._
 import com.github.plokhotnyuk.jsoniter_scala.core._
 import com.github.plokhotnyuk.jsoniter_scala.macros._
 import utest._
@@ -39,9 +40,9 @@ object StructibleJsonCodecTests extends TestSuite {
     }
 
     object Id {
-      implicit val structibleForDeviceId: Structible[Int, Id] = Structible.instanceUnsafe(apply, _.value)
+      private val structible: Structible[Int, Id] = Structible.instanceUnsafe(apply, _.value)
 
-      implicit val jsonCodecForDeviceId: JsonValueCodec[Id] = StructibleJsonCodec.int
+      implicit val jsonCodecForDeviceId: JsonValueCodec[Id] = structible.toJsonCodec
     }
 
   }
@@ -55,9 +56,9 @@ object StructibleJsonCodecTests extends TestSuite {
     }
 
     object Name {
-      implicit val structibleForUserName: Structible[String, Name] = Structible.instanceUnsafe(apply, _.value)
+      private val structible: Structible[String, Name] = Structible.instanceUnsafe(apply, _.value)
 
-      implicit val jsonCodecForUsername: JsonCodec[Name] = StructibleJsonCodec.string
+      implicit val jsonCodecForUsername: JsonCodec[Name] = structible.toJsonCodec
     }
 
   }

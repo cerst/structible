@@ -4,36 +4,16 @@
 SCRIPT_DIR_ABS_PATH="$(dirname $(greadlink -f "$0"))"
 PROJECT_ROOT_ABS_PATH="${SCRIPT_DIR_ABS_PATH}/../.."
 
-# run core tasks first as all other projects depend on it
-# run doc tasks last as it (likely) depends on test code snippets of other projects
+# compile IS required before test
+# https://github.com/plokhotnyuk/jsoniter-scala#known-issues
 SBT_STAGE_TASKS="\
-;core/clean
-;core/headerCreate
-;core/test;headerCreate
-;core/test
-;core/doc
-;akka-http/clean
-;akka-http/headerCreate
-;akka-http/test:headerCreate
-;akka-http/test
-;akka-http/doc
-;configs/clean
-;configs/headerCreate
-;configs/test:headerCreate
-;configs/test
-;configs/doc
-;jsoniter-scala/clean
-;jsoniter-scala/headerCreate
-;jsoniter-scala/test:headerCreate
-;jsoniter-scala/test
-;jsoniter-scala/doc
-;quill/clean
-;quill/headerCreate
-;quill/test:headerCreate
-;quill/test
-;quill/doc
-;doc/clean
-;doc/paradox"
+;clean
+;headerCreate
+;test:headerCreate
+;compile
+;test
+;doc
+;paradox"
 
 # TODO: sbt publish tasks
 SBT_PUBLISH_TASKS="\

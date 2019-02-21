@@ -5,12 +5,12 @@ object Dependencies {
   val resolvers: Seq[Resolver] = Seq()
 
   object Version {
-    val Akka = "2.5.14"
-    val AkkaHttp = "10.1.5"
+    val Akka = "2.5.21"
+    val AkkaHttp = "10.1.7"
     val Configs = "0.4.4"
-    val JsoniterScala = "0.30.1"
-    val Quill = "2.5.4"
-    val UTest = "0.6.5"
+    val JsoniterScala = "0.40.0"
+    val Quill = "3.0.1"
+    val UTest = "0.6.6"
   }
 
   // comment licenses for dependencies using the SPDX short identifier (see e.g. https://opensource.org/licenses/Apache-2.0)
@@ -20,6 +20,10 @@ object Dependencies {
     val AkkaHttp = "com.typesafe.akka" %% "akka-http" % Version.AkkaHttp
     // Apache-2.0
     val AkkaHttpTestkit = "com.typesafe.akka" %% "akka-http-testkit" % Version.AkkaHttp
+    // Apache-2.0
+    val AkkaStream = "com.typesafe.akka" %% "akka-stream" % Version.Akka
+    // Apache-2.0
+    val AkkaStreamTeskit = "com.typesafe.akka" %% "akka-stream-testkit" % Version.Akka
     // Apache-2.0
     val Configs = "com.github.kxbmap" %% "configs" % Version.Configs
     // MIT
@@ -34,13 +38,26 @@ object Dependencies {
     val UTest = "com.lihaoyi" %% "utest" % Version.UTest
   }
 
-  val `akka-http`: Seq[ModuleID] =
-    Seq(Library.AkkaHttp % Provided, Library.AkkaHttpTestkit % Test, Library.UTest % Test)
+  val `akka-http`: Seq[ModuleID] = Seq(
+    Library.AkkaHttp % Provided,
+    Library.AkkaHttpTestkit % Test,
+    Library.AkkaStreamTeskit % Test,
+    Library.UTest % Test
+  )
 
   val configs: Seq[ModuleID] =
     Seq(Library.Configs % Provided, Library.UTest % Test)
 
   val core: Seq[ModuleID] = Seq()
+
+  val doc: Seq[ModuleID] = Seq(
+    Library.AkkaHttp % Provided,
+    Library.AkkaStream % Provided,
+    Library.Configs % Provided,
+    Library.JsoniterScalaCore % Provided,
+    Library.JsoniterScalaMacros % Provided,
+    Library.QuillJdbc % Provided
+  )
 
   val `jsoniter-scala`: Seq[ModuleID] =
     Seq(Library.JsoniterScalaCore % Provided, Library.JsoniterScalaMacros % Provided, Library.UTest % Test)
