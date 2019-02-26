@@ -81,7 +81,7 @@ sbt_run_publish_task() {
     && echo "=======================" \
     && echo "Run 'sbt publishSigned'" \
     && echo "=======================" \
-    && $( cd ${PROJECT_ROOT_ABS_PATH} && sbt --warn publishSigned )
+    && ( cd ${PROJECT_ROOT_ABS_PATH} && sbt --warn publishSigned )
 }
 
 sbt_run_pre_publish_tasks() {
@@ -98,7 +98,7 @@ sbt_run_release_task() {
     && echo "=========================" \
     && echo "Run 'sbt sonatypeRelease'" \
     && echo "=========================" \
-    && $( cd ${PROJECT_ROOT_ABS_PATH} && sbt --warn sonatypeRelease )
+    && ( cd ${PROJECT_ROOT_ABS_PATH} && sbt --warn sonatypeRelease )
 }
 
 sbt_run_pre_publish_tasks \

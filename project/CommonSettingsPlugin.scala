@@ -10,7 +10,7 @@ object CommonSettingsPlugin extends CommonSettingsPluginTpl {
   override lazy val projectSettings: Seq[Def.Setting[_]] = {
     tplProjectSettingsPlus(
       developers := List(Developer("cerst", "Constantin Gerstberger", "", url("https://github.com/cerst"))),
-      git.baseVersion := "0.0.0",
+      git.baseVersion := "0.1.0",
       headerLicense := Some(HeaderLicense.MIT(startYear.value.get.toString, organizationName.value)),
       homepage := Some(url("https://github.com/cerst/structible")),
       licenses += "MIT" -> url("https://opensource.org/licenses/MIT"),
