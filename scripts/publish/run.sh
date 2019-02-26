@@ -3,10 +3,11 @@
 # greadlink because readlink has no -f on Mac
 SCRIPT_DIR_ABS_PATH="$(dirname $(greadlink -f "$0"))"
 PROJECT_ROOT_ABS_PATH="${SCRIPT_DIR_ABS_PATH}/../.."
+PROJECT_VERSION=""
 
 # compile IS required before test
 # https://github.com/plokhotnyuk/jsoniter-scala#known-issues
-SBT_STAGE_TASKS="\
+SBT_PRE_PUBLISH_TASKS="\
 ;clean
 ;headerCreate
 ;test:headerCreate
@@ -15,17 +16,36 @@ SBT_STAGE_TASKS="\
 ;doc
 ;paradox"
 
-# TODO: sbt publish tasks
-SBT_PUBLISH_TASKS="\
-"
-
-
-
 echo_success() {
     echo "" \
     && echo "=================" \
     && echo "Publish succeeded" \
     && echo "================="
+}
+
+git_clone_commit_push_doc() {
+    echo "==========================================="
+    echo "Cloning, updating and pushing documentation"
+    echo "==========================================="
+    if [[ ${PROJECT_VERSION} == "" ]]; then
+        echo "Internal script error: Project version should have been made available by now"
+        exit 1
+    else
+        (
+            REPO_NAME="cerst.github.io"
+            FOLDER_PATH="structible/$PROJECT_VERSION"
+            cd ${SCRIPT_DIR_ABS_PATH} \
+            && rm -rf ${REPO_NAME} \
+            && git clone https://github.com/cerst/cerst.github.io \
+            && cd ${REPO_NAME} \
+            && mkdir -p ${FOLDER_PATH} \
+            && cp -r ${PROJECT_ROOT_ABS_PATH}/doc/target/paradox/site/main/* ${FOLDER_PATH} \
+            && git add . \
+            && git commit -m "release structible v$PROJECT_VERSION" \
+            && git push
+        )
+    fi
+
 }
 
 git_ensure_master_branch() {
@@ -56,26 +76,35 @@ readAndConfirmVersion() {
     done
 }
 
-# TODO: clone the gh-pages repo, put the doc in it and push
-sbt_run_publish_tasks() {
+sbt_run_publish_task() {
     echo "" \
-    && echo "=====================" \
-    && echo "Run Sbt publish tasks" \
-    && echo ${SBT_PUBLISH_TASKS} \
-    && echo "=====================" \
-    && $( cd ${PROJECT_ROOT_ABS_PATH} && sbt --warn ${SBT_PUBLISH_TASKS} )
+    && echo "=======================" \
+    && echo "Run 'sbt publishSigned'" \
+    && echo "=======================" \
+    && $( cd ${PROJECT_ROOT_ABS_PATH} && sbt --warn publishSigned )
 }
 
-sbt_run_stage_stage_tasks() {
+sbt_run_pre_publish_tasks() {
     echo "" \
-    && echo "===================" \
-    && echo "Run Sbt stage tasks" \
-    && echo "${SBT_STAGE_TASKS}" \
-    && echo "===================" \
-    && ( cd ${PROJECT_ROOT_ABS_PATH} && sbt --warn ${SBT_STAGE_TASKS} )
+    && echo "=========================" \
+    && echo "Run sbt pre-publish tasks" \
+    && echo "${SBT_PRE_PUBLISH_TASKS}" \
+    && echo "=========================" \
+    && ( cd ${PROJECT_ROOT_ABS_PATH} && sbt --warn ${SBT_PRE_PUBLISH_TASKS} )
 }
 
-sbt_run_stage_stage_tasks \
+sbt_run_release_task() {
+    echo "" \
+    && echo "=========================" \
+    && echo "Run 'sbt sonatypeRelease'" \
+    && echo "=========================" \
+    && $( cd ${PROJECT_ROOT_ABS_PATH} && sbt --warn sonatypeRelease )
+}
+
+sbt_run_pre_publish_tasks \
     && readAndConfirmVersion \
     && git_ensure_master_branch \
-    && (echo "Publish not yet implemented" && exit 1)
+    && sbt_run_publish_task \
+    && git_clone_commit_push_doc \
+    && sbt_run_release_task \
+    && echo_success

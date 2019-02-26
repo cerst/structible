@@ -2,13 +2,15 @@ def publishSettings(enabled: Boolean): Seq[Def.Setting[_]] = {
   if (!enabled) {
     Seq(skip in publish := true)
   } else {
-    // refined as needed for publishing
-    // publishTo := ???
-    Seq()
+    publishTo := Some {
+      if (isSnapshot.value) {
+        Opts.resolver.sonatypeSnapshots
+      } else {
+        Opts.resolver.sonatypeStaging
+      }
+    }
   }
 }
-
-// TODO: set-up publish
 
 lazy val root = (project in file("."))
   .aggregate(`akka-http`, configs, core, doc, `jsoniter-scala`, quill)
@@ -20,6 +22,7 @@ lazy val root = (project in file("."))
 lazy val `akka-http` = (project in file("akka-http"))
   .dependsOn(core)
   .enablePlugins(GitBranchPrompt, GitVersioning)
+  .settings(publishSettings(enabled = true))
   .settings(
     libraryDependencies ++= Dependencies.`akka-http`,
     name := "structible-akka-http",
@@ -29,6 +32,7 @@ lazy val `akka-http` = (project in file("akka-http"))
 lazy val configs = (project in file("configs"))
   .dependsOn(core)
   .enablePlugins(GitBranchPrompt, GitVersioning)
+  .settings(publishSettings(enabled = true))
   .settings(
     libraryDependencies ++= Dependencies.configs,
     name := "structible-configs",
@@ -37,6 +41,7 @@ lazy val configs = (project in file("configs"))
 
 lazy val core = (project in file("core"))
   .enablePlugins(GitBranchPrompt, GitVersioning)
+  .settings(publishSettings(enabled = true))
   .settings(
     libraryDependencies ++= Dependencies.core,
     name := "structible-core",
@@ -83,6 +88,7 @@ lazy val doc = (project in file("doc"))
 lazy val `jsoniter-scala` = (project in file("jsoniter-scala"))
   .dependsOn(core)
   .enablePlugins(GitBranchPrompt, GitVersioning)
+  .settings(publishSettings(enabled = true))
   .settings(
     libraryDependencies ++= Dependencies.`jsoniter-scala`,
     name := "structible-jsoniter-scala",
@@ -92,6 +98,7 @@ lazy val `jsoniter-scala` = (project in file("jsoniter-scala"))
 lazy val quill = (project in file("quill"))
   .dependsOn(core)
   .enablePlugins(GitBranchPrompt, GitVersioning)
+  .settings(publishSettings(enabled = true))
   .settings(
     libraryDependencies ++= Dependencies.quill,
     name := "structible-quill",
