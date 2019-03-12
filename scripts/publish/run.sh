@@ -33,16 +33,19 @@ git_clone_commit_push_doc() {
     else
         (
             REPO_NAME="cerst.github.io"
-            FOLDER_PATH="structible/$PROJECT_VERSION"
+            PROJECT_NAME="structible"
+            FOLDER_PATH="$PROJECT_NAME/$PROJECT_VERSION"
+
             cd ${SCRIPT_DIR_ABS_PATH} \
             && rm -rf ${REPO_NAME} \
-            && git clone https://github.com/cerst/cerst.github.io \
+            && git clone https://github.com/cerst/${REPO_NAME} \
             && cd ${REPO_NAME} \
             && mkdir -p ${FOLDER_PATH} \
             && cp -r ${PROJECT_ROOT_ABS_PATH}/doc/target/paradox/site/main/* ${FOLDER_PATH} \
             && git add . \
-            && git commit -m "release structible v$PROJECT_VERSION" \
-            && git push
+            && git commit -m "release $PROJECT_NAME v$PROJECT_VERSION" \
+            && git push \
+            && rm -rf ${REPO_NAME}
         )
     fi
 
