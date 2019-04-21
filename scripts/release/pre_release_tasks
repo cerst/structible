@@ -1,0 +1,7 @@
+;clean
+;headerCreate
+;test:headerCreate
+;compile
+;test
+;doc
+;doc/makeSite

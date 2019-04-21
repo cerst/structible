@@ -12,13 +12,18 @@ project/SbtGitSettingsPluginTpl.scala
 project/sbt-api-mappings-tpl.sbt
 #project/sbt-buildinfo-tpl.sbt
 project/sbt-coursier-tpl.sbt
+project/sbt-ghpages-tpl.sbt
 project/sbt-git-tpl.sbt
 project/sbt-header-tpl.sbt
 project/sbt-license-report-tpl.sbt
 #project/sbt-native-packager-tpl.sbt
 project/sbt-paradox-tpl.sbt
 project/sbt-scalafmt-tpl.sbt
+project/sbt-site-tpl.sbt
 project/sbt-updates-tpl.sbt
 
 # project/project files
 project/project/sbt-updates.sbt
+
+# scripts
+scripts/release/run.sh

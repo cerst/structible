@@ -5,12 +5,12 @@ object Dependencies {
   val resolvers: Seq[Resolver] = Seq()
 
   object Version {
-    val Akka = "2.5.21"
-    val AkkaHttp = "10.1.7"
+    val Akka = "2.5.22"
+    val AkkaHttp = "10.1.8"
     val Configs = "0.4.4"
-    val JsoniterScala = "0.40.0"
-    val Quill = "3.0.1"
-    val UTest = "0.6.6"
+    val JsoniterScala = "0.46.0"
+    val Quill = "3.1.0"
+    val UTest = "0.6.7"
   }
 
   // comment licenses for dependencies using the SPDX short identifier (see e.g. https://opensource.org/licenses/Apache-2.0)

@@ -50,40 +50,48 @@ lazy val core = (project in file("core"))
 
 lazy val doc = (project in file("doc"))
   .dependsOn(`akka-http`, configs, core, `jsoniter-scala`, quill)
-  .enablePlugins(GitBranchPrompt, GitVersioning, ParadoxPlugin)
+  .enablePlugins(GhpagesPlugin, GitBranchPrompt, GitVersioning, ParadoxSitePlugin, ParadoxPlugin, PreprocessPlugin)
   // doc/src contains example code only to embedded in the documentation, so don't publish
   .settings(publishSettings(enabled = false))
   // all these settings are only relevant to the "doc" project which is why they are not defined in CommonSettingsPlugin.scala
   .settings(
-    libraryDependencies ++= Dependencies.doc,
-    name := "structible-doc",
-    // trigger dump-license-report in all other projects and rename the output
-    // (paradox uses the first heading as link name in '@@@index' containers AND cannot handle variables in links)
-    (mappings in Compile) in paradoxMarkdownToHtml ++= Seq(
-      (`akka-http` / dumpLicenseReport).value / ((`akka-http` / licenseReportTitle).value + ".md") -> "licenses/akka-http.md",
-      (configs / dumpLicenseReport).value / ((configs / licenseReportTitle).value + ".md") -> "licenses/configs.md",
-      (core / dumpLicenseReport).value / ((core / licenseReportTitle).value + ".md") -> "licenses/core.md",
-      dumpLicenseReport.value / (licenseReportTitle.value + ".md") -> "licenses/doc.md",
-      (`jsoniter-scala` / dumpLicenseReport).value / ((`jsoniter-scala` / licenseReportTitle).value + ".md") -> "licenses/jsoniter-scala.md",
-      (quill / dumpLicenseReport).value / ((quill / licenseReportTitle).value + ".md") -> "licenses/quill.md"
-    ),
-    // trigger code compilation of example code
-    paradox in Compile := {
-      val _ = (compile in Compile).value
-      (paradox in Compile).value
-    },
-    // properties to be accessible from within the documentation
-    paradoxProperties ++= Map(
-      "group" -> organization.value,
-      "name.akka-http" -> (`akka-http` / name).value,
-      "name.configs" -> (configs / name).value,
-      "name.core" -> (core / name).value,
-      "name.jsoniter-scala" -> (`jsoniter-scala` / name).value,
-      "name.quill" -> (quill / name).value,
-      "version" -> version.value
-    ),
-    paradoxTheme := Some(builtinParadoxTheme("generic"))
-  )
+  // only delete index.html which to put a new latest version link in to place but retain the old doc
+  includeFilter in ghpagesCleanSite := "index.html",
+  libraryDependencies ++= Dependencies.doc,
+  name := "structible-doc",
+  // trigger dump-license-report in all other projects and rename the output
+  // (paradox uses the first heading as link name in '@@@index' containers AND cannot handle variables in links)
+  (mappings in Paradox) in paradoxMarkdownToHtml ++= Seq(
+    (`akka-http` / dumpLicenseReport).value / ((`akka-http` / licenseReportTitle).value + ".md") -> "licenses/akka-http.md",
+    (configs / dumpLicenseReport).value / ((configs / licenseReportTitle).value + ".md") -> "licenses/configs.md",
+    (core / dumpLicenseReport).value / ((core / licenseReportTitle).value + ".md") -> "licenses/core.md",
+    dumpLicenseReport.value / (licenseReportTitle.value + ".md") -> "licenses/doc.md",
+    (`jsoniter-scala` / dumpLicenseReport).value / ((`jsoniter-scala` / licenseReportTitle).value + ".md") -> "licenses/jsoniter-scala.md",
+    (quill / dumpLicenseReport).value / ((quill / licenseReportTitle).value + ".md") -> "licenses/quill.md"
+  ),
+  // trigger code compilation of example code
+  paradox in Compile := {
+    val _ = (compile in Compile).value
+    (paradox in Compile).value
+  },
+  // properties to be accessible from within the documentation
+  paradoxProperties ++= Map(
+    "group" -> organization.value,
+    "name.akka-http" -> (`akka-http` / name).value,
+    "name.configs" -> (configs / name).value,
+    "name.core" -> (core / name).value,
+    "name.jsoniter-scala" -> (`jsoniter-scala` / name).value,
+    "name.quill" -> (quill / name).value,
+    "version" -> version.value
+  ),
+  paradoxTheme := Some(builtinParadoxTheme("generic")),
+  // used to update the "latest" link in the doc index.html which is not managed by paradox
+  preprocessVars in Preprocess := Map("version" -> version.value),
+  // sbt-site by default assumes Paradox sources under "src/paradox" (which is wrong)
+  sourceDirectory in Paradox := sourceDirectory.value / "main" / "paradox",
+  // move the paradox source into a sub-directory named after the current version
+  siteSubdirName in Paradox := version.value
+)
 
 lazy val `jsoniter-scala` = (project in file("jsoniter-scala"))
   .dependsOn(core)
