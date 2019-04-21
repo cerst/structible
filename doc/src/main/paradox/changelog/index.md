@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.2
+* Add missing _index.html_ for documentation entry site
+
 ## 0.1.1
 * Dependency Updates
     * Akka: 2.5.21 -> 2.5.22
