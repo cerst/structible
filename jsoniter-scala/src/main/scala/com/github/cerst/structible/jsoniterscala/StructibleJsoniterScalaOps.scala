@@ -21,6 +21,7 @@
 
 package com.github.cerst.structible.jsoniterscala
 
+import java.time.{Duration, OffsetDateTime, ZonedDateTime}
 import java.util.UUID
 
 import com.github.cerst.structible.core.Structible
@@ -28,19 +29,44 @@ import com.github.plokhotnyuk.jsoniter_scala.core.{JsonCodec, JsonReader, JsonWr
 
 // Jsoniter-Scala does not provide an implicit structure to derive json codecs - so, the derivations have to defined explicitly
 
-// =====================================================================================================================
-// BOOLEAN
-// =====================================================================================================================
-final class StructibleJsoniterScalaBooleanOps[R](val structible: Structible[Boolean, R]) extends AnyVal {
+private object newJsonCodec {
 
-  def toJsonCodec: JsonCodec[R] = new JsonCodec[R] {
+  final def apply[C, R](rName: String,
+                        structible: Structible[C, R],
+                        readC: JsonReader => C,
+                        writeVal: JsonWriter => C => Unit,
+                        readKeyAsC: JsonReader => C,
+                        writeKey: JsonWriter => C => Unit): JsonCodec[R] = {
 
-    override def decodeValue(in: JsonReader, default: R): R = {
-      if (in isNextToken 'n') {
-        in.readNullOrError(default, "expected Boolean value or null")
-      } else {
-        in.rollbackToken()
-        val c = in.readBoolean()
+    new JsonCodec[R] {
+      override def decodeValue(in: JsonReader, default: R): R = {
+        if (in isNextToken 'n') {
+          in.readNullOrError(default, s"expected $rName value or null")
+        } else {
+          in.rollbackToken()
+          def c = readC(in)
+          structible constructSafe c match {
+            case Left(error) =>
+              in decodeError error
+            case Right(r) =>
+              r
+          }
+        }
+      }
+
+      override def encodeValue(r: R, out: JsonWriter): Unit = {
+        if (r != null) {
+          def c = structible.destruct(r)
+          writeVal(out)(c)
+        } else {
+          out.writeNull()
+        }
+      }
+
+      override def nullValue: R = null.asInstanceOf[R]
+
+      override def decodeKey(in: JsonReader): R = {
+        def c = readKeyAsC(in)
         structible constructSafe c match {
           case Left(error) =>
             in decodeError error
@@ -48,32 +74,62 @@ final class StructibleJsoniterScalaBooleanOps[R](val structible: Structible[Bool
             r
         }
       }
-    }
 
-    override def encodeValue(r: R, out: JsonWriter): Unit = {
-      if (r != null) {
-        out writeVal structible.destruct(r)
-      } else {
-        out.writeNull()
+      override def encodeKey(r: R, out: JsonWriter): Unit = {
+        def c = structible.destruct(r)
+        writeKey(out)(c)
       }
-    }
-
-    override def nullValue: R = null.asInstanceOf[R]
-
-    override def decodeKey(in: JsonReader): R = {
-      val c = in.readKeyAsBoolean()
-      structible constructSafe c match {
-        case Left(error) =>
-          in decodeError error
-        case Right(r) =>
-          r
-      }
-    }
-
-    override def encodeKey(r: R, out: JsonWriter): Unit = {
-      out writeKey structible.destruct(r)
     }
   }
+
+}
+
+// =====================================================================================================================
+// BigDecimal
+// =====================================================================================================================
+final class StructibleJsoniterScalaBigDecimalOps[R](val structible: Structible[BigDecimal, R]) extends AnyVal {
+
+  def toJsonCodec: JsonCodec[R] = newJsonCodec[BigDecimal, R](
+    "BigDecimal",
+    structible,
+    readC = _.readBigDecimal(default = null),
+    writeVal = _.writeVal,
+    readKeyAsC = _.readKeyAsBigDecimal(),
+    writeKey = _.writeKey
+  )
+
+}
+
+// =====================================================================================================================
+// BigInt
+// =====================================================================================================================
+final class StructibleJsoniterScalaBigIntOps[R](val structible: Structible[BigInt, R]) extends AnyVal {
+
+  def toJsonCodec: JsonCodec[R] = newJsonCodec[BigInt, R](
+    "BigInt",
+    structible,
+    readC = _.readBigInt(default = null),
+    writeVal = _.writeVal,
+    readKeyAsC = _.readKeyAsBigInt(),
+    writeKey = _.writeKey
+  )
+
+}
+
+// =====================================================================================================================
+// BOOLEAN
+// =====================================================================================================================
+final class StructibleJsoniterScalaBooleanOps[R](val structible: Structible[Boolean, R]) extends AnyVal {
+
+  def toJsonCodec: JsonCodec[R] =
+    newJsonCodec[Boolean, R](
+      "Boolean",
+      structible,
+      readC = _.readBoolean,
+      writeVal = _.writeVal,
+      readKeyAsC = _.readKeyAsBoolean(),
+      writeKey = _.writeKey
+    )
 
 }
 
@@ -82,47 +138,30 @@ final class StructibleJsoniterScalaBooleanOps[R](val structible: Structible[Bool
 // =====================================================================================================================
 final class StructibleJsoniterScalaDoubleOps[R](val structible: Structible[Double, R]) extends AnyVal {
 
-  def toJsonCodec: JsonCodec[R] = new JsonCodec[R] {
+  def toJsonCodec: JsonCodec[R] = newJsonCodec[Double, R](
+    "Double",
+    structible,
+    readC = _.readDouble(),
+    writeVal = _.writeVal,
+    readKeyAsC = _.readKeyAsDouble(),
+    writeKey = _.writeKey
+  )
 
-    override def decodeValue(in: JsonReader, default: R): R = {
-      if (in isNextToken 'n') {
-        in.readNullOrError(default, "expected Double value or null")
-      } else {
-        in.rollbackToken()
-        val c = in.readDouble()
-        structible constructSafe c match {
-          case Left(error) =>
-            in decodeError error
-          case Right(r) =>
-            r
-        }
-      }
-    }
+}
 
-    override def encodeValue(r: R, out: JsonWriter): Unit = {
-      if (r != null) {
-        out writeVal structible.destruct(r)
-      } else {
-        out.writeNull()
-      }
-    }
+// =====================================================================================================================
+// DURATION
+// =====================================================================================================================
+final class StructibleJsoniterScalaDurationOps[R](val structible: Structible[Duration, R]) extends AnyVal {
 
-    override def nullValue: R = null.asInstanceOf[R]
-
-    override def decodeKey(in: JsonReader): R = {
-      val c = in.readKeyAsDouble()
-      structible constructSafe c match {
-        case Left(error) =>
-          in decodeError error
-        case Right(r) =>
-          r
-      }
-    }
-
-    override def encodeKey(r: R, out: JsonWriter): Unit = {
-      out writeKey structible.destruct(r)
-    }
-  }
+  def toJsonCodec: JsonCodec[R] = newJsonCodec[Duration, R](
+    "Duration",
+    structible,
+    readC = _.readDuration(default = null),
+    writeVal = _.writeVal,
+    readKeyAsC = _.readKeyAsDuration(),
+    writeKey = _.writeKey
+  )
 
 }
 
@@ -131,47 +170,14 @@ final class StructibleJsoniterScalaDoubleOps[R](val structible: Structible[Doubl
 // =====================================================================================================================
 final class StructibleJsoniterScalaFloatOps[R](val structible: Structible[Float, R]) extends AnyVal {
 
-  def toJsonCodec: JsonCodec[R] = new JsonCodec[R] {
-
-    override def decodeValue(in: JsonReader, default: R): R = {
-      if (in isNextToken 'n') {
-        in.readNullOrError(default, "expected Float value or null")
-      } else {
-        in.rollbackToken()
-        val c = in.readFloat()
-        structible constructSafe c match {
-          case Left(error) =>
-            in decodeError error
-          case Right(r) =>
-            r
-        }
-      }
-    }
-
-    override def encodeValue(r: R, out: JsonWriter): Unit = {
-      if (r != null) {
-        out writeVal structible.destruct(r)
-      } else {
-        out.writeNull()
-      }
-    }
-
-    override def nullValue: R = null.asInstanceOf[R]
-
-    override def decodeKey(in: JsonReader): R = {
-      val c = in.readKeyAsFloat()
-      structible constructSafe c match {
-        case Left(error) =>
-          in decodeError error
-        case Right(r) =>
-          r
-      }
-    }
-
-    override def encodeKey(r: R, out: JsonWriter): Unit = {
-      out writeKey structible.destruct(r)
-    }
-  }
+  def toJsonCodec: JsonCodec[R] = newJsonCodec[Float, R](
+    "Float",
+    structible,
+    readC = _.readFloat(),
+    writeVal = _.writeVal,
+    readKeyAsC = _.readKeyAsFloat(),
+    writeKey = _.writeKey
+  )
 
 }
 
@@ -180,47 +186,14 @@ final class StructibleJsoniterScalaFloatOps[R](val structible: Structible[Float,
 // =====================================================================================================================
 final class StructibleJsoniterScalaIntOps[R](val structible: Structible[Int, R]) extends AnyVal {
 
-  def toJsonCodec: JsonCodec[R] = new JsonCodec[R] {
-
-    override def decodeValue(in: JsonReader, default: R): R = {
-      if (in isNextToken 'n') {
-        in.readNullOrError(default, "expected Int value or null")
-      } else {
-        in.rollbackToken()
-        val c = in.readInt()
-        structible constructSafe c match {
-          case Left(error) =>
-            in decodeError error
-          case Right(r) =>
-            r
-        }
-      }
-    }
-
-    override def encodeValue(r: R, out: JsonWriter): Unit = {
-      if (r != null) {
-        out writeVal structible.destruct(r)
-      } else {
-        out.writeNull()
-      }
-    }
-
-    override def nullValue: R = null.asInstanceOf[R]
-
-    override def decodeKey(in: JsonReader): R = {
-      val c = in.readKeyAsInt()
-      structible constructSafe c match {
-        case Left(error) =>
-          in decodeError error
-        case Right(r) =>
-          r
-      }
-    }
-
-    override def encodeKey(r: R, out: JsonWriter): Unit = {
-      out writeKey structible.destruct(r)
-    }
-  }
+  def toJsonCodec: JsonCodec[R] = newJsonCodec[Int, R](
+    "Int",
+    structible,
+    readC = _.readInt(),
+    writeVal = _.writeVal,
+    readKeyAsC = _.readKeyAsInt(),
+    writeKey = _.writeKey
+  )
 
 }
 
@@ -229,47 +202,30 @@ final class StructibleJsoniterScalaIntOps[R](val structible: Structible[Int, R])
 // =====================================================================================================================
 final class StructibleJsoniterScalaLongOps[R](val structible: Structible[Long, R]) extends AnyVal {
 
-  def toJsonCodec: JsonCodec[R] = new JsonCodec[R] {
+  def toJsonCodec: JsonCodec[R] = newJsonCodec[Long, R](
+    "Long",
+    structible,
+    readC = _.readLong(),
+    writeVal = _.writeVal,
+    readKeyAsC = _.readKeyAsLong(),
+    writeKey = _.writeKey
+  )
 
-    override def decodeValue(in: JsonReader, default: R): R = {
-      if (in isNextToken 'n') {
-        in.readNullOrError(default, "expected Long value or null")
-      } else {
-        in.rollbackToken()
-        val c = in.readLong()
-        structible constructSafe c match {
-          case Left(error) =>
-            in decodeError error
-          case Right(r) =>
-            r
-        }
-      }
-    }
+}
 
-    override def encodeValue(r: R, out: JsonWriter): Unit = {
-      if (r != null) {
-        out writeVal structible.destruct(r)
-      } else {
-        out.writeNull()
-      }
-    }
+// =====================================================================================================================
+// OFFSET DATE TIME
+// =====================================================================================================================
+final class StructibleJsoniterScalaOffsetDateTimeOps[R](val structible: Structible[OffsetDateTime, R]) extends AnyVal {
 
-    override def nullValue: R = null.asInstanceOf[R]
-
-    override def decodeKey(in: JsonReader): R = {
-      val c = in.readKeyAsLong()
-      structible constructSafe c match {
-        case Left(error) =>
-          in decodeError error
-        case Right(r) =>
-          r
-      }
-    }
-
-    override def encodeKey(r: R, out: JsonWriter): Unit = {
-      out writeKey structible.destruct(r)
-    }
-  }
+  def toJsonCodec: JsonCodec[R] = newJsonCodec[OffsetDateTime, R](
+    "OffsetDateTime",
+    structible,
+    readC = _.readOffsetDateTime(default = null),
+    writeVal = _.writeVal,
+    readKeyAsC = _.readKeyAsOffsetDateTime(),
+    writeKey = _.writeKey
+  )
 
 }
 
@@ -278,47 +234,14 @@ final class StructibleJsoniterScalaLongOps[R](val structible: Structible[Long, R
 // =====================================================================================================================
 final class StructibleJsoniterScalaShortOps[R](val structible: Structible[Short, R]) extends AnyVal {
 
-  def toJsonCodec: JsonCodec[R] = new JsonCodec[R] {
-
-    override def decodeValue(in: JsonReader, default: R): R = {
-      if (in isNextToken 'n') {
-        in.readNullOrError(default, "expected Short value or null")
-      } else {
-        in.rollbackToken()
-        val c = in.readShort()
-        structible constructSafe c match {
-          case Left(error) =>
-            in decodeError error
-          case Right(r) =>
-            r
-        }
-      }
-    }
-
-    override def encodeValue(r: R, out: JsonWriter): Unit = {
-      if (r != null) {
-        out writeVal structible.destruct(r)
-      } else {
-        out.writeNull()
-      }
-    }
-
-    override def nullValue: R = null.asInstanceOf[R]
-
-    override def decodeKey(in: JsonReader): R = {
-      val c = in.readKeyAsShort()
-      structible constructSafe c match {
-        case Left(error) =>
-          in decodeError error
-        case Right(r) =>
-          r
-      }
-    }
-
-    override def encodeKey(r: R, out: JsonWriter): Unit = {
-      out writeKey structible.destruct(r)
-    }
-  }
+  def toJsonCodec: JsonCodec[R] = newJsonCodec[Short, R](
+    "Short",
+    structible,
+    readC = _.readShort(),
+    writeVal = _.writeVal,
+    readKeyAsC = _.readKeyAsShort(),
+    writeKey = _.writeKey
+  )
 
 }
 
@@ -327,89 +250,46 @@ final class StructibleJsoniterScalaShortOps[R](val structible: Structible[Short,
 // =====================================================================================================================
 final class StructibleJsoniterScalaStringOps[R](val structible: Structible[String, R]) extends AnyVal {
 
-  def toJsonCodec: JsonCodec[R] = new JsonCodec[R] {
-
-    override def decodeValue(in: JsonReader, default: R): R = {
-      val c = Option(in.readString(default = null))
-      c map structible.constructSafe match {
-        case None =>
-          default
-        case Some(Left(error)) =>
-          in decodeError error
-        case Some(Right(r)) =>
-          r
-      }
-    }
-
-    override def encodeValue(r: R, out: JsonWriter): Unit = {
-      if (r != null) {
-        out writeVal structible.destruct(r)
-      } else {
-        out.writeNull()
-      }
-    }
-
-    override def nullValue: R = null.asInstanceOf[R]
-
-    override def decodeKey(in: JsonReader): R = {
-      val c = in.readKeyAsString()
-      structible constructSafe c match {
-        case Left(error) =>
-          in decodeError error
-        case Right(r) =>
-          r
-      }
-    }
-
-    override def encodeKey(r: R, out: JsonWriter): Unit = {
-      out writeKey structible.destruct(r)
-    }
-  }
+  def toJsonCodec: JsonCodec[R] = newJsonCodec[String, R](
+    "String",
+    structible,
+    readC = _.readString(default = null),
+    writeVal = _.writeVal,
+    readKeyAsC = _.readKeyAsString(),
+    writeKey = _.writeKey
+  )
 
 }
+
 
 // =====================================================================================================================
 // UUID
 // =====================================================================================================================
 final class StructibleJsoniterScalaUuidOps[R](val structible: Structible[UUID, R]) extends AnyVal {
 
-  def toJsonCodec: JsonCodec[R] = new JsonCodec[R] {
+  def toJsonCodec: JsonCodec[R] = newJsonCodec[UUID, R](
+    "UUID",
+    structible,
+    readC = _.readUUID(default = null),
+    writeVal = _.writeVal,
+    readKeyAsC = _.readKeyAsUUID(),
+    writeKey = _.writeKey
+  )
 
-    override def decodeValue(in: JsonReader, default: R): R = {
-      val c = Option(in.readUUID(default = null))
-      c map structible.constructSafe match {
-        case None =>
-          default
-        case Some(Left(error)) =>
-          in decodeError error
-        case Some(Right(r)) =>
-          r
-      }
-    }
+}
 
-    override def encodeValue(r: R, out: JsonWriter): Unit = {
-      if (r != null) {
-        out writeVal structible.destruct(r)
-      } else {
-        out.writeNull()
-      }
-    }
+// =====================================================================================================================
+// ZONED DATE TIME
+// =====================================================================================================================
+final class StructibleJsoniterScalaZonedDateTimeOps[R](val structible: Structible[ZonedDateTime, R]) extends AnyVal {
 
-    override def nullValue: R = null.asInstanceOf[R]
-
-    override def decodeKey(in: JsonReader): R = {
-      val c = in.readKeyAsUUID()
-      structible constructSafe c match {
-        case Left(error) =>
-          in decodeError error
-        case Right(r) =>
-          r
-      }
-    }
-
-    override def encodeKey(r: R, out: JsonWriter): Unit = {
-      out writeKey structible.destruct(r)
-    }
-  }
+  def toJsonCodec: JsonCodec[R] = newJsonCodec[ZonedDateTime, R](
+    "ZonedDateTime",
+    structible,
+    readC = _.readZonedDateTime(default = null),
+    writeVal = _.writeVal,
+    readKeyAsC = _.readKeyAsZonedDateTime(),
+    writeKey = _.writeKey
+  )
 
 }

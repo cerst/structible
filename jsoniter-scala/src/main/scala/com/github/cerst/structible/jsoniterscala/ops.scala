@@ -21,11 +21,24 @@
 
 package com.github.cerst.structible.jsoniterscala
 
+import java.time.{Duration, OffsetDateTime, ZonedDateTime}
 import java.util.UUID
 
 import com.github.cerst.structible.core.Structible
 
 object ops {
+
+  implicit def toStructibleJsoniterScalaBigIntOps[R](
+    structible: Structible[BigInt, R]
+  ): StructibleJsoniterScalaBigIntOps[R] = {
+    new StructibleJsoniterScalaBigIntOps[R](structible)
+  }
+
+  implicit def toStructibleJsoniterScalaBigDecimalOps[R](
+    structible: Structible[BigDecimal, R]
+  ): StructibleJsoniterScalaBigDecimalOps[R] = {
+    new StructibleJsoniterScalaBigDecimalOps[R](structible)
+  }
 
   implicit def toStructibleJsoniterScalaBooleanOps[R](
     structible: Structible[Boolean, R]
@@ -37,6 +50,12 @@ object ops {
     structible: Structible[Double, R]
   ): StructibleJsoniterScalaDoubleOps[R] = {
     new StructibleJsoniterScalaDoubleOps[R](structible)
+  }
+
+  implicit def toStructibleJsoniterScalaDurationOps[R](
+    structible: Structible[Duration, R]
+  ): StructibleJsoniterScalaDurationOps[R] = {
+    new StructibleJsoniterScalaDurationOps[R](structible)
   }
 
   implicit def toStructibleJsoniterScalaIntOps[R](structible: Structible[Int, R]): StructibleJsoniterScalaIntOps[R] = {
@@ -55,6 +74,12 @@ object ops {
     new StructibleJsoniterScalaLongOps[R](structible)
   }
 
+  implicit def toStructibleJsoniterScalaOffsetDateTimeOps[R](
+    structible: Structible[OffsetDateTime, R]
+  ): StructibleJsoniterScalaOffsetDateTimeOps[R] = {
+    new StructibleJsoniterScalaOffsetDateTimeOps[R](structible)
+  }
+
   implicit def toStructibleJsoniterScalaShortOps[R](
     structible: Structible[Short, R]
   ): StructibleJsoniterScalaShortOps[R] = {
@@ -71,6 +96,12 @@ object ops {
     structible: Structible[UUID, R]
   ): StructibleJsoniterScalaUuidOps[R] = {
     new StructibleJsoniterScalaUuidOps[R](structible)
+  }
+
+  implicit def toStructibleJsoniterScalaZonedDateTimeOps[R](
+    structible: Structible[ZonedDateTime, R]
+  ): StructibleJsoniterScalaZonedDateTimeOps[R] = {
+    new StructibleJsoniterScalaZonedDateTimeOps[R](structible)
   }
 
 }

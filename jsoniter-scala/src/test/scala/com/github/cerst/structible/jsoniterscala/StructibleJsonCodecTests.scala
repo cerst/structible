@@ -22,62 +22,58 @@
 package com.github.cerst.structible.jsoniterscala
 
 import java.nio.charset.StandardCharsets.UTF_8
+import java.time.{Duration, OffsetDateTime, ZonedDateTime}
+import java.util.UUID
 
-import com.github.cerst.structible.core.Structible
-import com.github.cerst.structible.jsoniterscala.ops._
+import com.github.cerst.structible.jsoniterscala.testutil._
 import com.github.plokhotnyuk.jsoniter_scala.core._
-import com.github.plokhotnyuk.jsoniter_scala.macros._
 import utest._
 
 object StructibleJsonCodecTests extends TestSuite {
 
-  final case class Device(id: Device.Id, model: String)
+  private val wrapper = Wrapper(
+    BigDecimalValueClass(BigDecimal(200.0)),
+    BigIntValueClass(BigInt(200)),
+    BooleanValueClass(true),
+    DoubleValueClass(5.4),
+    DurationValueClass(Duration.ofSeconds(50, 399)),
+    FloatValueClass(10.45F),
+    IntValueClass(48),
+    LongValueClass(1234L),
+    OffsetDateTimeValueClass(OffsetDateTime parse "2019-05-29T19:49:35.814+02:00"),
+    ShortValueClass(7),
+    StringValueClass("Hello World"),
+    UUIDValueClass(UUID fromString "c1df0070-4ccc-431c-a634-378c90624620"),
+    ZonedDateTimeValueClass(ZonedDateTime parse "2019-05-29T19:50:54.008+02:00[Europe/Berlin]")
+  )
 
-  object Device {
-
-    final case class Id(value: Int) {
-      require(value >= 0)
-    }
-
-    object Id {
-      private val structible: Structible[Int, Id] = Structible.instanceUnsafe(apply, _.value)
-
-      implicit val jsonCodecForDeviceId: JsonValueCodec[Id] = structible.toJsonCodec
-    }
-
-  }
-
-  final case class User(name: User.Name, devices: Seq[Device])
-
-  object User {
-
-    final case class Name(value: String) {
-      require(value.nonEmpty)
-    }
-
-    object Name {
-      private val structible: Structible[String, Name] = Structible.instanceUnsafe(apply, _.value)
-
-      implicit val jsonCodecForUsername: JsonCodec[Name] = structible.toJsonCodec
-    }
-
-  }
+  private val jsonBytes =
+    """{
+      |"bigDecimalValueClass":200.0,
+      |"bigIntValueClass":200,
+      |"booleanValueClass":true,
+      |"doubleValueClass":5.4,
+      |"durationValueClass":"PT50.000000399S",
+      |"floatValueClass":10.45,
+      |"intValueClass":48,
+      |"longValueClass":1234,
+      |"offsetDateTimeValueClass":"2019-05-29T19:49:35.814+02:00",
+      |"shortValueClass":7,
+      |"stringValueClass":"Hello World",
+      |"uuidValueClass":"c1df0070-4ccc-431c-a634-378c90624620",
+      |"zonedDateTimeValueClass":"2019-05-29T19:50:54.008+02:00[Europe/Berlin]"
+      |}""".stripMargin.replaceAll("\n", "") getBytes UTF_8
 
   override val tests: Tests = Tests {
 
-    implicit val codec: JsonValueCodec[User] = JsonCodecMaker.make[User](CodecMakerConfig())
-
-    val jsonBytes = """{"name":"John","devices":[{"id":1,"model":"iPhone X"}]}""" getBytes UTF_8
-    val user = User(name = User.Name("John"), devices = Seq(Device(id = Device.Id(1), model = "iPhone X")))
-
     "to Json bytes" - {
-      val actualJson = writeToArray(user)
+      val actualJson = writeToArray(wrapper)
       assert(actualJson sameElements jsonBytes)
     }
 
     "from Json bytes" - {
-      val actualUser = readFromArray(jsonBytes)
-      assert(actualUser == user)
+      val actualUser = readFromArray[Wrapper](jsonBytes)
+      assert(actualUser == wrapper)
     }
 
   }

@@ -5,10 +5,10 @@ object Dependencies {
   val resolvers: Seq[Resolver] = Seq()
 
   object Version {
-    val Akka = "2.5.22"
+    val Akka = "2.5.23"
     val AkkaHttp = "10.1.8"
     val Configs = "0.4.4"
-    val JsoniterScala = "0.46.0"
+    val JsoniterScala = "0.48.3"
     val Quill = "3.1.0"
     val UTest = "0.6.7"
   }
@@ -64,4 +64,5 @@ object Dependencies {
 
   val quill: Seq[ModuleID] =
     Seq(Library.QuillCore % Provided, Library.QuillJdbc % Test)
+
 }
