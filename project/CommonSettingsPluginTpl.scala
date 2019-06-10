@@ -19,7 +19,7 @@ trait CommonSettingsPluginTpl extends AutoPlugin {
 
   private def licenseReportSettings: Seq[Def.Setting[_]] = Seq(
     // The ivy configurations we'd like to grab licenses for.
-    licenseConfigurations := Set(Compile, IntegrationTest, Test, Provided).map(_.name),
+    licenseConfigurations := Set(Compile, Provided).map(_.name),
     licenseReportStyleRules := Some("table, th, td {border: 1px solid black;}"),
     licenseReportTitle := normalizedName.value,
     licenseReportTypes := Seq(MarkDown)

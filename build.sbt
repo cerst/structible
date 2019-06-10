@@ -61,11 +61,10 @@ lazy val doc = (project in file("doc"))
   name := "structible-doc",
   // trigger dump-license-report in all other projects and rename the output
   // (paradox uses the first heading as link name in '@@@index' containers AND cannot handle variables in links)
-  (mappings in Paradox) in paradoxMarkdownToHtml ++= Seq(
+  (mappings in Compile) in paradoxMarkdownToHtml ++= Seq(
     (`akka-http` / dumpLicenseReport).value / ((`akka-http` / licenseReportTitle).value + ".md") -> "licenses/akka-http.md",
     (configs / dumpLicenseReport).value / ((configs / licenseReportTitle).value + ".md") -> "licenses/configs.md",
     (core / dumpLicenseReport).value / ((core / licenseReportTitle).value + ".md") -> "licenses/core.md",
-    dumpLicenseReport.value / (licenseReportTitle.value + ".md") -> "licenses/doc.md",
     (`jsoniter-scala` / dumpLicenseReport).value / ((`jsoniter-scala` / licenseReportTitle).value + ".md") -> "licenses/jsoniter-scala.md",
     (quill / dumpLicenseReport).value / ((quill / licenseReportTitle).value + ".md") -> "licenses/quill.md"
   ),
@@ -87,8 +86,6 @@ lazy val doc = (project in file("doc"))
   paradoxTheme := Some(builtinParadoxTheme("generic")),
   // used to update the "latest" link in the doc index.html which is not managed by paradox
   preprocessVars in Preprocess := Map("version" -> version.value),
-  // sbt-site by default assumes Paradox sources under "src/paradox" (which is wrong)
-  sourceDirectory in Paradox := sourceDirectory.value / "main" / "paradox",
   // move the paradox source into a sub-directory named after the current version
   siteSubdirName in Paradox := version.value
 )
