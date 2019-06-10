@@ -9,8 +9,7 @@
     * _java.time.Instant_
     * _java.time.OffsetDateTime_
     * _java.time.ZonedDateTime_
-* update Dependencies
-  * TODO
+* update Dependencies (see _Licenses_ in the documentation)
 
 ## 0.1.2
 
