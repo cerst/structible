@@ -1,6 +1,9 @@
 # Changelog
 
-## 0.2.0+
+## 0.3.0
+* cross-build for Scala 2.12 and 2.13 whenever possible
+
+## 0.2.0
 
 * extend _structible-jsoniter-scala_ to support the following types
     * _BigDecimal_

@@ -1,6 +1,8 @@
 # Jsoniter Scala
 
-Derivation of _JsonCodec_ instances.
+$name.jsoniter-scala$ is available for Scala 2.12 and 2.13.
+
+It provides derivations for _JsonCodec_ instances.
 
 
 ## Dependency

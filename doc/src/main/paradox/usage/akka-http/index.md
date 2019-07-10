@@ -1,6 +1,8 @@
 # Akka-Http
 
-The Akka-Http satellite project provides derivations for:
+$name.akka-http$ is available for Scala 2.12 and 2.13.
+
+It provides derivations for:
 
 * _PathMatcher_
 * _Unmarshaller_
