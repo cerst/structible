@@ -8,9 +8,9 @@ object Dependencies {
     val Akka = "2.5.23"
     val AkkaHttp = "10.1.8"
     val Configs = "0.4.4"
-    val JsoniterScala = "0.50.0"
+    val JsoniterScala = "0.51.5"
     val Quill = "3.2.2"
-    val UTest = "0.6.9"
+    val UTest = "0.7.1"
   }
 
   // comment licenses for dependencies using the SPDX short identifier (see e.g. https://opensource.org/licenses/Apache-2.0)

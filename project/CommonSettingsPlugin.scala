@@ -1,7 +1,6 @@
-import com.typesafe.sbt.GitPlugin.autoImport.git
 import de.heikoseeberger.sbtheader.HeaderPlugin.autoImport.{HeaderLicense, headerLicense}
-import sbt._
 import sbt.Keys._
+import sbt._
 
 object CommonSettingsPlugin extends CommonSettingsPluginTpl {
 
@@ -13,28 +12,25 @@ object CommonSettingsPlugin extends CommonSettingsPluginTpl {
   override lazy val projectSettings: Seq[Def.Setting[_]] = {
     tplProjectSettingsPlus(scalaVersionValue)(
       developers := List(Developer("cerst", "Constantin Gerstberger", "", url("https://github.com/cerst"))),
-      git.baseVersion := "0.2.0",
-      // basically only needed for sbt-ghpages
-      git.remoteRepo := "git@github.com:cerst/structible.git",
       headerLicense := Some(HeaderLicense.MIT(startYear.value.get.toString, organizationName.value)),
       homepage := Some(url("https://github.com/cerst/structible")),
       licenses += "MIT" -> url("https://opensource.org/licenses/MIT"),
       organization := "com.github.cerst",
       organizationName := "Constantin Gerstberger",
-      publishMavenStyle := true,
       resolvers ++= Dependencies.resolvers,
-      scmInfo := Some(ScmInfo(homepage.value.get, git.remoteRepo.value)),
+      scmInfo := Some(ScmInfo(homepage.value.get, "git@github.com:cerst/structible.git")),
       startYear := Some(2018)
     )
   }
 
   def publishSettings(enabled: Boolean): Seq[Def.Setting[_]] = {
-    if(!enabled){
+    if (!enabled) {
       skip in publish := true
     } else {
-      // refined as needed for publishing
-      // publishTo := ???
-      Seq()
+      Seq(
+        publishMavenStyle := true,
+        publishTo := Some(if (isSnapshot.value) Opts.resolver.sonatypeSnapshots else Opts.resolver.sonatypeStaging)
+      )
     }
   }
 

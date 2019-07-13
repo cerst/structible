@@ -2,6 +2,8 @@
 
 ## 0.3.0
 * cross-build for Scala 2.12 and 2.13 whenever possible
+* update build
+* update dependencies (see _Licenses_ in the documentation)
 
 ## 0.2.0
 
