@@ -31,7 +31,7 @@ import com.github.cerst.structible.core.Constructible
 final class ConstructibleAkkaHttpOps[C, R](val constructible: Constructible[C, R]) extends AnyVal {
 
   def toUnmarshaller(implicit unmarshaller: Unmarshaller[String, C]): Unmarshaller[String, R] = {
-    unmarshaller map constructible.constructUnsafe
+    unmarshaller map constructible.construct
   }
 
 }
@@ -44,7 +44,7 @@ final class ConstructibleAkkaHttpOps[C, R](val constructible: Constructible[C, R
 final class ConstructibleAkkaHttpDoubleOps[R](val constructible: Constructible[Double, R]) extends AnyVal {
 
   def toPathMatcher: PathMatcher1[R] = {
-    DoubleNumber flatMap (Double => constructible.constructSafe(Double).toOption)
+    DoubleNumber flatMap (Double => constructible.constructOption(Double))
   }
 
 }
@@ -55,11 +55,11 @@ final class ConstructibleAkkaHttpDoubleOps[R](val constructible: Constructible[D
 final class ConstructibleAkkaHttpIntOps[R](val constructible: Constructible[Int, R]) extends AnyVal {
 
   def toHexPathMatcher: PathMatcher1[R] = {
-    HexIntNumber flatMap (hexInt => constructible.constructSafe(hexInt).toOption)
+    HexIntNumber flatMap (hexInt => constructible.constructOption(hexInt))
   }
 
   def toPathMatcher: PathMatcher1[R] = {
-    IntNumber flatMap (int => constructible.constructSafe(int).toOption)
+    IntNumber flatMap (int => constructible.constructOption(int))
   }
 
 }
@@ -70,11 +70,11 @@ final class ConstructibleAkkaHttpIntOps[R](val constructible: Constructible[Int,
 final class ConstructibleAkkaHttpLongOps[R](val constructible: Constructible[Long, R]) extends AnyVal {
 
   def toHexPathMatcher: PathMatcher1[R] = {
-    HexLongNumber flatMap (hexLong => constructible.constructSafe(hexLong).toOption)
+    HexLongNumber flatMap (hexLong => constructible.constructOption(hexLong))
   }
 
   def toPathMatcher: PathMatcher1[R] = {
-    LongNumber flatMap (long => constructible.constructSafe(long).toOption)
+    LongNumber flatMap (long => constructible.constructOption(long))
   }
 
 }
@@ -85,7 +85,7 @@ final class ConstructibleAkkaHttpLongOps[R](val constructible: Constructible[Lon
 final class ConstructibleAkkaHttpStringOps[R](val constructible: Constructible[String, R]) extends AnyVal {
 
   def toPathMatcher: PathMatcher1[R] = {
-    Segment flatMap (string => constructible.constructSafe(string).toOption)
+    Segment flatMap (string => constructible.constructOption(string))
   }
 
 }
@@ -96,7 +96,7 @@ final class ConstructibleAkkaHttpStringOps[R](val constructible: Constructible[S
 final class ConstructibleAkkaHttpUuidOps[R](val constructible: Constructible[UUID, R]) extends AnyVal {
 
   def toPathMatcher: PathMatcher1[R] = {
-    JavaUUID flatMap (uuid => constructible.constructSafe(uuid).toOption)
+    JavaUUID flatMap (uuid => constructible.constructOption(uuid))
   }
 
 }

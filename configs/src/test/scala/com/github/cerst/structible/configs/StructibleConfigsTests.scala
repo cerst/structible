@@ -36,7 +36,7 @@ object StructibleConfigsTests extends TestSuite {
 
   object DeviceId {
 
-    private val structible: Structible[Int, DeviceId] = Structible.instanceUnsafe(apply, _.value)
+    private val structible: Structible[Int, DeviceId] = Structible.structible(apply, _.value)
 
     implicit val configsForDeviceId: Configs[DeviceId] = structible.toConfigs
 
@@ -51,7 +51,7 @@ object StructibleConfigsTests extends TestSuite {
 
   object UserName {
 
-    private val structible: Structible[String, UserName] = Structible.instanceUnsafe(apply, _.value)
+    private val structible: Structible[String, UserName] = Structible.structible(apply, _.value)
 
     implicit val configsForUserName: Configs[UserName] = structible.toConfigs
 
