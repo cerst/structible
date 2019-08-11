@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+
+<head>
+<title>Quill · structible</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="description" content='structible-doc'/>
+<link rel="canonical" href="https://github.com/cerst/structibleusage/quill/index.html"/>
+<link href="https://fonts.googleapis.com/css?family=Roboto:100normal,100italic,300normal,300italic,400normal,400italic,500normal,500italic,700normal,700italic,900normal,900italicc" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="../../lib/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="../../js/page.js"></script>
+<script type="text/javascript" src="../../js/warnOldVersion.js"></script>
+<script type="text/javascript" src="../../js/groups.js"></script>
+<link rel="stylesheet" type="text/css" href="../../lib/normalize.css/normalize.css"/>
+<link rel="stylesheet" type="text/css" href="../../lib/foundation/dist/foundation.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../css/page.css"/>
+
+<!--
+<link rel="shortcut icon" href="../../images/favicon.ico" />
+-->
+</head>
+
+<body>
+<div class="off-canvas-wrapper">
+<div class="off-canvas-wrapper-inner" data-off-canvas-wrapper>
+
+<div class="off-canvas position-left" id="off-canvas-menu" data-off-canvas>
+<nav class="off-canvas-nav">
+<div class="nav-home">
+<a href="../../index.html" >
+<span class="home-icon">⌂</span>structible
+</a>
+<div class="version-number">
+0.4.0
+</div>
+</div>
+<div class="nav-toc">
+<ul>
+  <li><a href="../../changelog/index.html" class="page">Changelog</a></li>
+  <li><a href="../../licenses/index.html" class="page">Licenses</a>
+  <ul>
+    <li><a href="../../licenses/akka-http.html" class="page">structible-akka-http</a></li>
+    <li><a href="../../licenses/configs.html" class="page">structible-configs</a></li>
+    <li><a href="../../licenses/core.html" class="page">structible-core</a></li>
+    <li><a href="../../licenses/jsoniter-scala.html" class="page">structible-jsoniter-scala</a></li>
+    <li><a href="../../licenses/quill.html" class="page">structible-quill</a></li>
+  </ul></li>
+  <li><a href="../../usage/index.html" class="page">Usage</a>
+  <ul>
+    <li><a href="../../usage/akka-http/index.html" class="page">Akka-Http</a></li>
+    <li><a href="../../usage/configs/index.html" class="page">Configs</a></li>
+    <li><a href="../../usage/jsoniterscala/index.html" class="page">Jsoniter Scala</a></li>
+    <li><a href="../../usage/quill/index.html" class="active page">Quill</a></li>
+  </ul></li>
+</ul>
+</div>
+
+</nav>
+</div>
+
+<div class="off-canvas-content" data-off-canvas-content>
+
+<header class="site-header expanded row">
+<div class="small-12 column">
+<a href="#" class="off-canvas-toggle hide-for-medium" data-toggle="off-canvas-menu"><svg class="svg-icon svg-icon-menu" version="1.1" id="Menu" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 20 20" enable-background="new 0 0 20 20" xml:space="preserve"> <path class="svg-icon-menu-path" fill="#53CDEC" d="M16.4,9H3.6C3.048,9,3,9.447,3,10c0,0.553,0.048,1,0.6,1H16.4c0.552,0,0.6-0.447,0.6-1C17,9.447,16.952,9,16.4,9z M16.4,13
+H3.6C3.048,13,3,13.447,3,14c0,0.553,0.048,1,0.6,1H16.4c0.552,0,0.6-0.447,0.6-1C17,13.447,16.952,13,16.4,13z M3.6,7H16.4
+C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.048,7,3.6,7z"/></svg>
+</a>
+<div class="title"><a href="../../index.html">structible</a></div>
+
+<!--
+<a href="https://www.example.com" class="logo show-for-medium">logo</a>
+-->
+</div>
+</header>
+
+<div class="expanded row">
+
+<div class="medium-3 large-2 show-for-medium column">
+<nav class="site-nav">
+<div class="nav-home">
+<a href="../../index.html" >
+<span class="home-icon">⌂</span>structible
+</a>
+<div class="version-number">
+0.4.0
+</div>
+</div>
+<div class="nav-toc">
+<ul>
+  <li><a href="../../changelog/index.html" class="page">Changelog</a></li>
+  <li><a href="../../licenses/index.html" class="page">Licenses</a>
+  <ul>
+    <li><a href="../../licenses/akka-http.html" class="page">structible-akka-http</a></li>
+    <li><a href="../../licenses/configs.html" class="page">structible-configs</a></li>
+    <li><a href="../../licenses/core.html" class="page">structible-core</a></li>
+    <li><a href="../../licenses/jsoniter-scala.html" class="page">structible-jsoniter-scala</a></li>
+    <li><a href="../../licenses/quill.html" class="page">structible-quill</a></li>
+  </ul></li>
+  <li><a href="../../usage/index.html" class="page">Usage</a>
+  <ul>
+    <li><a href="../../usage/akka-http/index.html" class="page">Akka-Http</a></li>
+    <li><a href="../../usage/configs/index.html" class="page">Configs</a></li>
+    <li><a href="../../usage/jsoniterscala/index.html" class="page">Jsoniter Scala</a></li>
+    <li><a href="../../usage/quill/index.html" class="active page">Quill</a></li>
+  </ul></li>
+</ul>
+</div>
+
+</nav>
+</div>
+
+<div class="small-12 medium-9 large-10 column">
+<section class="site-content">
+
+<span id="version-warning"></span>
+
+<div class="page-header row">
+<div class="medium-12 show-for-medium column">
+<div class="nav-breadcrumbs">
+<ul>
+  <li><a href="../../index.html">structible</a></li>
+  <li><a href="../../usage/index.html">Usage</a></li>
+  <li>Quill</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div class="page-content row">
+<div class="small-12 large-9 column" id="docs">
+<h1><a href="#quill" name="quill" class="anchor"><span class="anchor-link"></span></a>Quill</h1>
+<p>Derivation of <em>MappedEncoding</em> instances.</p>
+<h2><a href="#dependency" name="dependency" class="anchor"><span class="anchor-link"></span></a>Dependency</h2><dl class="dependency"><dt>sbt</dt><dd><pre class="prettyprint"><code class="language-scala">libraryDependencies += "com.github.cerst" % "structible-quill" % "0.4.0"</code></pre></dd><dt>Maven</dt><dd><pre class="prettyprint"><code class="language-xml">&lt;dependency&gt;
+  &lt;groupId&gt;com.github.cerst&lt;/groupId&gt;
+  &lt;artifactId&gt;structible-quill&lt;/artifactId&gt;
+  &lt;version&gt;0.4.0&lt;/version&gt;
+&lt;/dependency&gt;</code></pre></dd><dt>Gradle</dt><dd><pre class="prettyprint"><code class="language-gradle">dependencies {
+  compile group: 'com.github.cerst', name: 'structible-quill', version: '0.4.0'
+}</code></pre></dd></dl>
+<h2><a href="#example" name="example" class="anchor"><span class="anchor-link"></span></a>Example</h2>
+<pre class="prettyprint"><a class="icon go-to-source" href="https://github.com/cerst/structible/tree/v0.4.0/doc/src/main/scala/usage/quill/MappedEncodingExample.scala#L25-L60" target="_blank" title="Go to snippet source"></a><code class="language-scala">import com.github.cerst.structible.core.Structible
+import com.github.cerst.structible.quill.ops._
+import io.getquill.{MappedEncoding, PostgresJdbcContext, SnakeCase}
+
+object MappedEncodingExample {
+
+  final case class PersonId(value: Long) {
+    require(value &gt;= 0, s&quot;PersonId must be non-negative (got: &#39;$value&#39;)&quot;)
+  }
+
+  object PersonId {
+
+    // you can also pass-in &#39;construct&#39; functions returning Either[String, A], Option[A] or Try[A]
+    private val structible: Structible[Long, PersonId] = Structible.structible(PersonId.apply, _.value)
+
+    implicit val decodeForPersonId: MappedEncoding[Long, PersonId] = structible.toDecode
+
+    implicit val encodeForPersonId: MappedEncoding[PersonId, Long] = structible.toEncode
+
+  }
+
+  final case class Person(personId: PersonId)
+
+  // this specific context is solely for demonstration - any works
+  object TestContext extends PostgresJdbcContext(SnakeCase, &quot;configPrefix&quot;)
+
+  import TestContext._
+
+  def findPersonById(personId: PersonId): List[Person] = {
+    run(quote {
+      query[Person]
+        .filter(_.personId == lift(personId))
+    })
+  }
+
+}</code></pre>
+<div class="source-github">
+The source code for this page can be found <a href="https://github.com/cerst/structible/tree/v0.4.0/doc/src/main/paradox/usage/quill/index.md">here</a>.
+</div>
+
+</div>
+<div class="large-3 show-for-large column" data-sticky-container>
+<nav class="sidebar sticky" data-sticky data-anchor="docs" data-sticky-on="large">
+<div class="page-nav">
+<div class="nav-title">On this page:</div>
+<div class="nav-toc">
+<ul>
+  <li><a href="../../usage/quill/index.html#quill" class="header">Quill</a>
+  <ul>
+    <li><a href="../../usage/quill/index.html#dependency" class="header">Dependency</a></li>
+    <li><a href="../../usage/quill/index.html#example" class="header">Example</a></li>
+  </ul></li>
+</ul>
+</div>
+</div>
+</nav>
+</div>
+</div>
+
+</section>
+</div>
+
+</div>
+
+<footer class="site-footer">
+
+<section class="site-footer-nav">
+<div class="expanded row">
+<div class="small-12 large-offset-2 large-10 column">
+<div class="row site-footer-content">
+
+<div class="small-12 medium-4 large-3 text-center column">
+<div class="nav-links">
+<ul>
+<!-- <li><a href="https://www.example.com/products/">Products</a> -->
+</ul>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+</section>
+
+<section class="site-footer-base">
+<div class="expanded row">
+<div class="small-12 large-offset-2 large-10 column">
+<div class="row site-footer-content">
+
+<div class="small-12 text-center large-9 column">
+
+<!--
+<div class="copyright">
+<span class="text">&copy; 2019</span>
+<a href="https://www.example.com" class="logo">logo</a>
+</div>
+-->
+</div>
+
+</div>
+</div>
+</div>
+</section>
+</footer>
+
+</div>
+</div>
+</div>
+</body>
+
+<script type="text/javascript" src="../../lib/foundation/dist/foundation.min.js"></script>
+<script type="text/javascript">jQuery(document).foundation();</script>
+<script type="text/javascript" src="../../js/magellan.js"></script>
+
+<style type="text/css">@import "../../lib/prettify/prettify.css";</style>
+<script type="text/javascript" src="../../lib/prettify/prettify.js"></script>
+<script type="text/javascript" src="../../lib/prettify/lang-scala.js"></script>
+<script type="text/javascript">jQuery(function(){window.prettyPrint && prettyPrint()});</script>
+<script type="text/javascript">jQuery(function(jq){initOldVersionWarnings(jq, '0.4.0', 'https://github.com/cerst/structible')});</script>
+
+
+</html>
