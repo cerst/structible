@@ -25,7 +25,6 @@ import scala.reflect.ClassTag
 import scala.util.control.NonFatal
 import scala.util.{Failure, Success, Try}
 
-// TODO: document methods
 
 /**
   * @tparam C Common type
