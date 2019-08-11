@@ -35,9 +35,10 @@ object PathMatcherExample {
 
   object PersonId {
 
-    private val structible: Structible[Long, PersonId] = Structible.instanceUnsafe(PersonId.apply, _.value)
+    // you can also pass-in 'construct' functions returning Either[String, A], Option[A] or Try[A]
+    private val structible: Structible[Long, PersonId] = Structible.structible(PersonId.apply, _.value)
 
-    // not declare as implicit because you usually call patch matchers explicitly within the Akka routing Dsl
+    // not declared as implicit because you usually call patch matchers explicitly within the Akka routing Dsl
     val pathMatcher: PathMatcher1[PersonId] = structible.toPathMatcher
 
   }

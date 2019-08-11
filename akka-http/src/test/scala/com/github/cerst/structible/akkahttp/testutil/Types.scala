@@ -33,7 +33,7 @@ final case class NegDouble private (value: Double) extends AnyVal
 
 object NegDouble {
 
-  private val structible: Structible[Double, NegDouble] = Structible.instanceUnsafe(apply, _.value)
+  private val structible: Structible[Double, NegDouble] = Structible.structible(apply, _.value)
 
   implicit val unmarshallerForNegDouble: Unmarshaller[String, NegDouble] = structible.toUnmarshaller
 
@@ -53,7 +53,7 @@ final case class OddInt private (value: Int) extends AnyVal
 
 object OddInt {
 
-  private val structible: Structible[Int, OddInt] = Structible.instanceUnsafe(apply, _.value)
+  private val structible: Structible[Int, OddInt] = Structible.structible(apply, _.value)
 
   implicit val unmarshallerForOddInt: Unmarshaller[String, OddInt] = structible.toUnmarshaller
 
@@ -75,7 +75,7 @@ final case class PosLong private (value: Long) extends AnyVal
 
 object PosLong {
 
-  private val structible: Structible[Long, PosLong] = Structible.instanceUnsafe(apply, _.value)
+  private val structible: Structible[Long, PosLong] = Structible.structible(apply, _.value)
 
   implicit val unmarshallerForNegLong: Unmarshaller[String, PosLong] = structible.toUnmarshaller
 
@@ -97,8 +97,7 @@ final case class NonEmptyString private (value: String) extends AnyVal
 
 object NonEmptyString {
 
-  private val structible: Structible[String, NonEmptyString] =
-    Structible.instanceUnsafe(apply, _.value)
+  private val structible: Structible[String, NonEmptyString] = Structible.structible(apply, _.value)
 
   implicit val unmarshallerForNonEmptyString: Unmarshaller[String, NonEmptyString] = structible.toUnmarshaller
 

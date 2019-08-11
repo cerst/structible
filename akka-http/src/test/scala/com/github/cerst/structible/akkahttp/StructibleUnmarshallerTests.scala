@@ -26,7 +26,6 @@ import akka.http.scaladsl.unmarshalling.{Unmarshal, Unmarshaller}
 import akka.stream.{ActorMaterializer, Materializer}
 import akka.testkit.TestKit
 import com.github.cerst.structible.akkahttp.testutil.{NegDouble, NonEmptyString, OddInt, PosLong}
-import com.github.cerst.structible.core.ConstructException
 import utest._
 
 import scala.concurrent.Await
@@ -48,7 +47,7 @@ object StructibleUnmarshallerTests extends TestSuite {
     val shouldSucceed = Await.result(Unmarshal(marshallable._1).to[R], 3.seconds)
     assert(shouldSucceed == marshallable._2)
 
-    intercept[ConstructException] {
+    intercept[IllegalArgumentException] {
       val _ = Await.result(Unmarshal(unmarshallable).to[R], 3.seconds)
     }
     ()

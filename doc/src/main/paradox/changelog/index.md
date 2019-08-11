@@ -1,9 +1,24 @@
 # Changelog
 
+## 0.4.0
+
+**Breaking Changes**
+
+* replace all _construct_, _destruct_ and _instance_ methods having suffixes _safe_ and _unsafe_ with such better
+representing the involved types (e.g. _Either_ or _Try_)
+* extend the external and internal API to support exceptions, _Either_, _Try_, and _Option_  
+
+**Other Changes**
+
+* update Dependencies (see _Licenses_ in the documentation)
+
 ## 0.3.0
+
 * cross-build for Scala 2.12 and 2.13 whenever possible
 * update build
 * update dependencies (see _Licenses_ in the documentation)
+
+
 
 ## 0.2.0
 
@@ -16,9 +31,12 @@
     * _java.time.ZonedDateTime_
 * update Dependencies (see _Licenses_ in the documentation)
 
+
+
 ## 0.1.2
 
 * Add missing _index.html_ for documentation entry site
+
 
 
 ## 0.1.1
@@ -30,6 +48,7 @@
     * Quill: 3.0.1 -> 3.1.0
     * UTest: 0.6.6 -> 0.6.7
 * Push documentation into Github-pages branch rather than a repo (the one for 0.1.0 is thus lost) 
+
 
 
 ## 0.1.0

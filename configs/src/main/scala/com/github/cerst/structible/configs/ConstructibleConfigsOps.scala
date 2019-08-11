@@ -28,7 +28,7 @@ final class ConstructibleConfigsOps[C, R](val constructible: Constructible[C, R]
 
   def toConfigs(implicit configs: Configs[C]): Configs[R] = {
     Configs from { (config, path) =>
-      Configs[C].get(config, path) map constructible.constructUnsafe
+      Configs[C].get(config, path) map constructible.construct
     }
   }
 

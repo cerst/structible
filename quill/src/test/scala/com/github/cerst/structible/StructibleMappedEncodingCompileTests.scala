@@ -36,7 +36,7 @@ object StructibleMappedEncodingCompileTests {
   }
 
   object PersonId {
-    private val structible: Structible[Int, PersonId] = Structible.instanceUnsafe(apply, _.value)
+    private val structible: Structible[Int, PersonId] = Structible.structible(apply, _.value)
 
     implicit val decodeForPersonId: MappedEncoding[Int, PersonId] = structible.toDecode
 

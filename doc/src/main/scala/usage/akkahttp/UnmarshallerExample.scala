@@ -37,7 +37,8 @@ object UnmarshallerExample {
 
   object PersonId {
 
-    private val structible: Structible[Long, PersonId] = Structible.instanceUnsafe(PersonId.apply, _.value)
+    // you can also pass-in 'construct' functions returning Either[String, A], Option[A] or Try[A]
+    private val structible: Structible[Long, PersonId] = Structible.structible(PersonId.apply, _.value)
 
     implicit val unmarshallerForPersonId: Unmarshaller[String, PersonId] = structible.toUnmarshaller
 

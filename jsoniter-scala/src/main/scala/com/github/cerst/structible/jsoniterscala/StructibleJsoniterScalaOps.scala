@@ -45,7 +45,7 @@ private object newJsonCodec {
         } else {
           in.rollbackToken()
           def c = readC(in)
-          structible constructSafe c match {
+          structible constructEither c match {
             case Left(error) =>
               in decodeError error
             case Right(r) =>
@@ -67,7 +67,7 @@ private object newJsonCodec {
 
       override def decodeKey(in: JsonReader): R = {
         def c = readKeyAsC(in)
-        structible constructSafe c match {
+        structible constructEither c match {
           case Left(error) =>
             in decodeError error
           case Right(r) =>

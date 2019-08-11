@@ -5,11 +5,11 @@ object Dependencies {
   val resolvers: Seq[Resolver] = Seq()
 
   object Version {
-    val Akka = "2.5.23"
-    val AkkaHttp = "10.1.8"
+    val Akka = "2.5.24"
+    val AkkaHttp = "10.1.9"
     val Configs = "0.4.4"
-    val JsoniterScala = "0.51.5"
-    val Quill = "3.2.2"
+    val JsoniterScala = "0.55.0"
+    val Quill = "3.4.1"
     val UTest = "0.7.1"
   }
 

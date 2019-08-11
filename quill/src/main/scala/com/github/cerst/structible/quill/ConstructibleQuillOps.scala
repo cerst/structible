@@ -27,7 +27,7 @@ import io.getquill.MappedEncoding
 final class ConstructibleQuillOps[C, R](val constructible: Constructible[C, R]) extends AnyVal {
 
   def toDecode: MappedEncoding[C, R] = {
-    MappedEncoding(constructible.constructUnsafe)
+    MappedEncoding(constructible.construct)
   }
 
 }

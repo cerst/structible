@@ -22,6 +22,7 @@ Structible addresses this issue in two steps:
 
 **1)**  
 By way of its _core_ library providing three type classes to standardize the aforementioned conversion:
+
 * _Constructible_: _common type_ -> _refined type_ (think read)
 * _Destructible_: _refined type_ -> _common type_ (think write)
 * _Structible_: Combination of _Constructible_ and _Destructible_
