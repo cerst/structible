@@ -21,6 +21,8 @@
 
 package com.github.cerst.structible.core
 
+import com.github.cerst.structible.core.constraint.syntax.ConstraintSyntax
+
 import scala.reflect.ClassTag
 import scala.util.control.NonFatal
 import scala.util.{Failure, Success, Try}
@@ -83,7 +85,44 @@ trait Structible[C, R] extends Constructible[C, R] with Destructible[C, R]
 
 object Structible {
 
-  final def apply[P, W](implicit structible: Structible[P, W]): Structible[P, W] = structible
+  private[core] final def regularSimpleName[B: ClassTag]: String = implicitly[ClassTag[B]].runtimeClass.getSimpleName
+
+  /** Companion objects end with a '$' */
+  private[core] final def companionSimpleName[B: ClassTag]: String = regularSimpleName[B].dropRight(1)
+
+  final def apply[C, R](implicit structible: Structible[C, R]): Structible[C, R] = structible
+
+  final def apply[C,R](constrain: ConstraintSyntax.type => Structible[C,R]): Structible[C,R] = {
+    constrain(ConstraintSyntax)
+  }
+
+  apply(c => Structible.structible(c.))
+
+  final def structible[C: ClassTag, R](_construct: C => R, constraint: Constraint[C], _destruct: R => C): Structible[C,R] = {
+    new Structible[C,R] {
+      override def construct(c: C): R = {
+        try {
+          val violations = constraint(c)
+          if(violations.nonEmpty){
+            def formattedViolations = violations.mkString("[ ", ", ", " ]")
+            def message = s"'$a' is not a valid '$bName' due to the following constraint violations: $formattedViolations"
+            throw new IllegalArgumentException(message)
+          } else {
+
+          }
+
+        }
+      }
+
+      override def constructEither(c: C): Either[String, R] = ???
+
+      override def constructOption(c: C): Option[R] = ???
+
+      override def constructTry(c: C): Try[R] = ???
+
+      override def destruct(r: R): C = ???
+    }
+  }
 
   /**
     * Creates a structible instance.<br/>
