@@ -7,6 +7,7 @@ object Dependencies {
   object Version {
     val Akka = "2.5.24"
     val AkkaHttp = "10.1.9"
+    val Avro4s = "3.0.1"
     val Configs = "0.4.4"
     val JsoniterScala = "0.55.0"
     val Quill = "3.4.1"
@@ -24,6 +25,8 @@ object Dependencies {
     val AkkaStream = "com.typesafe.akka" %% "akka-stream" % Version.Akka
     // Apache-2.0
     val AkkaStreamTeskit = "com.typesafe.akka" %% "akka-stream-testkit" % Version.Akka
+    // Apache-2.0
+    val Avro4s = "com.sksamuel.avro4s" %% "avro4s-core" % Version.Avro4s
     // Apache-2.0
     val Configs = "com.github.kxbmap" %% "configs" % Version.Configs
     // MIT
@@ -44,6 +47,8 @@ object Dependencies {
     Library.AkkaStreamTeskit % Test,
     Library.UTest % Test
   )
+
+  val avro4s: Seq[ModuleID] = Seq(Library.Avro4s, Library.UTest % Test)
 
   val configs: Seq[ModuleID] =
     Seq(Library.Configs % Provided, Library.UTest % Test)

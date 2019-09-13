@@ -21,6 +21,17 @@ lazy val `akka-http` = (project in file("akka-http"))
     testFrameworks += new TestFramework("utest.runner.Framework")
   )
 
+lazy val avro4s = (project in file("avro4s"))
+  .dependsOn(core)
+  .enablePlugins(GitBranchPrompt, GitVersioning)
+  .settings(CommonSettingsPlugin.publishSettings(enabled = true))
+  .settings(
+    crossScalaVersions := CommonSettingsPlugin.crossScalaVersions,
+    libraryDependencies ++= Dependencies.avro4s,
+    name := "structible-avro4s",
+    testFrameworks += new TestFramework("utest.runner.Framework")
+  )
+
 lazy val configs = (project in file("configs"))
   .dependsOn(core)
   .enablePlugins(GitBranchPrompt, GitVersioning)
@@ -46,7 +57,7 @@ lazy val core = (project in file("core"))
 
 // if makeSite fails, make sure that the Scala 2.12 compile options are removed (seems like the build is not reloaded on Scala version switch as part of cross-builds)
 lazy val doc = (project in file("doc"))
-  .dependsOn(`akka-http`, configs, core, `jsoniter-scala`, quill)
+  .dependsOn(`akka-http`, avro4s, configs, core, `jsoniter-scala`, quill)
   .enablePlugins(GhpagesPlugin, GitBranchPrompt, GitVersioning, ParadoxSitePlugin, ParadoxPlugin, PreprocessPlugin)
   // doc/src contains example code only to embedded in the documentation, so don't publish
   .settings(CommonSettingsPlugin.publishSettings(enabled = false))
@@ -65,6 +76,7 @@ lazy val doc = (project in file("doc"))
     // (paradox uses the first heading as link name in '@@@index' containers AND cannot handle variables in links)
     (mappings in Compile) in paradoxMarkdownToHtml ++= Seq(
       (`akka-http` / dumpLicenseReport).value / ((`akka-http` / licenseReportTitle).value + ".md") -> "licenses/akka-http.md",
+      (avro4s / dumpLicenseReport).value / ((avro4s / licenseReportTitle).value + ".md") -> "licenses/avro4s.md",
       (configs / dumpLicenseReport).value / ((configs / licenseReportTitle).value + ".md") -> "licenses/configs.md",
       (core / dumpLicenseReport).value / ((core / licenseReportTitle).value + ".md") -> "licenses/core.md",
       (`jsoniter-scala` / dumpLicenseReport).value / ((`jsoniter-scala` / licenseReportTitle).value + ".md") -> "licenses/jsoniter-scala.md",
@@ -79,6 +91,7 @@ lazy val doc = (project in file("doc"))
     paradoxProperties ++= Map(
       "group" -> organization.value,
       "name.akka-http" -> (`akka-http` / name).value,
+      "name.avro4s" -> (avro4s / name).value,
       "name.configs" -> (configs / name).value,
       "name.core" -> (core / name).value,
       "name.jsoniter-scala" -> (`jsoniter-scala` / name).value,

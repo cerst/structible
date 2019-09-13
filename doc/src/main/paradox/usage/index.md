@@ -7,6 +7,7 @@ Simply select a satellite project on the left based on the library you want to i
 @@@ index
 
 * [akka-http](akka-http/index.md)
+* [avro4s](avro4s/index.md)
 * [configs](configs/index.md)
 * [jsoniterscala](jsoniterscala/index.md)
 * [quill](quill/index.md)
