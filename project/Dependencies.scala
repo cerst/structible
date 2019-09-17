@@ -11,7 +11,7 @@ object Dependencies {
     val Configs = "0.4.4"
     val JsoniterScala = "0.55.2"
     val Pureconfig = "0.12.0"
-    val Quill = "3.4.4"
+    val Quill = "3.4.4" // 3.4.6 not on Maven as of 2019-09-17
     val UTest = "0.7.1"
   }
 
@@ -27,7 +27,7 @@ object Dependencies {
     // Apache-2.0
     val AkkaStreamTeskit = "com.typesafe.akka" %% "akka-stream-testkit" % Version.Akka
     // Apache-2.0
-    val Avro4s = "com.sksamuel.avro4s" %% "avro4s-core" % Version.Avro4s
+    val Avro4sCore = "com.sksamuel.avro4s" %% "avro4s-core" % Version.Avro4s
     // Apache-2.0
     val Configs = "com.github.kxbmap" %% "configs" % Version.Configs
     // MIT
@@ -35,7 +35,7 @@ object Dependencies {
     // MIT
     val JsoniterScalaMacros = "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros" % Version.JsoniterScala // required only at compile-time
     // MPL-2.0
-    val Pureconfig = "com.github.pureconfig" %% "pureconfig-core" % Version.Pureconfig
+    val PureconfigCore = "com.github.pureconfig" %% "pureconfig-core" % Version.Pureconfig
     // Apache-2.0
     val QuillCore = "io.getquill" %% "quill-core" % Version.Quill
     // Apache-2.0
@@ -51,7 +51,7 @@ object Dependencies {
     Library.UTest % Test
   )
 
-  val avro4s: Seq[ModuleID] = Seq(Library.Avro4s, Library.UTest % Test)
+  val avro4s: Seq[ModuleID] = Seq(Library.Avro4sCore, Library.UTest % Test)
 
   val configs: Seq[ModuleID] =
     Seq(Library.Configs % Provided, Library.UTest % Test)
@@ -70,7 +70,7 @@ object Dependencies {
   val `jsoniter-scala`: Seq[ModuleID] =
     Seq(Library.JsoniterScalaCore % Provided, Library.JsoniterScalaMacros % Provided, Library.UTest % Test)
 
-  val pureconfig: Seq[ModuleID] = Seq(Library.Pureconfig, Library.UTest % Test)
+  val pureconfig: Seq[ModuleID] = Seq(Library.PureconfigCore, Library.UTest % Test)
 
   val quill: Seq[ModuleID] =
     Seq(Library.QuillCore % Provided, Library.QuillJdbc % Test)
