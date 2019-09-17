@@ -1,6 +1,11 @@
 # Changelog
 
+## 0.5.2
+
+* Downgrade to sbt 1.2.8 to make ghpages work again
+
 ## 0.5.1
+Did **not** get released properly due a build-related problem.
 
 * fix build related problem which prevent releasing
 * add missing Avro4s and Pureconfig projects to root for them to be released
