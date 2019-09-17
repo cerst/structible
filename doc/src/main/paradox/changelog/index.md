@@ -1,9 +1,10 @@
 # Changelog
 
-## 0.5.0+
+## 0.5.0
 
 * add support for Avro4s
 * add support for Pureconfig
+* update dependencies
 
 ## 0.4.0
 
