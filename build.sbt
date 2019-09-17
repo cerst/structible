@@ -1,5 +1,5 @@
 lazy val root = (project in file("."))
-  .aggregate(`akka-http`, configs, core, doc, `jsoniter-scala`, quill)
+  .aggregate(`akka-http`, avro4s, configs, core, doc, `jsoniter-scala`, pureconfig, quill)
   .enablePlugins(GitBranchPrompt, GitVersioning)
   // root intentionally does not contain any code, so don't publish
   .settings(CommonSettingsPlugin.publishSettings(enabled = false))

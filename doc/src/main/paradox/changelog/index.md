@@ -1,6 +1,12 @@
 # Changelog
 
+## 0.5.1
+
+* fix build related problem which prevent releasing
+* add missing Avro4s and Pureconfig projects to root for them to be released
+
 ## 0.5.0
+Did **not** get released properly due a build-related problem.
 
 * add support for Avro4s
 * add support for Pureconfig

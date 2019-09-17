@@ -20,8 +20,7 @@ object CommonSettingsPlugin extends CommonSettingsPluginTpl {
       resolvers ++= Dependencies.resolvers,
       scmInfo := Some(ScmInfo(homepage.value.get, "git@github.com:cerst/structible.git")),
       startYear := Some(2018),
-      testFrameworks += new TestFramework("utest.runner.Framework"),
-      turbo := true
+      testFrameworks += new TestFramework("utest.runner.Framework")
     )
   }
 

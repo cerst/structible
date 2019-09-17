@@ -35,7 +35,7 @@ object Dependencies {
     // MIT
     val JsoniterScalaMacros = "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros" % Version.JsoniterScala // required only at compile-time
     // MPL-2.0
-    val PureconfigCore = "com.github.pureconfig" %% "pureconfig-core" % Version.Pureconfig
+    val Pureconfig = "com.github.pureconfig" %% "pureconfig" % Version.Pureconfig
     // Apache-2.0
     val QuillCore = "io.getquill" %% "quill-core" % Version.Quill
     // Apache-2.0
@@ -70,7 +70,7 @@ object Dependencies {
   val `jsoniter-scala`: Seq[ModuleID] =
     Seq(Library.JsoniterScalaCore % Provided, Library.JsoniterScalaMacros % Provided, Library.UTest % Test)
 
-  val pureconfig: Seq[ModuleID] = Seq(Library.PureconfigCore, Library.UTest % Test)
+  val pureconfig: Seq[ModuleID] = Seq(Library.Pureconfig, Library.UTest % Test)
 
   val quill: Seq[ModuleID] =
     Seq(Library.QuillCore % Provided, Library.QuillJdbc % Test)
