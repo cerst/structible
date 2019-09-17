@@ -10,6 +10,7 @@ Simply select a satellite project on the left based on the library you want to i
 * [avro4s](avro4s/index.md)
 * [configs](configs/index.md)
 * [jsoniterscala](jsoniterscala/index.md)
+* [pureconfig](pureconfig/index.md)
 * [quill](quill/index.md)
 
 @@@

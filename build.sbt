@@ -17,8 +17,7 @@ lazy val `akka-http` = (project in file("akka-http"))
   .settings(
     crossScalaVersions := CommonSettingsPlugin.crossScalaVersions,
     libraryDependencies ++= Dependencies.`akka-http`,
-    name := "structible-akka-http",
-    testFrameworks += new TestFramework("utest.runner.Framework")
+    name := "structible-akka-http"
   )
 
 lazy val avro4s = (project in file("avro4s"))
@@ -28,8 +27,7 @@ lazy val avro4s = (project in file("avro4s"))
   .settings(
     crossScalaVersions := CommonSettingsPlugin.crossScalaVersions,
     libraryDependencies ++= Dependencies.avro4s,
-    name := "structible-avro4s",
-    testFrameworks += new TestFramework("utest.runner.Framework")
+    name := "structible-avro4s"
   )
 
 lazy val configs = (project in file("configs"))
@@ -41,8 +39,7 @@ lazy val configs = (project in file("configs"))
 //    crossScalaVersions := List(CommonSettingsPlugin.scala212VersionValue),
 //    scalaVersion := CommonSettingsPlugin.scala212VersionValue,
     libraryDependencies ++= Dependencies.configs,
-    name := "structible-configs",
-    testFrameworks += new TestFramework("utest.runner.Framework")
+    name := "structible-configs"
   )
 
 lazy val core = (project in file("core"))
@@ -51,13 +48,12 @@ lazy val core = (project in file("core"))
   .settings(
     crossScalaVersions := CommonSettingsPlugin.crossScalaVersions,
     libraryDependencies ++= Dependencies.core,
-    name := "structible-core",
-    testFrameworks += new TestFramework("utest.runner.Framework")
+    name := "structible-core"
   )
 
 // if makeSite fails, make sure that the Scala 2.12 compile options are removed (seems like the build is not reloaded on Scala version switch as part of cross-builds)
 lazy val doc = (project in file("doc"))
-  .dependsOn(`akka-http`, avro4s, configs, core, `jsoniter-scala`, quill)
+  .dependsOn(`akka-http`, avro4s, configs, core, `jsoniter-scala`, pureconfig, quill)
   .enablePlugins(GhpagesPlugin, GitBranchPrompt, GitVersioning, ParadoxSitePlugin, ParadoxPlugin, PreprocessPlugin)
   // doc/src contains example code only to embedded in the documentation, so don't publish
   .settings(CommonSettingsPlugin.publishSettings(enabled = false))
@@ -80,6 +76,7 @@ lazy val doc = (project in file("doc"))
       (configs / dumpLicenseReport).value / ((configs / licenseReportTitle).value + ".md") -> "licenses/configs.md",
       (core / dumpLicenseReport).value / ((core / licenseReportTitle).value + ".md") -> "licenses/core.md",
       (`jsoniter-scala` / dumpLicenseReport).value / ((`jsoniter-scala` / licenseReportTitle).value + ".md") -> "licenses/jsoniter-scala.md",
+      (pureconfig / dumpLicenseReport).value / ((pureconfig / licenseReportTitle).value + ".md") -> "licenses/pureconfig.md",
       (quill / dumpLicenseReport).value / ((quill / licenseReportTitle).value + ".md") -> "licenses/quill.md"
     ),
     // trigger code compilation of example code
@@ -95,6 +92,7 @@ lazy val doc = (project in file("doc"))
       "name.configs" -> (configs / name).value,
       "name.core" -> (core / name).value,
       "name.jsoniter-scala" -> (`jsoniter-scala` / name).value,
+      "name.pureconfig" -> (pureconfig / name).value,
       "name.quill" -> (quill / name).value,
       "version" -> version.value
     ),
@@ -112,8 +110,17 @@ lazy val `jsoniter-scala` = (project in file("jsoniter-scala"))
   .settings(
     crossScalaVersions := CommonSettingsPlugin.crossScalaVersions,
     libraryDependencies ++= Dependencies.`jsoniter-scala`,
-    name := "structible-jsoniter-scala",
-    testFrameworks += new TestFramework("utest.runner.Framework")
+    name := "structible-jsoniter-scala"
+  )
+
+lazy val pureconfig = (project in file("pureconfig"))
+  .dependsOn(core)
+  .enablePlugins(GitBranchPrompt, GitVersioning)
+  .settings(CommonSettingsPlugin.publishSettings(enabled = true))
+  .settings(
+    crossScalaVersions := CommonSettingsPlugin.crossScalaVersions,
+    libraryDependencies ++= Dependencies.pureconfig,
+    name := "structible-pureconfig"
   )
 
 lazy val quill = (project in file("quill"))
@@ -125,6 +132,5 @@ lazy val quill = (project in file("quill"))
 //    crossScalaVersions := CommonSettingsPlugin.crossScalaVersions,
 //    scalaVersion := CommonSettingsPlugin.scala212VersionValue,
     libraryDependencies ++= Dependencies.quill,
-    name := "structible-quill",
-    testFrameworks += new TestFramework("utest.runner.Framework")
+    name := "structible-quill"
   )

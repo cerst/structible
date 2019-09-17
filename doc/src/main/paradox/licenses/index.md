@@ -7,6 +7,7 @@
 * [configs](configs.md)
 * [core](core.md)
 * [jsoniter-scala](jsoniter-scala.md)
+* [pureconfig](pureconfig.md)
 * [quill](quill.md)
 
 @@@

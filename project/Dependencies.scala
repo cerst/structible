@@ -10,6 +10,7 @@ object Dependencies {
     val Avro4s = "3.0.1"
     val Configs = "0.4.4"
     val JsoniterScala = "0.55.2"
+    val Pureconfig = "0.12.0"
     val Quill = "3.4.4"
     val UTest = "0.7.1"
   }
@@ -33,6 +34,8 @@ object Dependencies {
     val JsoniterScalaCore = "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-core" % Version.JsoniterScala
     // MIT
     val JsoniterScalaMacros = "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros" % Version.JsoniterScala // required only at compile-time
+    // MPL-2.0
+    val Pureconfig = "com.github.pureconfig" %% "pureconfig-core" % Version.Pureconfig
     // Apache-2.0
     val QuillCore = "io.getquill" %% "quill-core" % Version.Quill
     // Apache-2.0
@@ -66,6 +69,8 @@ object Dependencies {
 
   val `jsoniter-scala`: Seq[ModuleID] =
     Seq(Library.JsoniterScalaCore % Provided, Library.JsoniterScalaMacros % Provided, Library.UTest % Test)
+
+  val pureconfig: Seq[ModuleID] = Seq(Library.Pureconfig, Library.UTest % Test)
 
   val quill: Seq[ModuleID] =
     Seq(Library.QuillCore % Provided, Library.QuillJdbc % Test)

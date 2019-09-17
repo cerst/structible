@@ -19,7 +19,9 @@ object CommonSettingsPlugin extends CommonSettingsPluginTpl {
       organizationName := "Constantin Gerstberger",
       resolvers ++= Dependencies.resolvers,
       scmInfo := Some(ScmInfo(homepage.value.get, "git@github.com:cerst/structible.git")),
-      startYear := Some(2018)
+      startYear := Some(2018),
+      testFrameworks += new TestFramework("utest.runner.Framework"),
+      turbo := true
     )
   }
 

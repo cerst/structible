@@ -7,6 +7,7 @@ It provides derivations for:
 * _Encoder_
 * _Decoder_
 * _SchemaFor_
+* _BicoderWithSchemaFor_ (see below)
 
 These allow you to (de-) serialize value classes as if they were plain values.
 

@@ -2,7 +2,8 @@
 
 ## 0.5.0+
 
-* add support for Avro4s derivations
+* add support for Avro4s
+* add support for Pureconfig
 
 ## 0.4.0
 
