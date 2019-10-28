@@ -52,11 +52,11 @@ object StructiblePathMatcherTests extends RouteTestSuite {
     }
 
     "int from hex-string" - {
-      test(OddInt.hexIntPm, "b" -> OddInt(11), "a")
+      test(NonNegInt.hexIntPm, "b" -> NonNegInt(11), "a")
     }
 
     "int from string" - {
-      test(OddInt.intPm, "1" -> OddInt(1), "0")
+      test(NonNegInt.intPm, "1" -> NonNegInt(1), "0")
     }
 
     "long from hex-string" - {

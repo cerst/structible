@@ -9,9 +9,10 @@ object Dependencies {
     val AkkaHttp = "10.1.9"
     val Avro4s = "3.0.1"
     val Configs = "0.4.4"
-    val JsoniterScala = "0.55.2"
+    val JsoniterScala = "0.55.4"
     val Pureconfig = "0.12.0"
     val Quill = "3.4.4" // 3.4.6 not on Maven as of 2019-09-17
+    val Silencer = "1.4.1"
     val UTest = "0.7.1"
   }
 
@@ -40,6 +41,8 @@ object Dependencies {
     val QuillCore = "io.getquill" %% "quill-core" % Version.Quill
     // Apache-2.0
     val QuillJdbc = "io.getquill" %% "quill-jdbc" % Version.Quill
+    val SilencerCompilerPlugin = compilerPlugin("com.github.ghik" %% "silencer-plugin" % Version.Silencer)
+    val SilencerLib = "com.github.ghik" %% "silencer-lib" % Version.Silencer
     // MIT
     val UTest = "com.lihaoyi" %% "utest" % Version.UTest
   }
@@ -56,7 +59,10 @@ object Dependencies {
   val configs: Seq[ModuleID] =
     Seq(Library.Configs % Provided, Library.UTest % Test)
 
-  val core: Seq[ModuleID] = Seq()
+  val core: Seq[ModuleID] = Seq(
+    Library.SilencerCompilerPlugin,
+    Library.SilencerLib % Provided
+  )
 
   val doc: Seq[ModuleID] = Seq(
     Library.AkkaHttp % Provided,
@@ -68,7 +74,7 @@ object Dependencies {
   )
 
   val `jsoniter-scala`: Seq[ModuleID] =
-    Seq(Library.JsoniterScalaCore % Provided, Library.JsoniterScalaMacros % Provided, Library.UTest % Test)
+    Seq(Library.JsoniterScalaCore, Library.JsoniterScalaMacros % Provided, Library.UTest % Test)
 
   val pureconfig: Seq[ModuleID] = Seq(Library.Pureconfig, Library.UTest % Test)
 

@@ -25,7 +25,7 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.unmarshalling.{Unmarshal, Unmarshaller}
 import akka.stream.{ActorMaterializer, Materializer}
 import akka.testkit.TestKit
-import com.github.cerst.structible.akkahttp.testutil.{NegDouble, NonEmptyString, OddInt, PosLong}
+import com.github.cerst.structible.akkahttp.testutil.{NegDouble, NonEmptyString, NonNegInt, PosLong}
 import utest._
 
 import scala.concurrent.Await
@@ -61,7 +61,7 @@ object StructibleUnmarshallerTests extends TestSuite {
     }
 
     "int" - {
-      test("1" -> OddInt(1), "2")
+      test("1" -> NonNegInt(1), "-1")
     }
 
     "long" - {

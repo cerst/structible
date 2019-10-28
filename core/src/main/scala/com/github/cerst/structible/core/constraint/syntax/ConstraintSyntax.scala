@@ -128,4 +128,9 @@ final object ConstraintSyntax {
     */
   def nonEmpty[A](implicit ev: NonEmpty[A]): Constraint[A] = ev(())
 
+  /**
+    * Requires nothing.
+    */
+  def unconstrained[A]: Constraint[A] = _ => List.empty
+
 }

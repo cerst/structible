@@ -1,5 +1,13 @@
 package com.github.cerst.structible.core
 
+/**
+  * A constraint such as 'greater than x' or 'matches x'.<p/>
+  * Constraints can be combined using the <i>&&</i> and <i>||</i> operators (having the usual precedence). There is no
+  * implementation of the <i>!</i> operator because constraint implementation predefined error messages which arguably
+  * become the harder to read the more (nested) levels of <i>!</i> occur in an expression.<p/>
+  * Example: c => c >= 0 && c <= 100 || c >= 200 && c <= 300
+  *
+  */
 trait Constraint[A] extends (A => List[String]){
 
   def &&(that: Constraint[A]): Constraint[A] = (a: A) => apply(a) ++ that(a)

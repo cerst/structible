@@ -24,7 +24,8 @@ package com.github.cerst.structible.akkahttp.testutil
 import akka.http.scaladsl.server.PathMatcher1
 import akka.http.scaladsl.unmarshalling.Unmarshaller
 import com.github.cerst.structible.akkahttp.ops._
-import com.github.cerst.structible.core.Structible
+import com.github.cerst.structible.core.DefaultConstraints._
+import com.github.cerst.structible.core._
 
 // ================================================================================================================
 // DOUBLE
@@ -33,38 +34,34 @@ final case class NegDouble private (value: Double) extends AnyVal
 
 object NegDouble {
 
-  private val structible: Structible[Double, NegDouble] = Structible.structible(apply, _.value)
+  private val structible: Structible[Double, NegDouble] =
+    Structible.structible(new NegDouble(_), _.value, c < 0, hideC = false)
 
   implicit val unmarshallerForNegDouble: Unmarshaller[String, NegDouble] = structible.toUnmarshaller
 
   val pm: PathMatcher1[NegDouble] = structible.toPathMatcher
 
-  def apply(value: Double): NegDouble = {
-    require(value < 0, "NegDouble.value must be > 0")
-    new NegDouble(value)
-  }
+  def apply(value: Double): NegDouble = structible.construct(value)
 
 }
 
 // ================================================================================================================
 // INT
 // ================================================================================================================
-final case class OddInt private (value: Int) extends AnyVal
+final case class NonNegInt private (value: Int) extends AnyVal
 
-object OddInt {
+object NonNegInt {
 
-  private val structible: Structible[Int, OddInt] = Structible.structible(apply, _.value)
+  private val structible: Structible[Int, NonNegInt] =
+    Structible.structible(new NonNegInt(_), _.value, c >= 0, hideC = false)
 
-  implicit val unmarshallerForOddInt: Unmarshaller[String, OddInt] = structible.toUnmarshaller
+  implicit val unmarshallerForOddInt: Unmarshaller[String, NonNegInt] = structible.toUnmarshaller
 
-  val hexIntPm: PathMatcher1[OddInt] = structible.toHexPathMatcher
+  val hexIntPm: PathMatcher1[NonNegInt] = structible.toHexPathMatcher
 
-  val intPm: PathMatcher1[OddInt] = structible.toPathMatcher
+  val intPm: PathMatcher1[NonNegInt] = structible.toPathMatcher
 
-  def apply(value: Int): OddInt = {
-    require(value % 2 == 1, "OddInt.value must be odd")
-    new OddInt(value)
-  }
+  def apply(value: Int): NonNegInt = structible.construct(value)
 
 }
 
@@ -75,7 +72,8 @@ final case class PosLong private (value: Long) extends AnyVal
 
 object PosLong {
 
-  private val structible: Structible[Long, PosLong] = Structible.structible(apply, _.value)
+  private val structible: Structible[Long, PosLong] =
+    Structible.structible(new PosLong(_), _.value, c > 0, hideC = false)
 
   implicit val unmarshallerForNegLong: Unmarshaller[String, PosLong] = structible.toUnmarshaller
 
@@ -83,10 +81,7 @@ object PosLong {
 
   val longPm: PathMatcher1[PosLong] = structible.toPathMatcher
 
-  def apply(value: Long): PosLong = {
-    require(value > 0, "NegLong.value must be > 0")
-    new PosLong(value)
-  }
+  def apply(value: Long): PosLong = structible.construct(value)
 
 }
 
@@ -97,14 +92,12 @@ final case class NonEmptyString private (value: String) extends AnyVal
 
 object NonEmptyString {
 
-  private val structible: Structible[String, NonEmptyString] = Structible.structible(apply, _.value)
+  private val structible: Structible[String, NonEmptyString] =
+    Structible.structible(new NonEmptyString(_), _.value, c.nonEmpty, hideC = false)
 
   implicit val unmarshallerForNonEmptyString: Unmarshaller[String, NonEmptyString] = structible.toUnmarshaller
 
   val pm: PathMatcher1[NonEmptyString] = structible.toPathMatcher
 
-  def apply(value: String): NonEmptyString = {
-    require(value.nonEmpty, "NonEmptyString.value must not be empty")
-    new NonEmptyString(value)
-  }
+  def apply(value: String): NonEmptyString = structible.construct(value)
 }

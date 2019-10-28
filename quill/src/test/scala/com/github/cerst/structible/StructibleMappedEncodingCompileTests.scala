@@ -21,9 +21,10 @@
 
 package com.github.cerst.structible
 
-import com.github.cerst.structible.core.Structible
-import io.getquill._
+import com.github.cerst.structible.core.DefaultConstraints._
+import com.github.cerst.structible.core._
 import com.github.cerst.structible.quill.ops._
+import io.getquill._
 
 object StructibleMappedEncodingCompileTests {
 
@@ -31,21 +32,22 @@ object StructibleMappedEncodingCompileTests {
 
   import TestContext._
 
-  final case class PersonId(value: Int) {
-    require(value >= 0, "PersonId must be >= 0")
+  final case class UserId private(value: Int) extends AnyVal
+
+  object UserId {
+    private val structible: Structible[Int, UserId] =
+      Structible.structible(new UserId(_), _.value, c >= 0, hideC = false)
+
+    implicit val decodeForPersonId: MappedEncoding[Int, UserId] = structible.toDecode
+
+    implicit val encodeForPersonId: MappedEncoding[UserId, Int] = structible.toEncode
+
+    def apply(value: Int): UserId = structible.construct(value)
   }
 
-  object PersonId {
-    private val structible: Structible[Int, PersonId] = Structible.structible(apply, _.value)
+  final case class Person(id: UserId, name: String)
 
-    implicit val decodeForPersonId: MappedEncoding[Int, PersonId] = structible.toDecode
-
-    implicit val encodeForPersonId: MappedEncoding[PersonId, Int] = structible.toEncode
-  }
-
-  final case class Person(id: PersonId, name: String)
-
-  def findById(personId: PersonId): List[Person] = {
+  def findById(personId: UserId): List[Person] = {
     run(quote {
       query[Person]
         .filter(_.id == lift(personId))

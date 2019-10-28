@@ -1,7 +1,6 @@
 package com.github.cerst.structible.core
 
-import com.github.cerst.factories.constraints._
-import com.github.cerst.structible.core.constraint.instances.{BigIntConstraints, ByteConstraints, DoubleConstraints, DurationConstraints, FloatConstraints, InstantConstraints, IntConstraints, JavaDurationConstraints, LongConstraints, OffsetDateTimeConstraints, ShortConstraints, StringConstraints, ZonedDateTimeConstraints}
+import com.github.cerst.structible.core.constraint.instances._
 
 /**
   * Aggregates all constraint type implementations for import convenience.
