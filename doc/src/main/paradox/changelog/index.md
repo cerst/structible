@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.0
+* Integrate the _factories_ library into _structible_ to specify constraints - see the updated documentation
+
+
 ## 0.5.2
 
 * Downgrade to sbt 1.2.8 to make ghpages work again

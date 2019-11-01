@@ -87,6 +87,8 @@ object Structible {
 
   /**
     * Creates a structible instance.<br/>
+    * Use this overload if the compiler cannot provide a [[scala.reflect.ClassTag ClassTag]] for <i>R</i>. Otherwise,
+    * check the one which doesn't accept an explicit <i>rName</i> parameter.
     *
     * @param _construct <i>NonFatal</i> exceptions thrown by this function are caught and handled. Check the
     *                   documentation of the methods defined by
@@ -94,18 +96,15 @@ object Structible {
     * @param _destruct  Expected to never throw an exception.
     * @param constraint Checked by the returned [[com.github.cerst.structible.core.Structible Structible]] instance
     *                   before invoking the provided <i>_construct</i> function.
-    * @param hideC      Whether or not values of type <i>C</i> may appear in error messages produced by
-    *                   <i>Structible</i> (i.e. does <b>not</b> effect error messages produced by the provided
-    *                   <i>_construct</i> function.
     * @param rName      Name of the type <i>R</i> which is used to wrap/ enhance error messages produced by the provided
     *                   <i>_construct</i> function.
-    *
-    * @see [[com.github.cerst.structible.core.Constraint Constraint]]
+    * @see [[com.github.cerst.structible.core.Constraint Constraint]]<br/>
+    *      [[com.github.cerst.structible.core.constraint.syntax.ConstraintSyntax$ ConstraintSyntax]]<br/>
+    *      [[com.github.cerst.structible.core.DefaultConstraints$ DefaultConstraints]]
     */
   def structible[C, R](_construct: C => R,
                        _destruct: R => C,
                        constraint: Constraint[C],
-                       hideC: Boolean,
                        rName: RName): Structible[C, R] = new Structible[C, R] {
 
     override def destruct(r: R): C = _destruct(r)
@@ -116,11 +115,11 @@ object Structible {
           try {
             _construct(c)
           } catch {
-            case NonFatal(cause) => Error.throwException(c, hideC, rName, cause)
+            case NonFatal(cause) => Error.throwException(c, rName, cause)
           }
 
         case Some(value) =>
-          Error.throwException(c, hideC, rName, reason = value)
+          Error.throwException(c, rName, reason = value)
       }
     }
 
@@ -130,11 +129,11 @@ object Structible {
           try {
             Right(_construct(c))
           } catch {
-            case NonFatal(cause) => Error.left(c, hideC, rName, cause)
+            case NonFatal(cause) => Error.left(c, rName, cause)
           }
 
         case Some(value) =>
-          Error.left(c, hideC, rName, reason = value)
+          Error.left(c, rName, reason = value)
       }
     }
 
@@ -158,11 +157,11 @@ object Structible {
           Try {
             construct(c)
           } recoverWith {
-            case NonFatal(cause) => Error.failure(c, hideC, rName, cause)
+            case NonFatal(cause) => Error.failure(c, rName, cause)
           }
 
         case Some(value) =>
-          Error.failure(c, hideC, rName, reason = value)
+          Error.failure(c, rName, reason = value)
       }
     }
 
@@ -171,14 +170,13 @@ object Structible {
   def structible[C, R: ClassTag](_construct: C => R,
                                  _destruct: R => C,
                                  constraint: Constraint[C],
-                                 hideC: Boolean): Structible[C, R] = {
-    structible(_construct, _destruct, constraint, hideC, rName = RName[R])
+  ): Structible[C, R] = {
+    structible(_construct, _destruct, constraint, rName = RName[R])
   }
 
   def structibleEither[C, R](_construct: C => Either[String, R],
                              _destruct: R => C,
                              constraint: Constraint[C],
-                             hideC: Boolean,
                              rName: RName): Structible[C, R] = new Structible[C, R] {
 
     override def destruct(r: R): C = _destruct(r)
@@ -187,12 +185,12 @@ object Structible {
       CheckConstraint(c, constraint) match {
         case None =>
           _construct(c) match {
-            case Left(value) => Error.throwException(c, hideC, rName, reason = value)
+            case Left(value) => Error.throwException(c, rName, reason = value)
             case Right(r)    => r
           }
 
         case Some(value) =>
-          Error.throwException(c, hideC, rName, reason = value)
+          Error.throwException(c, rName, reason = value)
       }
     }
 
@@ -200,12 +198,12 @@ object Structible {
       CheckConstraint(c, constraint) match {
         case None =>
           _construct(c) match {
-            case Left(value) => Error.left(c, hideC, rName, reason = value)
+            case Left(value) => Error.left(c, rName, reason = value)
             case Right(r)    => Right(r)
           }
 
         case Some(value) =>
-          Error.left(c, hideC, rName, reason = value)
+          Error.left(c, rName, reason = value)
       }
     }
 
@@ -226,12 +224,12 @@ object Structible {
       CheckConstraint(c, constraint) match {
         case None =>
           _construct(c) match {
-            case Left(value) => Error.failure(c, hideC, rName, reason = value)
+            case Left(value) => Error.failure(c, rName, reason = value)
             case Right(r)    => Success(r)
           }
 
         case Some(value) =>
-          Error.failure(c, hideC, rName, reason = value)
+          Error.failure(c, rName, reason = value)
       }
     }
 
@@ -239,15 +237,13 @@ object Structible {
 
   def structibleEither[C, R: ClassTag](_construct: C => Either[String, R],
                                        _destruct: R => C,
-                                       constraint: Constraint[C],
-                                       hideC: Boolean): Structible[C, R] = {
-    structibleEither(_construct, _destruct, constraint, hideC, rName = RName[R])
+                                       constraint: Constraint[C]): Structible[C, R] = {
+    structibleEither(_construct, _destruct, constraint, rName = RName[R])
   }
 
   def structibleOption[C, R](_construct: C => Option[R],
                              _destruct: R => C,
                              constraint: Constraint[C],
-                             hideC: Boolean,
                              rName: RName): Structible[C, R] = new Structible[C, R] {
 
     override def destruct(r: R): C = _destruct(r)
@@ -256,12 +252,12 @@ object Structible {
       CheckConstraint(c, constraint) match {
         case None =>
           _construct(c) match {
-            case None    => Error.throwException(c, hideC, rName, reason = "")
+            case None    => Error.throwException(c, rName, reason = "")
             case Some(r) => r
           }
 
         case Some(value) =>
-          Error.throwException(c, hideC, rName, reason = value)
+          Error.throwException(c, rName, reason = value)
       }
     }
 
@@ -269,12 +265,12 @@ object Structible {
       CheckConstraint(c, constraint) match {
         case None =>
           _construct(c) match {
-            case None    => Error.left(c, hideC, rName)
+            case None    => Error.left(c, rName)
             case Some(r) => Right(r)
           }
 
         case Some(value) =>
-          Error.left(c, hideC, rName, reason = value)
+          Error.left(c, rName, reason = value)
       }
     }
 
@@ -291,25 +287,23 @@ object Structible {
     override def constructTry(c: C): Try[R] = {
       CheckConstraint(c, constraint) match {
         case None =>
-          Error.failure(c, hideC, rName)
+          Error.failure(c, rName)
 
         case Some(value) =>
-          Error.failure(c, hideC, rName, reason = value)
+          Error.failure(c, rName, reason = value)
       }
     }
   }
 
   def structibleOption[C, R: ClassTag](_construct: C => Option[R],
                                        _destruct: R => C,
-                                       constraint: Constraint[C],
-                                       hideC: Boolean): Structible[C, R] = {
-    structibleOption(_construct, _destruct, constraint, hideC, rName = RName[R])
+                                       constraint: Constraint[C]): Structible[C, R] = {
+    structibleOption(_construct, _destruct, constraint, rName = RName[R])
   }
 
   def structibleTry[C, R](_construct: C => Try[R],
                           _destruct: R => C,
                           constraint: Constraint[C],
-                          hideC: Boolean,
                           rName: RName): Structible[C, R] = new Structible[C, R] {
 
     override def destruct(r: R): C = _destruct(r)
@@ -318,12 +312,12 @@ object Structible {
       CheckConstraint(c, constraint) match {
         case None =>
           _construct(c) match {
-            case Failure(cause) => Error.throwException(c, hideC, rName, cause)
+            case Failure(cause) => Error.throwException(c, rName, cause)
             case Success(r)     => r
           }
 
         case Some(value) =>
-          Error.throwException(c, hideC, rName, reason = value)
+          Error.throwException(c, rName, reason = value)
       }
     }
 
@@ -331,11 +325,11 @@ object Structible {
       CheckConstraint(c, constraint) match {
         case None =>
           _construct(c) match {
-            case Failure(cause) => Error.left(c, hideC, rName, cause)
+            case Failure(cause) => Error.left(c, rName, cause)
             case Success(r)     => Right(r)
           }
         case Some(value) =>
-          Error.left(c, hideC, rName, reason = value)
+          Error.left(c, rName, reason = value)
       }
     }
 
@@ -356,21 +350,20 @@ object Structible {
       CheckConstraint(c, constraint) match {
         case None =>
           _construct(c) match {
-            case Failure(cause) => Error.failure(c, hideC, rName, cause)
+            case Failure(cause) => Error.failure(c, rName, cause)
             case Success(r)     => Success(r)
           }
 
         case Some(value) =>
-          Error.failure(c, hideC, rName, reason = value)
+          Error.failure(c, rName, reason = value)
       }
     }
   }
 
   def structibleTry[C, R: ClassTag](_construct: C => Try[R],
                                     _destruct: R => C,
-                                    constraint: Constraint[C],
-                                    hideC: Boolean): Structible[C, R] = {
-    structibleTry(_construct, _destruct, constraint, hideC, rName = RName[R])
+                                    constraint: Constraint[C]): Structible[C, R] = {
+    structibleTry(_construct, _destruct, constraint, rName = RName[R])
   }
 
 }

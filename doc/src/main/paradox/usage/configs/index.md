@@ -2,6 +2,7 @@
 
 Derivation of _Configs_ instances.
 
+Make sure to familiarize yourself with @ref:[creating _structible_ instances](../index.md) before looking at the examples below.
 
 ## Dependency
 

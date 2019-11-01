@@ -32,20 +32,19 @@ import scala.concurrent.{ExecutionContext, Future}
 
 object UnmarshallerExample {
 
-  final case class ItemId private (value: Long) extends AnyVal
+  final class ItemId private (val value: Long) extends AnyVal
 
   object ItemId {
 
-    // you can also pass-in 'construct' functions returning Either[String, A], Option[A] or Try[A]
-    private val structible: Structible[Long, ItemId] =
-      Structible.structible(new ItemId(_), _.value, c >= 0, hideC = false)
+    private val structible: Structible[Long, ItemId] = Structible.structible(new ItemId(_), _.value, c >= 0)
 
-    implicit val unmarshallerForPersonId: Unmarshaller[String, ItemId] = structible.toUnmarshaller
+    implicit val unmarshallerForItemId: Unmarshaller[String, ItemId] = structible.toUnmarshaller
 
+    def apply(value: Long): ItemId = structible.construct(value)
   }
 
   // this works seamlessly for e.g. HttpResponse.entity instead of String
-  def toPersonId(input: String)(implicit ec: ExecutionContext, mat: Materializer): Future[ItemId] = {
+  def toItemId(input: String)(implicit ec: ExecutionContext, mat: Materializer): Future[ItemId] = {
     Unmarshal(input).to[ItemId]
   }
 

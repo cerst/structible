@@ -8,6 +8,7 @@ import com.github.cerst.structible.core.constraint.instances._
 object DefaultConstraints
     extends BigDecimalConstraints
     with BigIntConstraints
+    with ByteConstraints
     with DoubleConstraints
     with DurationConstraints
     with FloatConstraints
@@ -16,7 +17,6 @@ object DefaultConstraints
     with JavaDurationConstraints
     with LongConstraints
     with OffsetDateTimeConstraints
-    with ByteConstraints
     with ShortConstraints
     with StringConstraints
     with ZonedDateTimeConstraints

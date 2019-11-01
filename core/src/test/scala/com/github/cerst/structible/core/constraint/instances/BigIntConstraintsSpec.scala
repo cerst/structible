@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Constantin Gerstberger
+ * Copyright (c) 2019 Constantin Gerstberger
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -19,47 +19,25 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.github.cerst.structible.configs
+package com.github.cerst.structible.core.constraint.instances
 
-import com.github.cerst.structible.configs.ops._
-import com.github.cerst.structible.core._
-import com.typesafe.config.ConfigFactory
-import configs.Configs
-import configs.syntax._
-import utest._
+import com.github.cerst.structible.core.DefaultConstraints._
+import com.github.cerst.structible.core.constraint.instances.BigIntConstraintsSpec.chooseForBigInt
+import com.github.cerst.structible.core.testutil.NumericConstraintsSpec
+import org.scalacheck.Gen
+import org.scalacheck.Gen.Choose
 
-object StructibleConfigsTests extends TestSuite {
+// Generate values from the range delimited by long should be enough though BigInt's exclusive max is 2^Int.MaxValue
+final class BigIntConstraintsSpec
+    extends NumericConstraintsSpec[BigInt](
+      dec = _ - 1,
+      inc = _ + 1,
+      globalMax = BigInt(Long.MaxValue),
+      globalMin = BigInt(Long.MinValue)
+    ) {}
 
-  final case class UserId private(value: Int) extends AnyVal
+object BigIntConstraintsSpec {
 
-  object UserId {
-
-    private val structible: Structible[Int, UserId] =
-      Structible.structible(new UserId(_), _.value, c.unconstrained, hideC = false)
-
-    implicit val configsForDeviceId: Configs[UserId] = structible.toConfigs
-
-    def apply(value: Int): UserId = structible.construct(value)
-
-  }
-
-  final case class User(id: UserId)
-
-  override val tests: Tests = Tests {
-
-    * - {
-      val config = ConfigFactory.parseString("""{
-          |  user {
-          |    id = 1
-          |  }
-          |}
-        """.stripMargin)
-
-      val actualUser = config.get[User]("user").value
-      val expectedUser = User(UserId(1))
-      assert(actualUser == expectedUser)
-    }
-
-  }
+  implicit final val chooseForBigInt: Choose[BigInt] = Gen.Choose.xmap[Long, BigInt](BigInt.apply, _.toLong)
 
 }

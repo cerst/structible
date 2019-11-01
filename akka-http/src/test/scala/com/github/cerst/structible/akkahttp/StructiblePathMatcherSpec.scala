@@ -24,10 +24,11 @@ package com.github.cerst.structible.akkahttp
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.PathMatcher1
+import akka.http.scaladsl.testkit.ScalatestRouteTest
 import com.github.cerst.structible.akkahttp.testutil._
-import utest._
+import org.scalatest.{FreeSpec, Matchers}
 
-object StructiblePathMatcherTests extends RouteTestSuite {
+final class StructiblePathMatcherSpec extends FreeSpec with Matchers with ScalatestRouteTest {
 
   private def test[R](pathMatcher1: PathMatcher1[R], matchable: (String, R), unmatchable: String): Unit = {
     val route = path(pathMatcher1) { refined =>
@@ -41,35 +42,32 @@ object StructiblePathMatcherTests extends RouteTestSuite {
     }
 
     Get(s"/$unmatchable") ~> route ~> check {
-      assert(!handled)
+      val _ = assert(!handled)
     }
   }
 
-  override val tests: Tests = Tests {
-
-    "double" - {
-      test(NegDouble.pm, "-0.3" -> NegDouble(-0.3D), "0.3")
-    }
-
-    "int from hex-string" - {
-      test(NonNegInt.hexIntPm, "b" -> NonNegInt(11), "a")
-    }
-
-    "int from string" - {
-      test(NonNegInt.intPm, "1" -> NonNegInt(1), "0")
-    }
-
-    "long from hex-string" - {
-      test(PosLong.hexLongPm, "f" -> PosLong(15), "0")
-    }
-
-    "long from string" - {
-      test(PosLong.longPm, "1" -> PosLong(1), "0")
-    }
-
-    "string" - {
-      test(NonEmptyString.pm, "a" -> NonEmptyString("a"), "")
-    }
-
+  "double" in {
+    test(NegDouble.pm, "-0.3" -> NegDouble(-0.3D), "0.3")
   }
+
+  "int from hex-string" in {
+    test(NonNegInt.hexIntPm, "b" -> NonNegInt(11), "a")
+  }
+
+  "int from string" in {
+    test(NonNegInt.intPm, "1" -> NonNegInt(1), "0")
+  }
+
+  "long from hex-string" in {
+    test(PosLong.hexLongPm, "f" -> PosLong(15), "0")
+  }
+
+  "long from string" in {
+    test(PosLong.longPm, "1" -> PosLong(1), "0")
+  }
+
+  "string" in {
+    test(NonEmptyString.pm, "a" -> NonEmptyString("a"), "")
+  }
+
 }

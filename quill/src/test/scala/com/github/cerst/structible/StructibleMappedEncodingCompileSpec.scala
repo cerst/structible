@@ -19,15 +19,39 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.github.cerst.structible.quill
+package com.github.cerst.structible
 
-import com.github.cerst.structible.core.Constructible
-import io.getquill.MappedEncoding
+import com.github.cerst.structible.core.DefaultConstraints._
+import com.github.cerst.structible.core._
+import com.github.cerst.structible.quill.ops._
+import io.getquill._
 
-final class ConstructibleQuillOps[C, R](val constructible: Constructible[C, R]) extends AnyVal {
+object StructibleMappedEncodingCompileSpec {
 
-  def toDecode: MappedEncoding[C, R] = {
-    MappedEncoding(constructible.construct)
+  object TestContext extends MysqlJdbcContext(SnakeCase, "configPrefix")
+
+  import TestContext._
+
+  final case class UserId private(value: Int) extends AnyVal
+
+  object UserId {
+    private val structible: Structible[Int, UserId] =
+      Structible.structible(new UserId(_), _.value, c >= 0)
+
+    implicit val decodeForPersonId: MappedEncoding[Int, UserId] = structible.toDecode
+
+    implicit val encodeForPersonId: MappedEncoding[UserId, Int] = structible.toEncode
+
+    def apply(value: Int): UserId = structible.construct(value)
+  }
+
+  final case class Person(id: UserId, name: String)
+
+  def findById(personId: UserId): List[Person] = {
+    run(quote {
+      query[Person]
+        .filter(_.id == lift(personId))
+    })
   }
 
 }

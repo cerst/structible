@@ -27,9 +27,44 @@ import java.util.UUID
 
 import com.github.cerst.structible.jsoniterscala.testutil._
 import com.github.plokhotnyuk.jsoniter_scala.core._
-import utest._
+import com.github.plokhotnyuk.jsoniter_scala.macros._
+import org.scalatest.{FreeSpec, Matchers}
 
-object StructibleJsonCodecTests extends TestSuite {
+final class StructibleJsonCodecSpec extends FreeSpec with Matchers {
+
+  import StructibleJsonCodecSpec._
+
+  "to Json bytes" in {
+    val actualJson = writeToArray(wrapper)
+    assert(actualJson sameElements jsonBytes)
+  }
+
+  "from Json bytes" in {
+    val actualUser = readFromArray[Wrapper](jsonBytes)
+    assert(actualUser == wrapper)
+  }
+
+}
+
+private object StructibleJsonCodecSpec {
+
+  final case class Wrapper(bigDecimalValueClass: BigDecimalValueClass,
+                           bigIntValueClass: BigIntValueClass,
+                           booleanValueClass: BooleanValueClass,
+                           doubleValueClass: DoubleValueClass,
+                           durationValueClass: DurationValueClass,
+                           floatValueClass: FloatValueClass,
+                           intValueClass: IntValueClass,
+                           longValueClass: LongValueClass,
+                           offsetDateTimeValueClass: OffsetDateTimeValueClass,
+                           shortValueClass: ShortValueClass,
+                           stringValueClass: StringValueClass,
+                           uuidValueClass: UUIDValueClass,
+                           zonedDateTimeValueClass: ZonedDateTimeValueClass)
+
+  object Wrapper {
+    implicit val jsonValueCodecForWrapper: JsonValueCodec[Wrapper] = JsonCodecMaker.make[Wrapper](CodecMakerConfig())
+  }
 
   private val wrapper = Wrapper(
     BigDecimalValueClass(BigDecimal(200.0)),
@@ -63,19 +98,4 @@ object StructibleJsonCodecTests extends TestSuite {
       |"uuidValueClass":"c1df0070-4ccc-431c-a634-378c90624620",
       |"zonedDateTimeValueClass":"2019-05-29T19:50:54.008+02:00[Europe/Berlin]"
       |}""".stripMargin.replaceAll("\n", "") getBytes UTF_8
-
-  override val tests: Tests = Tests {
-
-    "to Json bytes" - {
-      val actualJson = writeToArray(wrapper)
-      assert(actualJson sameElements jsonBytes)
-    }
-
-    "from Json bytes" - {
-      val actualUser = readFromArray[Wrapper](jsonBytes)
-      assert(actualUser == wrapper)
-    }
-
-  }
-
 }

@@ -19,35 +19,57 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package usage.pureconfig
+package com.github.cerst.structible.pureconfig
 
-// #example
+import com.github.cerst.structible.core.DefaultConstraints._
 import com.github.cerst.structible.core._
-import DefaultConstraints._
 import com.github.cerst.structible.pureconfig.ops._
-import com.typesafe.config.{Config, ConfigValue}
-import pureconfig.{ConfigConvert, ConfigReader, ConfigSource, ConfigWriter}
+import com.typesafe.config._
+import org.scalatest.{FreeSpec, Matchers}
+import pureconfig._
+import pureconfig.generic.semiauto._
 
-object CompactExample {
+final class CompactSpec extends FreeSpec with Matchers {
 
-  final class UserId private(val value: Long) extends AnyVal
+  import CompactSpec._
 
-  object UserId {
-
-    private val structible: Structible[Long, UserId] = Structible.structible(new UserId(_), _.value, c >= 0)
-
-    implicit val configConvertForUserId: ConfigConvert[UserId] = structible.toConfigConvert
-
-    def apply(value: Long): UserId = structible.construct(value)
+  "read config" in {
+    val actualUser = ConfigSource.fromConfig(config).loadOrThrow[User]
+    assert(actualUser == user)
   }
 
-  def fromConfig(config: Config): ConfigReader.Result[UserId] = {
-    ConfigSource.fromConfig(config).load[UserId]
-  }
-
-  def toConfigValue(personId: UserId): ConfigValue = {
-    ConfigWriter[UserId].to(personId)
+  "write config" in {
+    // couldn't find a way to get from ConfigValue to Config with ".render" ....
+    val actualConfig = ConfigFactory parseString ConfigWriter[User].to(user).render
+    assert(actualConfig == config)
   }
 
 }
-// #example
+
+private object CompactSpec {
+
+  final class UserId private (val value: Int) extends AnyVal
+
+  object UserId {
+
+    private val structible: Structible[Int, UserId] = Structible.structible(new UserId(_), _.value, c >= 0)
+
+    implicit val configConvertForUserId: ConfigConvert[UserId] = structible.toConfigConvert
+
+    def apply(value: Int): UserId = structible.construct(value)
+
+  }
+
+  final case class User(id: UserId)
+
+  object User {
+    implicit val configConvertForUser: ConfigConvert[User] = deriveConvert[User]
+  }
+
+  val config: Config = ConfigFactory.parseString("""{
+                                                   |  id = 1
+                                                   |}
+                                                   |""".stripMargin)
+
+  val user = User(UserId(1))
+}

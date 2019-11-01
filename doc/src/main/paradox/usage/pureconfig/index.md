@@ -8,11 +8,13 @@ It provides derivations for
 * _ConfigReader_
 * _ConfigWriter_
 
+Make sure to familiarize yourself with @ref:[creating _structible_ instances](../index.md) before looking at the examples below.
+
 ## Dependency
 
 @@dependency[sbt,Maven,Gradle] {
     group="$group$"
-    artifact="$name.avro4s$"
+    artifact="$name.pureconfig$"
     version="$version$"
 }
 

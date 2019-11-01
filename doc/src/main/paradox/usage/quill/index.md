@@ -2,6 +2,8 @@
 
 Derivation of _MappedEncoding_ instances.
 
+Make sure to familiarize yourself with @ref:[creating _structible_ instances](../index.md) before looking at the examples below.
+
 ## Dependency
 
 @@dependency[sbt,Maven,Gradle] {

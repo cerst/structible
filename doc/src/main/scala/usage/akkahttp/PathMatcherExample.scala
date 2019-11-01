@@ -30,13 +30,11 @@ import com.github.cerst.structible.core._
 
 object PathMatcherExample {
 
-  final case class ItemId private (value: Long) extends AnyVal
+  final class ItemId private (val value: Long) extends AnyVal
 
   object ItemId {
 
-    // you can also pass-in 'construct' functions returning Either[String, A], Option[A] or Try[A]
-    private val structible: Structible[Long, ItemId] =
-      Structible.structible(new ItemId(_), _.value, c >= 0, hideC = false)
+    private val structible: Structible[Long, ItemId] = Structible.structible(new ItemId(_), _.value, c >= 0)
 
     // not declared as implicit because you usually call patch matchers explicitly within the Akka routing Dsl
     val pathMatcher: PathMatcher1[ItemId] = structible.toPathMatcher

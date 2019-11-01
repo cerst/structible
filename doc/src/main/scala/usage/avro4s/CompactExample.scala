@@ -23,30 +23,28 @@ package usage.avro4s
 
 // #example
 import com.github.cerst.structible.avro4s.ops._
-import com.github.cerst.structible.core.Structible
+import com.github.cerst.structible.core._
+import com.github.cerst.structible.core.DefaultConstraints._
 import com.sksamuel.avro4s.AvroSchema
 import org.apache.avro.Schema
 
-
 object CompactExample {
 
-  final case class PersonId(value: Long){
-    require(value >= 0, s"PersonId must be non-negative (got: '$value')")
+  final class UserId(val value: Long) extends AnyVal
+
+  object UserId {
+
+    private val structible: Structible[Long, UserId] = Structible.structible(new UserId(_), _.value, c >= 0)
+
+    implicit val bicoderWithSchemaForForUserId: BicoderWithSchemaFor[UserId] = structible.toBicoderWithSchemaFor
+
+    def apply(value: Long): UserId = structible.construct(value)
   }
 
-  object PersonId {
+  final case class User(id: UserId)
 
-    // you can also pass-in 'construct' functions returning Either[String, A], Option[A] or Try[A]
-    private val structible: Structible[Long, PersonId] = Structible.structible(PersonId.apply, _.value)
-
-    implicit val bicoderWithSchemaForForPersonId: BicoderWithSchemaFor[PersonId] = structible.toBicoderWithSchemaFor
-
-  }
-
-  final case class Person(id: PersonId)
-
-  object Person {
-    val schema: Schema = AvroSchema[Person]
+  object User {
+    val schema: Schema = AvroSchema[User]
   }
 
 }

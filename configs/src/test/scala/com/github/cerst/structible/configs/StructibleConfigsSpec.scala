@@ -19,32 +19,49 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.github.cerst.structible.avro4s
+package com.github.cerst.structible.configs
 
-import com.github.cerst.structible.avro4s.ops.BicoderWithSchemaFor
-import com.github.cerst.structible.core.Structible
-import com.sksamuel.avro4s.{Decoder, Encoder, FieldMapper, SchemaFor}
-import org.apache.avro.Schema
+import com.github.cerst.structible.configs.ops._
+import com.github.cerst.structible.core._
+import com.typesafe.config.ConfigFactory
+import configs.Configs
+import configs.syntax._
+import org.scalatest.{FreeSpec, Matchers}
 
-final class StructibleAvro4sOps[C, R](val structible: Structible[C, R]) extends AnyVal {
+final class StructibleConfigsSpec extends FreeSpec with Matchers {
 
-  def toBicoderWithSchemaFor(implicit cDecoder: Decoder[C],
-                             cEncoder: Encoder[C],
-                             cSchemaFor: SchemaFor[C]): BicoderWithSchemaFor[R] = {
+  import StructibleConfigsSpec._
 
-    new BicoderWithSchemaFor[R] {
-      override def encode(r: R, schema: Schema, fieldMapper: FieldMapper): AnyRef = {
-        def c = structible.destruct(r)
-        cEncoder.encode(c, schema, fieldMapper)
-      }
+  "read config" in {
+    val config = ConfigFactory.parseString("""{
+          |  user {
+          |    id = 1
+          |  }
+          |}
+        """.stripMargin)
 
-      override def decode(value: Any, schema: Schema, fieldMapper: FieldMapper): R = {
-        def c = cDecoder.decode(value, schema, fieldMapper)
-        structible.construct(c)
-      }
-
-      override def schema(fieldMapper: FieldMapper): Schema = cSchemaFor.schema(fieldMapper)
-    }
+    val actualUser = config.get[User]("user").value
+    val expectedUser = User(UserId(1))
+    assert(actualUser == expectedUser)
   }
+
+}
+
+private object StructibleConfigsSpec {
+
+  final case class UserId private (value: Int) extends AnyVal
+
+  object UserId {
+
+    private val structible: Structible[Int, UserId] =
+      Structible.structible(new UserId(_), _.value, c.unconstrained)
+
+    implicit val configsForDeviceId: Configs[UserId] = structible.toConfigs
+
+    def apply(value: Int): UserId = structible.construct(value)
+
+  }
+
+  final case class User(id: UserId)
 
 }

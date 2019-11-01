@@ -22,34 +22,33 @@
 package usage.pureconfig
 
 // #example
-import com.github.cerst.structible.core.Structible
+import com.github.cerst.structible.core.DefaultConstraints._
+import com.github.cerst.structible.core._
 import com.github.cerst.structible.pureconfig.ops._
 import com.typesafe.config.{Config, ConfigValue}
 import pureconfig.{ConfigReader, ConfigSource, ConfigWriter}
 
 object IndividualExample {
 
-  final case class PersonId(value: Long) {
-    require(value >= 0, s"PersonId must be non-negative (got: '$value')")
+  final class UserId private(val value: Long) extends AnyVal
+
+  object UserId {
+
+    private val structible: Structible[Long, UserId] = Structible.structible(new UserId(_), _.value, c >= 0)
+
+    implicit val configReaderForUserId: ConfigReader[UserId] = structible.toConfigReader
+
+    implicit val configWriterForUserId: ConfigWriter[UserId] = structible.toConfigWriter
+
+    def apply(value: Long): UserId = structible.construct(value)
   }
 
-  object PersonId {
-
-    // you can also pass-in 'construct' functions returning Either[String, A], Option[A] or Try[A]
-    private val structible: Structible[Long, PersonId] = Structible.structible(PersonId.apply, _.value)
-
-    implicit val configReaderForPersonId: ConfigReader[PersonId] = structible.toConfigReader
-
-    implicit val configWriterForPersonId: ConfigWriter[PersonId] = structible.toConfigWriter
-
+  def fromConfig(config: Config): ConfigReader.Result[UserId] = {
+    ConfigSource.fromConfig(config).load[UserId]
   }
 
-  def fromConfig(config: Config): ConfigReader.Result[PersonId] = {
-    ConfigSource.fromConfig(config).load[PersonId]
-  }
-
-  def toConfigValue(personId: PersonId): ConfigValue = {
-    ConfigWriter[PersonId].to(personId)
+  def toConfigValue(personId: UserId): ConfigValue = {
+    ConfigWriter[UserId].to(personId)
   }
 
 }

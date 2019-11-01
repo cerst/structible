@@ -34,7 +34,7 @@ import com.github.cerst.structible.core.constraint.syntax.{GreaterThan, GreaterT
   * <li>[[java.time.ZonedDateTime#compareTo compareTo]] has different semantics</i>
   * <li>there is no <i>isBeforeOrSame</i> or <i>isAfterOrSame</i> for [[java.time.ZonedDateTime ZonedDateTime]]</li>
   * <li>(re-) implementation is more efficient that calling e.g. [[java.time.ZonedDateTime#isBefore isBefore]] and [[java.time.ZonedDateTime#isEqual isEqual]] in sequence</li>
-  * <li>using the same implementation for all constraints instead of e.g. using [[java.time.ZonedDateTime#isBefore isBefore]] for implementing [[com.github.cerst.factories.syntax.LessThan]] increases readability</li>
+  * <li>using the same implementation for all constraints instead of e.g. using [[java.time.ZonedDateTime#isBefore isBefore]] for implementing [[com.github.cerst.structible.core.constraint.syntax.LessThan]] increases readability</li>
   * <ul>
   */
 trait ZonedDateTimeConstraints {

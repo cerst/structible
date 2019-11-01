@@ -12,6 +12,8 @@ object Dependencies {
     val JsoniterScala = "0.55.4"
     val Pureconfig = "0.12.0"
     val Quill = "3.4.4" // 3.4.6 not on Maven as of 2019-09-17
+    val ScalaCheck = "1.14.0"
+    val Scalatest = "3.0.8"
     val Silencer = "1.4.1"
     val UTest = "0.7.1"
   }
@@ -41,27 +43,30 @@ object Dependencies {
     val QuillCore = "io.getquill" %% "quill-core" % Version.Quill
     // Apache-2.0
     val QuillJdbc = "io.getquill" %% "quill-jdbc" % Version.Quill
+    // BSD-3-Clause
+    val ScalaCheck = "org.scalacheck" %% "scalacheck" % Version.ScalaCheck
+    // Apache-2.0
+    val Scalatest = "org.scalatest" %% "scalatest" % Version.Scalatest
     val SilencerCompilerPlugin = compilerPlugin("com.github.ghik" %% "silencer-plugin" % Version.Silencer)
     val SilencerLib = "com.github.ghik" %% "silencer-lib" % Version.Silencer
-    // MIT
-    val UTest = "com.lihaoyi" %% "utest" % Version.UTest
   }
 
   val `akka-http`: Seq[ModuleID] = Seq(
     Library.AkkaHttp % Provided,
     Library.AkkaHttpTestkit % Test,
     Library.AkkaStreamTeskit % Test,
-    Library.UTest % Test
+    Library.Scalatest % Test
   )
 
-  val avro4s: Seq[ModuleID] = Seq(Library.Avro4sCore, Library.UTest % Test)
+  val avro4s: Seq[ModuleID] = Seq(Library.Avro4sCore, Library.Scalatest % Test)
 
-  val configs: Seq[ModuleID] =
-    Seq(Library.Configs % Provided, Library.UTest % Test)
+  val configs: Seq[ModuleID] = Seq(Library.Configs % Provided, Library.Scalatest % Test)
 
   val core: Seq[ModuleID] = Seq(
     Library.SilencerCompilerPlugin,
-    Library.SilencerLib % Provided
+    Library.SilencerLib % Provided,
+    Library.Scalatest % Test,
+    Library.ScalaCheck % Test
   )
 
   val doc: Seq[ModuleID] = Seq(
@@ -74,9 +79,9 @@ object Dependencies {
   )
 
   val `jsoniter-scala`: Seq[ModuleID] =
-    Seq(Library.JsoniterScalaCore, Library.JsoniterScalaMacros % Provided, Library.UTest % Test)
+    Seq(Library.JsoniterScalaCore, Library.JsoniterScalaMacros % Provided, Library.Scalatest % Test)
 
-  val pureconfig: Seq[ModuleID] = Seq(Library.Pureconfig, Library.UTest % Test)
+  val pureconfig: Seq[ModuleID] = Seq(Library.Pureconfig, Library.Scalatest % Test)
 
   val quill: Seq[ModuleID] =
     Seq(Library.QuillCore % Provided, Library.QuillJdbc % Test)

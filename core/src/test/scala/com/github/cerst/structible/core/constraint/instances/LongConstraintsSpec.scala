@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Constantin Gerstberger
+ * Copyright (c) 2019 Constantin Gerstberger
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -19,13 +19,10 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.github.cerst.structible.avro4s
+package com.github.cerst.structible.core.constraint.instances
 
-import com.github.cerst.structible.core._
-import com.sksamuel.avro4s.Decoder
+import com.github.cerst.structible.core.DefaultConstraints._
+import com.github.cerst.structible.core.testutil.NumericConstraintsSpec
 
-final class ConstructibleAvro4sOps[C,R](val constructible: Constructible[C,R]) extends AnyVal {
-
-   def toDecoder(implicit cDecoder: Decoder[C]): Decoder[R] = cDecoder.map(constructible.construct)
-
-}
+final class LongConstraintsSpec
+    extends NumericConstraintsSpec[Long](dec = _ - 1, inc = _ + 1, globalMax = Long.MaxValue, globalMin = Long.MinValue) {}

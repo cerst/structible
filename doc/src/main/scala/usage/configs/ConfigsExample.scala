@@ -35,9 +35,7 @@ object ConfigsExample {
 
   object UserId {
 
-    // you can also pass-in 'construct' functions returning Either[String, A], Option[A] or Try[A]
-    private val structible: Structible[Long, UserId] =
-      Structible.structible(new UserId(_), _.value, c >= 0, hideC = false)
+    private val structible: Structible[Long, UserId] = Structible.structible(new UserId(_), _.value, c >= 0)
 
     implicit val configsForUserId: Configs[UserId] = structible.toConfigs
 

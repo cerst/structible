@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Constantin Gerstberger
+ * Copyright (c) 2019 Constantin Gerstberger
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -19,39 +19,15 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.github.cerst.structible
+package com.github.cerst.structible.core.constraint.instances
 
 import com.github.cerst.structible.core.DefaultConstraints._
-import com.github.cerst.structible.core._
-import com.github.cerst.structible.quill.ops._
-import io.getquill._
+import com.github.cerst.structible.core.testutil.NumericConstraintsSpec
 
-object StructibleMappedEncodingCompileTests {
-
-  object TestContext extends MysqlJdbcContext(SnakeCase, "configPrefix")
-
-  import TestContext._
-
-  final case class UserId private(value: Int) extends AnyVal
-
-  object UserId {
-    private val structible: Structible[Int, UserId] =
-      Structible.structible(new UserId(_), _.value, c >= 0, hideC = false)
-
-    implicit val decodeForPersonId: MappedEncoding[Int, UserId] = structible.toDecode
-
-    implicit val encodeForPersonId: MappedEncoding[UserId, Int] = structible.toEncode
-
-    def apply(value: Int): UserId = structible.construct(value)
-  }
-
-  final case class Person(id: UserId, name: String)
-
-  def findById(personId: UserId): List[Person] = {
-    run(quote {
-      query[Person]
-        .filter(_.id == lift(personId))
-    })
-  }
-
-}
+final class FloatConstraintsSpec
+    extends NumericConstraintsSpec[Float](
+      dec = Math.nextDown,
+      inc = Math.nextUp,
+      globalMax = Float.MaxValue,
+      globalMin = Float.MinValue
+    ) {}

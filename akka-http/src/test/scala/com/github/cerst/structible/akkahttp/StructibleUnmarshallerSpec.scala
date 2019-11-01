@@ -26,19 +26,19 @@ import akka.http.scaladsl.unmarshalling.{Unmarshal, Unmarshaller}
 import akka.stream.{ActorMaterializer, Materializer}
 import akka.testkit.TestKit
 import com.github.cerst.structible.akkahttp.testutil.{NegDouble, NonEmptyString, NonNegInt, PosLong}
-import utest._
+import org.scalatest.{BeforeAndAfterAll, FreeSpec, Matchers}
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
 
-object StructibleUnmarshallerTests extends TestSuite {
+object StructibleUnmarshallerSpec extends FreeSpec with Matchers with BeforeAndAfterAll {
 
   implicit val actorSystem: ActorSystem = ActorSystem("StructibleUnmarshallerTests")
   implicit val materializer: Materializer = ActorMaterializer()
 
-  override def utestAfterAll(): Unit = {
+  override protected def afterAll(): Unit = {
     TestKit.shutdownActorSystem(actorSystem)
-    super.utestAfterAll()
+    super.afterAll()
   }
 
   private def test[R](marshallable: (String, R),
@@ -51,27 +51,22 @@ object StructibleUnmarshallerTests extends TestSuite {
       val _ = Await.result(Unmarshal(unmarshallable).to[R], 3.seconds)
     }
     ()
-
   }
 
-  override val tests: Tests = Tests {
+  "double" in {
+    test("-1" -> NegDouble(-1), "0")
+  }
 
-    "double" - {
-      test("-1" -> NegDouble(-1), "0")
-    }
+  "int" in {
+    test("1" -> NonNegInt(1), "-1")
+  }
 
-    "int" - {
-      test("1" -> NonNegInt(1), "-1")
-    }
+  "long" in {
+    test("3" -> PosLong(3), "0")
+  }
 
-    "long" - {
-      test("3" -> PosLong(3), "0")
-    }
-
-    "string" - {
-      test("<non-empty>" -> NonEmptyString("<non-empty>"), "")
-    }
-
+  "string" in {
+    test("<non-empty>" -> NonEmptyString("<non-empty>"), "")
   }
 
 }

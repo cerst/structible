@@ -23,42 +23,84 @@ package com.github.cerst.structible.akkahttp
 
 import java.util.UUID
 
+import akka.http.scaladsl.server.PathMatcher1
+import akka.http.scaladsl.server.PathMatchers._
+import akka.http.scaladsl.unmarshalling.Unmarshaller
 import com.github.cerst.structible.core.Constructible
 
 object ops {
 
-  implicit def toConstructibleAkkaHttpOps[C, R](constructible: Constructible[C, R]): ConstructibleAkkaHttpOps[C, R] = {
-    new ConstructibleAkkaHttpOps(constructible)
+  implicit class ConstructibleAkkaHttpOps[C, R](val constructible: Constructible[C, R]) extends AnyVal {
+
+    def toUnmarshaller(implicit unmarshaller: Unmarshaller[String, C]): Unmarshaller[String, R] = {
+      unmarshaller map constructible.construct
+    }
+
   }
 
-  implicit def toConstructibleAkkaHttpDoubleOps[R](
-    constructible: Constructible[Double, R]
-  ): ConstructibleAkkaHttpDoubleOps[R] = {
-    new ConstructibleAkkaHttpDoubleOps(constructible)
+  // Akka Http PathMatchers are defined and used explicitly - so, the derivations have to be the same
+
+  // ===================================================================================================================
+  // DOUBLE
+  // ===================================================================================================================
+  implicit class ConstructibleAkkaHttpDoubleOps[R](val constructible: Constructible[Double, R]) extends AnyVal {
+
+    def toPathMatcher: PathMatcher1[R] = {
+      DoubleNumber flatMap (Double => constructible.constructOption(Double))
+    }
+
   }
 
-  implicit def toConstructibleAkkaHttpIntOps[R](
-    constructible: Constructible[Int, R]
-  ): ConstructibleAkkaHttpIntOps[R] = {
-    new ConstructibleAkkaHttpIntOps(constructible)
+  // ===================================================================================================================
+  // INT
+  // ===================================================================================================================
+  implicit class ConstructibleAkkaHttpIntOps[R](val constructible: Constructible[Int, R]) extends AnyVal {
+
+    def toHexPathMatcher: PathMatcher1[R] = {
+      HexIntNumber flatMap (hexInt => constructible.constructOption(hexInt))
+    }
+
+    def toPathMatcher: PathMatcher1[R] = {
+      IntNumber flatMap (int => constructible.constructOption(int))
+    }
+
   }
 
-  implicit def toConstructibleAkkaHttpLongOps[R](
-    constructible: Constructible[Long, R]
-  ): ConstructibleAkkaHttpLongOps[R] = {
-    new ConstructibleAkkaHttpLongOps(constructible)
+  // ===================================================================================================================
+  // LONG
+  // ===================================================================================================================
+  implicit class ConstructibleAkkaHttpLongOps[R](val constructible: Constructible[Long, R]) extends AnyVal {
+
+    def toHexPathMatcher: PathMatcher1[R] = {
+      HexLongNumber flatMap (hexLong => constructible.constructOption(hexLong))
+    }
+
+    def toPathMatcher: PathMatcher1[R] = {
+      LongNumber flatMap (long => constructible.constructOption(long))
+    }
+
   }
 
-  implicit def toConstructibleAkkaHttpStringOps[R](
-    constructible: Constructible[String, R]
-  ): ConstructibleAkkaHttpStringOps[R] = {
-    new ConstructibleAkkaHttpStringOps(constructible)
+  // ===================================================================================================================
+  // STRING
+  // ===================================================================================================================
+  implicit class ConstructibleAkkaHttpStringOps[R](val constructible: Constructible[String, R]) extends AnyVal {
+
+    def toPathMatcher: PathMatcher1[R] = {
+      Segment flatMap (string => constructible.constructOption(string))
+    }
+
   }
 
-  implicit def toConstructibleAkkaHttpUuidOps[R](
-    constructible: Constructible[UUID, R]
-  ): ConstructibleAkkaHttpUuidOps[R] = {
-    new ConstructibleAkkaHttpUuidOps(constructible)
+  // ===================================================================================================================
+  // UUID
+  // ===================================================================================================================
+  implicit class ConstructibleAkkaHttpUuidOps[R](val constructible: Constructible[UUID, R]) extends AnyVal {
+
+    def toPathMatcher: PathMatcher1[R] = {
+      JavaUUID flatMap (uuid => constructible.constructOption(uuid))
+    }
+
   }
 
 }

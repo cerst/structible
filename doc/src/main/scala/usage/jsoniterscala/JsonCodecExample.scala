@@ -30,14 +30,16 @@ import com.github.plokhotnyuk.jsoniter_scala.macros._
 
 object JsonCodecExample {
 
-  final case class UserId private (value: Long) extends AnyVal
+  final class UserId private (val value: Long) extends AnyVal
 
   object UserId {
-    // you can also pass-in 'construct' functions returning Either[String, A], Option[A] or Try[A]
-    private val structible: Structible[Long, UserId] =
-      Structible.structible(new UserId(_), _.value, c >= 0, hideC = false)
 
-    implicit val jsonCodecForUserId: JsonCodec[UserId] = structible.toJsonCodec
+    private val structible: Structible[Long, UserId] = Structible.structible(new UserId(_), _.value, c >= 0)
+
+    // jsoniter-scala uses a null value internally which you have to provide explicitly when using AnyVal due to a compiler bug:
+    // https://github.com/scala/bug/issues/8097
+    // otherwise, the created codec throws a NullPointerException at runtime
+    implicit val jsonCodecForUserId: JsonCodec[UserId] = structible.toJsonCodec(null.asInstanceOf[UserId])
   }
 
   final case class User(userId: UserId)

@@ -6,40 +6,39 @@ import scala.util.{Failure, Try}
 
 object Error {
 
-  def failure[C, R](c: C, hideC: Boolean, rName: RName, cause: Throwable): Try[R] = {
-    val msg = errorMsg(c, hideC, rName, reason = getMessageNonNull(cause))
+  def failure[C, R](c: C, rName: RName, cause: Throwable): Try[R] = {
+    val msg = errorMsg(c, rName, reason = getMessageNonNull(cause))
     Failure(new RuntimeException(msg, cause))
   }
 
-  def failure[C, R](c: C, hideC: Boolean, rName: RName, reason: String = ""): Try[R] = {
-    val msg = errorMsg(c, hideC, rName, reason)
+  def failure[C, R](c: C, rName: RName, reason: String = ""): Try[R] = {
+    val msg = errorMsg(c, rName, reason)
     Failure(new RuntimeException(msg))
   }
 
-  def left[C, R](c: C, hideC: Boolean, rName: RName, cause: Throwable): Either[String, R] = {
-    val msg = errorMsg(c, hideC, rName, reason = getMessageNonNull(cause))
+  def left[C, R](c: C, rName: RName, cause: Throwable): Either[String, R] = {
+    val msg = errorMsg(c, rName, reason = getMessageNonNull(cause))
     Left(msg)
   }
 
-  def left[C, R](c: C, hideC: Boolean, rName: RName, reason: String = ""): Either[String, R] = {
-    val msg = errorMsg(c, hideC, rName, reason)
+  def left[C, R](c: C, rName: RName, reason: String = ""): Either[String, R] = {
+    val msg = errorMsg(c, rName, reason)
     Left(msg)
   }
 
-  def throwException[C, R](c: C, hideC: Boolean, rName: RName, reason: String): Nothing = {
-    val msg = errorMsg(c, hideC, rName, reason)
+  def throwException[C, R](c: C, rName: RName, reason: String): Nothing = {
+    val msg = errorMsg(c, rName, reason)
     throw new IllegalArgumentException(msg)
   }
 
-  def throwException[C, R](c: C, hideC: Boolean, rName: RName, cause: Throwable): Nothing = {
-    val msg = errorMsg(c, hideC, rName, reason = "")
+  def throwException[C, R](c: C, rName: RName, cause: Throwable): Nothing = {
+    val msg = errorMsg(c, rName, reason = "")
     throw new IllegalArgumentException(msg, cause)
   }
 
-  private def errorMsg[C, R](c: C, hideC: Boolean, rName: RName, reason: String): String = {
-    val cInMsg = if (hideC) "<redacted>" else c.toString
+  private def errorMsg[C, R](c: C, rName: RName, reason: String): String = {
     val suffix = if (reason.nonEmpty) s" due to: $reason" else ""
-    s"Failed to construct '${rName.value}' from '$cInMsg' $suffix"
+    s"Failed to construct '${rName.value}' from '$c' $suffix"
   }
 
   /**

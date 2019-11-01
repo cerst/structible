@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Constantin Gerstberger
+ * Copyright (c) 2019 Constantin Gerstberger
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -19,20 +19,15 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.github.cerst.structible.akkahttp.testutil
+package com.github.cerst.structible.core.constraint.instances
 
-import akka.http.scaladsl.testkit.{RouteTest, TestFrameworkInterface}
-import utest.TestSuite
+import com.github.cerst.structible.core.DefaultConstraints._
+import com.github.cerst.structible.core.testutil.NumericConstraintsSpec
 
-abstract class RouteTestSuite extends TestSuite with TestFrameworkInterface with RouteTest {
-
-  override def failTest(msg: String): Nothing = {
-    throw new RuntimeException("RouteTest failed:" + msg)
-  }
-
-  override def utestAfterAll(): Unit = {
-    cleanUp()
-    super.utestAfterAll()
-  }
-
-}
+final class ByteConstraintsSpec
+    extends NumericConstraintsSpec[Byte](
+      dec = x => (x - 1).toByte,
+      inc = x => (x + 1).toByte,
+      globalMax = Byte.MaxValue,
+      globalMin = Byte.MinValue
+    ) {}

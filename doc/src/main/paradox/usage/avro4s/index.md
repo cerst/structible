@@ -10,6 +10,8 @@ It provides derivations for:
 * _BicoderWithSchemaFor_ (see below)
 
 These allow you to (de-) serialize value classes as if they were plain values.
+ 
+Make sure to familiarize yourself with @ref:[creating _structible_ instances](../index.md) before looking at the examples below.
 
 ## Dependency
 

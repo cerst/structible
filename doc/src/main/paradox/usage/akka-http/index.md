@@ -7,6 +7,8 @@ It provides derivations for:
 * _PathMatcher_
 * _Unmarshaller_
 
+Make sure to familiarize yourself with @ref:[creating _structible_ instances](../index.md) before looking at the examples below.
+
 
 ## Dependency
 

@@ -25,83 +25,324 @@ import java.time.{Duration, OffsetDateTime, ZonedDateTime}
 import java.util.UUID
 
 import com.github.cerst.structible.core.Structible
+import com.github.plokhotnyuk.jsoniter_scala.core._
 
 object ops {
 
-  implicit def toStructibleJsoniterScalaBigIntOps[R](
-    structible: Structible[BigInt, R]
-  ): StructibleJsoniterScalaBigIntOps[R] = {
-    new StructibleJsoniterScalaBigIntOps[R](structible)
+  // =====================================================================================================================
+  // BigDecimal
+  // =====================================================================================================================
+  implicit class StructibleJsoniterScalaBigIntOps[R](val structible: Structible[BigInt, R]) extends AnyVal {
+
+    /**
+      * @param rNullValue <br/>Must be set <b>explicitly</b> to <i>null.asInstanceOf[R]</i> with <i>R</i> being the actual
+      *                   type (e.g. <i>UserId</i>) if and only if <i>R</i> is a subtype of <i>AnyVal</i>.
+      *                   <br/>
+      *                   This required to work around [[https://github.com/scala/bug/issues/8097 this compiler bug]].
+      *                   <br/>
+      *                   Otherwise, the created codec throws a <i>NullPointerException</i> at runtime.
+      */
+    def toJsonCodec(rNullValue: R = null.asInstanceOf[R]): JsonCodec[R] = newJsonCodec[BigInt, R](
+      "BigInt",
+      structible,
+      rNullValue,
+      readC = _.readBigInt(default = null),
+      writeVal = _.writeVal,
+      readKeyAsC = _.readKeyAsBigInt(),
+      writeKey = _.writeKey
+    )
   }
 
-  implicit def toStructibleJsoniterScalaBigDecimalOps[R](
-    structible: Structible[BigDecimal, R]
-  ): StructibleJsoniterScalaBigDecimalOps[R] = {
-    new StructibleJsoniterScalaBigDecimalOps[R](structible)
+  // =====================================================================================================================
+  // BigInt
+  // =====================================================================================================================
+  implicit class StructibleJsoniterScalaBigDecimalOps[R](val structible: Structible[BigDecimal, R]) extends AnyVal {
+
+    /**
+      * @param rNullValue <br/>Must be set <b>explicitly</b> to <i>null.asInstanceOf[R]</i> with <i>R</i> being the actual
+      *                   type (e.g. <i>UserId</i>) if and only if <i>R</i> is a subtype of <i>AnyVal</i>.
+      *                   <br/>
+      *                   This required to work around [[https://github.com/scala/bug/issues/8097 this compiler bug]].
+      *                   <br/>
+      *                   Otherwise, the created codec throws a <i>NullPointerException</i> at runtime.
+      */
+    def toJsonCodec(rNullValue: R = null.asInstanceOf[R]): JsonCodec[R] = newJsonCodec[BigDecimal, R](
+      "BigDecimal",
+      structible,
+      rNullValue,
+      readC = _.readBigDecimal(default = null),
+      writeVal = _.writeVal,
+      readKeyAsC = _.readKeyAsBigDecimal(),
+      writeKey = _.writeKey
+    )
   }
 
-  implicit def toStructibleJsoniterScalaBooleanOps[R](
-    structible: Structible[Boolean, R]
-  ): StructibleJsoniterScalaBooleanOps[R] = {
-    new StructibleJsoniterScalaBooleanOps[R](structible)
+  // =====================================================================================================================
+  // BOOLEAN
+  // =====================================================================================================================
+  implicit class StructibleJsoniterScalaBooleanOps[R](val structible: Structible[Boolean, R]) extends AnyVal {
+
+    /**
+      * @param rNullValue <br/>Must be set <b>explicitly</b> to <i>null.asInstanceOf[R]</i> with <i>R</i> being the actual
+      *                   type (e.g. <i>UserId</i>) if and only if <i>R</i> is a subtype of <i>AnyVal</i>.
+      *                   <br/>
+      *                   This required to work around [[https://github.com/scala/bug/issues/8097 this compiler bug]].
+      *                   <br/>
+      *                   Otherwise, the created codec throws a <i>NullPointerException</i> at runtime.
+      */
+    def toJsonCodec(rNullValue: R = null.asInstanceOf[R]): JsonCodec[R] =
+      newJsonCodec[Boolean, R](
+        "Boolean",
+        structible,
+        rNullValue,
+        readC = _.readBoolean,
+        writeVal = _.writeVal,
+        readKeyAsC = _.readKeyAsBoolean(),
+        writeKey = _.writeKey
+      )
   }
 
-  implicit def toStructibleJsoniterScalaDoubleOps[R](
-    structible: Structible[Double, R]
-  ): StructibleJsoniterScalaDoubleOps[R] = {
-    new StructibleJsoniterScalaDoubleOps[R](structible)
+  // =====================================================================================================================
+  // DOUBLE
+  // =====================================================================================================================
+  implicit class StructibleJsoniterScalaDoubleOps[R](val structible: Structible[Double, R]) extends AnyVal {
+
+    /**
+      * @param rNullValue <br/>Must be set <b>explicitly</b> to <i>null.asInstanceOf[R]</i> with <i>R</i> being the actual
+      *                   type (e.g. <i>UserId</i>) if and only if <i>R</i> is a subtype of <i>AnyVal</i>.
+      *                   <br/>
+      *                   This required to work around [[https://github.com/scala/bug/issues/8097 this compiler bug]].
+      *                   <br/>
+      *                   Otherwise, the created codec throws a <i>NullPointerException</i> at runtime.
+      */
+    def toJsonCodec(rNullValue: R = null.asInstanceOf[R]): JsonCodec[R] = newJsonCodec[Double, R](
+      "Double",
+      structible,
+      rNullValue,
+      readC = _.readDouble(),
+      writeVal = _.writeVal,
+      readKeyAsC = _.readKeyAsDouble(),
+      writeKey = _.writeKey
+    )
   }
 
-  implicit def toStructibleJsoniterScalaDurationOps[R](
-    structible: Structible[Duration, R]
-  ): StructibleJsoniterScalaDurationOps[R] = {
-    new StructibleJsoniterScalaDurationOps[R](structible)
+  // =====================================================================================================================
+  // DURATION
+  // =====================================================================================================================
+  implicit class StructibleJsoniterScalaDurationOps[R](val structible: Structible[Duration, R]) extends AnyVal {
+
+    /**
+      * @param rNullValue <br/>Must be set <b>explicitly</b> to <i>null.asInstanceOf[R]</i> with <i>R</i> being the actual
+      *                   type (e.g. <i>UserId</i>) if and only if <i>R</i> is a subtype of <i>AnyVal</i>.
+      *                   <br/>
+      *                   This required to work around [[https://github.com/scala/bug/issues/8097 this compiler bug]].
+      *                   <br/>
+      *                   Otherwise, the created codec throws a <i>NullPointerException</i> at runtime.
+      */
+    def toJsonCodec(rNullValue: R = null.asInstanceOf[R]): JsonCodec[R] = newJsonCodec[Duration, R](
+      "Duration",
+      structible,
+      rNullValue,
+      readC = _.readDuration(default = null),
+      writeVal = _.writeVal,
+      readKeyAsC = _.readKeyAsDuration(),
+      writeKey = _.writeKey
+    )
   }
 
-  implicit def toStructibleJsoniterScalaIntOps[R](structible: Structible[Int, R]): StructibleJsoniterScalaIntOps[R] = {
-    new StructibleJsoniterScalaIntOps[R](structible)
+  // =====================================================================================================================
+  // FLOAT
+  // =====================================================================================================================
+  implicit class StructibleJsoniterScalaFloatOps[R](val structible: Structible[Float, R]) extends AnyVal {
+
+    /**
+      * @param rNullValue <br/>Must be set <b>explicitly</b> to <i>null.asInstanceOf[R]</i> with <i>R</i> being the actual
+      *                   type (e.g. <i>UserId</i>) if and only if <i>R</i> is a subtype of <i>AnyVal</i>.
+      *                   <br/>
+      *                   This required to work around [[https://github.com/scala/bug/issues/8097 this compiler bug]].
+      *                   <br/>
+      *                   Otherwise, the created codec throws a <i>NullPointerException</i> at runtime.
+      */
+    def toJsonCodec(rNullValue: R = null.asInstanceOf[R]): JsonCodec[R] = newJsonCodec[Float, R](
+      "Float",
+      structible,
+      rNullValue,
+      readC = _.readFloat(),
+      writeVal = _.writeVal,
+      readKeyAsC = _.readKeyAsFloat(),
+      writeKey = _.writeKey
+    )
   }
 
-  implicit def toStructibleJsoniterScalaFloatOps[R](
-    structible: Structible[Float, R]
-  ): StructibleJsoniterScalaFloatOps[R] = {
-    new StructibleJsoniterScalaFloatOps[R](structible)
+  // =====================================================================================================================
+  // INT
+  // =====================================================================================================================
+  implicit class StructibleJsoniterScalaIntOps[R](val structible: Structible[Int, R]) extends AnyVal {
+
+    /**
+      * @param rNullValue <br/>Must be set <b>explicitly</b> to <i>null.asInstanceOf[R]</i> with <i>R</i> being the actual
+      *                   type (e.g. <i>UserId</i>) if and only if <i>R</i> is a subtype of <i>AnyVal</i>.
+      *                   <br/>
+      *                   This required to work around [[https://github.com/scala/bug/issues/8097 this compiler bug]].
+      *                   <br/>
+      *                   Otherwise, the created codec throws a <i>NullPointerException</i> at runtime.
+      */
+    def toJsonCodec(rNullValue: R = null.asInstanceOf[R]): JsonCodec[R] = newJsonCodec[Int, R](
+      "Int",
+      structible,
+      rNullValue,
+      readC = _.readInt(),
+      writeVal = _.writeVal,
+      readKeyAsC = _.readKeyAsInt(),
+      writeKey = _.writeKey
+    )
   }
 
-  implicit def toStructibleJsoniterScalaLongOps[R](
-    structible: Structible[Long, R]
-  ): StructibleJsoniterScalaLongOps[R] = {
-    new StructibleJsoniterScalaLongOps[R](structible)
+  // =====================================================================================================================
+  // LONG
+  // =====================================================================================================================
+  implicit class StructibleJsoniterScalaLongOps[R](val structible: Structible[Long, R]) extends AnyVal {
+
+    /**
+      * @param rNullValue <br/>Must be set <b>explicitly</b> to <i>null.asInstanceOf[R]</i> with <i>R</i> being the actual
+      *                   type (e.g. <i>UserId</i>) if and only if <i>R</i> is a subtype of <i>AnyVal</i>.
+      *                   <br/>
+      *                   This required to work around [[https://github.com/scala/bug/issues/8097 this compiler bug]].
+      *                   <br/>
+      *                   Otherwise, the created codec throws a <i>NullPointerException</i> at runtime.
+      */
+    def toJsonCodec(rNullValue: R = null.asInstanceOf[R]): JsonCodec[R] = newJsonCodec[Long, R](
+      "Long",
+      structible,
+      rNullValue,
+      readC = _.readLong(),
+      writeVal = _.writeVal,
+      readKeyAsC = _.readKeyAsLong(),
+      writeKey = _.writeKey
+    )
   }
 
-  implicit def toStructibleJsoniterScalaOffsetDateTimeOps[R](
-    structible: Structible[OffsetDateTime, R]
-  ): StructibleJsoniterScalaOffsetDateTimeOps[R] = {
-    new StructibleJsoniterScalaOffsetDateTimeOps[R](structible)
+  // =====================================================================================================================
+  // OFFSET DATE TIME
+  // =====================================================================================================================
+  implicit class StructibleJsoniterScalaOffsetDateTimeOps[R](val structible: Structible[OffsetDateTime, R])
+      extends AnyVal {
+
+    /**
+      * @param rNullValue <br/>Must be set <b>explicitly</b> to <i>null.asInstanceOf[R]</i> with <i>R</i> being the actual
+      *                   type (e.g. <i>UserId</i>) if and only if <i>R</i> is a subtype of <i>AnyVal</i>.
+      *                   <br/>
+      *                   This required to work around [[https://github.com/scala/bug/issues/8097 this compiler bug]].
+      *                   <br/>
+      *                   Otherwise, the created codec throws a <i>NullPointerException</i> at runtime.
+      */
+    def toJsonCodec(rNullValue: R = null.asInstanceOf[R]): JsonCodec[R] = newJsonCodec[OffsetDateTime, R](
+      "OffsetDateTime",
+      structible,
+      rNullValue,
+      readC = _.readOffsetDateTime(default = null),
+      writeVal = _.writeVal,
+      readKeyAsC = _.readKeyAsOffsetDateTime(),
+      writeKey = _.writeKey
+    )
   }
 
-  implicit def toStructibleJsoniterScalaShortOps[R](
-    structible: Structible[Short, R]
-  ): StructibleJsoniterScalaShortOps[R] = {
-    new StructibleJsoniterScalaShortOps[R](structible)
+  // =====================================================================================================================
+  // SHORT
+  // =====================================================================================================================
+  implicit class StructibleJsoniterScalaShortOps[R](val structible: Structible[Short, R]) extends AnyVal {
+
+    /**
+      * @param rNullValue <br/>Must be set <b>explicitly</b> to <i>null.asInstanceOf[R]</i> with <i>R</i> being the actual
+      *                   type (e.g. <i>UserId</i>) if and only if <i>R</i> is a subtype of <i>AnyVal</i>.
+      *                   <br/>
+      *                   This required to work around [[https://github.com/scala/bug/issues/8097 this compiler bug]].
+      *                   <br/>
+      *                   Otherwise, the created codec throws a <i>NullPointerException</i> at runtime.
+      */
+    def toJsonCodec(rNullValue: R = null.asInstanceOf[R]): JsonCodec[R] = newJsonCodec[Short, R](
+      "Short",
+      structible,
+      rNullValue,
+      readC = _.readShort(),
+      writeVal = _.writeVal,
+      readKeyAsC = _.readKeyAsShort(),
+      writeKey = _.writeKey
+    )
   }
 
-  implicit def toStructibleJsoniterScalaStringOps[R](
-    structible: Structible[String, R]
-  ): StructibleJsoniterScalaStringOps[R] = {
-    new StructibleJsoniterScalaStringOps[R](structible)
+  // =====================================================================================================================
+  // STRING
+  // =====================================================================================================================
+  implicit class StructibleJsoniterScalaStringOps[R](val structible: Structible[String, R]) extends AnyVal {
+
+    /**
+      * @param rNullValue <br/>Must be set <b>explicitly</b> to <i>null.asInstanceOf[R]</i> with <i>R</i> being the actual
+      *                   type (e.g. <i>UserId</i>) if and only if <i>R</i> is a subtype of <i>AnyVal</i>.
+      *                   <br/>
+      *                   This required to work around [[https://github.com/scala/bug/issues/8097 this compiler bug]].
+      *                   <br/>
+      *                   Otherwise, the created codec throws a <i>NullPointerException</i> at runtime.
+      */
+    def toJsonCodec(rNullValue: R = null.asInstanceOf[R]): JsonCodec[R] = newJsonCodec[String, R](
+      "String",
+      structible,
+      rNullValue,
+      readC = _.readString(default = null),
+      writeVal = _.writeVal,
+      readKeyAsC = _.readKeyAsString(),
+      writeKey = _.writeKey
+    )
   }
 
-  implicit def toStructibleJsoniterScalaUuidOps[R](
-    structible: Structible[UUID, R]
-  ): StructibleJsoniterScalaUuidOps[R] = {
-    new StructibleJsoniterScalaUuidOps[R](structible)
+  // =====================================================================================================================
+  // UUID
+  // =====================================================================================================================
+  implicit class StructibleJsoniterScalaUuidOps[R](val structible: Structible[UUID, R]) extends AnyVal {
+
+    /**
+      * @param rNullValue <br/>Must be set <b>explicitly</b> to <i>null.asInstanceOf[R]</i> with <i>R</i> being the actual
+      *                   type (e.g. <i>UserId</i>) if and only if <i>R</i> is a subtype of <i>AnyVal</i>.
+      *                   <br/>
+      *                   This required to work around [[https://github.com/scala/bug/issues/8097 this compiler bug]].
+      *                   <br/>
+      *                   Otherwise, the created codec throws a <i>NullPointerException</i> at runtime.
+      */
+    def toJsonCodec(rNullValue: R = null.asInstanceOf[R]): JsonCodec[R] = newJsonCodec[UUID, R](
+      "UUID",
+      structible,
+      rNullValue,
+      readC = _.readUUID(default = null),
+      writeVal = _.writeVal,
+      readKeyAsC = _.readKeyAsUUID(),
+      writeKey = _.writeKey
+    )
+
   }
 
-  implicit def toStructibleJsoniterScalaZonedDateTimeOps[R](
-    structible: Structible[ZonedDateTime, R]
-  ): StructibleJsoniterScalaZonedDateTimeOps[R] = {
-    new StructibleJsoniterScalaZonedDateTimeOps[R](structible)
+  // =====================================================================================================================
+  // ZONED DATE TIME
+  // =====================================================================================================================
+  implicit class StructibleJsoniterScalaZonedDateTimeOps[R](val structible: Structible[ZonedDateTime, R])
+      extends AnyVal {
+
+    /**
+      * @param rNullValue <br/>Must be set <b>explicitly</b> to <i>null.asInstanceOf[R]</i> with <i>R</i> being the actual
+      *                   type (e.g. <i>UserId</i>) if and only if <i>R</i> is a subtype of <i>AnyVal</i>.
+      *                   <br/>
+      *                   This required to work around [[https://github.com/scala/bug/issues/8097 this compiler bug]].
+      *                   <br/>
+      *                   Otherwise, the created codec throws a <i>NullPointerException</i> at runtime.
+      */
+    def toJsonCodec(rNullValue: R = null.asInstanceOf[R]): JsonCodec[R] = newJsonCodec[ZonedDateTime, R](
+      "ZonedDateTime",
+      structible,
+      rNullValue,
+      readC = _.readZonedDateTime(default = null),
+      writeVal = _.writeVal,
+      readKeyAsC = _.readKeyAsZonedDateTime(),
+      writeKey = _.writeKey
+    )
   }
 
 }
