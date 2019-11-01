@@ -87,11 +87,11 @@ object Structible {
 
   /**
     * Creates a structible instance.<br/>
-    * Use this overload if the compiler cannot provide a [[scala.reflect.ClassTag ClassTag]] for <i>R</i>. Otherwise,
-    * check the one which doesn't accept an explicit <i>rName</i> parameter.
+    * Use this overload if the compiler <u>cannot</u> provide a [[scala.reflect.ClassTag ClassTag]] for <i>R</i>.
+    * Otherwise, check the one which doesn't accept an explicit <i>rName</i> parameter.
     *
-    * @param _construct <i>NonFatal</i> exceptions thrown by this function are caught and handled. Check the
-    *                   documentation of the methods defined by
+    * @param _construct <i>NonFatal</i> exceptions thrown by this function are handled as a failed construction.
+    *                   Check the documentation of the methods defined by
     *                   [[com.github.cerst.structible.core.Constructible Constructible]] for details.
     * @param _destruct  Expected to never throw an exception.
     * @param constraint Checked by the returned [[com.github.cerst.structible.core.Structible Structible]] instance
@@ -167,13 +167,42 @@ object Structible {
 
   }
 
-  def structible[C, R: ClassTag](_construct: C => R,
-                                 _destruct: R => C,
-                                 constraint: Constraint[C],
-  ): Structible[C, R] = {
+  /**
+    * Creates a structible instance.<br/>
+    * Use this overload if the compiler <u>can</u> provide a [[scala.reflect.ClassTag ClassTag]] for <i>R</i>.
+    * Otherwise, check the one which accepts an explicit <i>rName</i> parameter.
+    *
+    * @param _construct <i>NonFatal</i> exceptions thrown by this function are handled as a failed construction.
+    *                   Check the documentation of the methods defined by
+    *                   [[com.github.cerst.structible.core.Constructible Constructible]] for details.
+    * @param _destruct  Expected to never throw an exception.
+    * @param constraint Checked by the returned [[com.github.cerst.structible.core.Structible Structible]] instance
+    *                   before invoking the provided <i>_construct</i> function.
+    * @see [[com.github.cerst.structible.core.Constraint Constraint]]<br/>
+    *      [[com.github.cerst.structible.core.constraint.syntax.ConstraintSyntax$ ConstraintSyntax]]<br/>
+    *      [[com.github.cerst.structible.core.DefaultConstraints$ DefaultConstraints]]
+    */
+  def structible[C, R: ClassTag](_construct: C => R, _destruct: R => C, constraint: Constraint[C]): Structible[C, R] = {
     structible(_construct, _destruct, constraint, rName = RName[R])
   }
 
+  /**
+    * Creates a structible instance.<br/>
+    * Use this overload if the compiler <u>cannot</u> provide a [[scala.reflect.ClassTag ClassTag]] for <i>R</i>.
+    * Otherwise, check the one which doesn't accept an explicit <i>rName</i> parameter.
+    *
+    * @param _construct <i>Left</i> returned by this function is handled as a failed construction.
+    *                   Check the documentation of the methods defined by
+    *                   [[com.github.cerst.structible.core.Constructible Constructible]] for details.
+    * @param _destruct  Expected to never throw an exception.
+    * @param constraint Checked by the returned [[com.github.cerst.structible.core.Structible Structible]] instance
+    *                   before invoking the provided <i>_construct</i> function.
+    * @param rName      Name of the type <i>R</i> which is used to wrap/ enhance error messages produced by the provided
+    *                   <i>_construct</i> function.
+    * @see [[com.github.cerst.structible.core.Constraint Constraint]]<br/>
+    *      [[com.github.cerst.structible.core.constraint.syntax.ConstraintSyntax$ ConstraintSyntax]]<br/>
+    *      [[com.github.cerst.structible.core.DefaultConstraints$ DefaultConstraints]]
+    */
   def structibleEither[C, R](_construct: C => Either[String, R],
                              _destruct: R => C,
                              constraint: Constraint[C],
@@ -235,12 +264,44 @@ object Structible {
 
   }
 
+  /**
+    * Creates a structible instance.<br/>
+    * Use this overload if the compiler <u>cannot</u> provide a [[scala.reflect.ClassTag ClassTag]] for <i>R</i>.
+    * Otherwise, check the one which doesn't accept an explicit <i>rName</i> parameter.
+    *
+    * @param _construct <i>Left</i> returned by this function is handled as a failed construction.
+    *                   Check the documentation of the methods defined by
+    *                   [[com.github.cerst.structible.core.Constructible Constructible]] for details.
+    * @param _destruct  Expected to never throw an exception.
+    * @param constraint Checked by the returned [[com.github.cerst.structible.core.Structible Structible]] instance
+    *                   before invoking the provided <i>_construct</i> function.
+    * @see [[com.github.cerst.structible.core.Constraint Constraint]]<br/>
+    *      [[com.github.cerst.structible.core.constraint.syntax.ConstraintSyntax$ ConstraintSyntax]]<br/>
+    *      [[com.github.cerst.structible.core.DefaultConstraints$ DefaultConstraints]]
+    */
   def structibleEither[C, R: ClassTag](_construct: C => Either[String, R],
                                        _destruct: R => C,
                                        constraint: Constraint[C]): Structible[C, R] = {
     structibleEither(_construct, _destruct, constraint, rName = RName[R])
   }
 
+  /**
+    * Creates a structible instance.<br/>
+    * Use this overload if the compiler <u>cannot</u> provide a [[scala.reflect.ClassTag ClassTag]] for <i>R</i>.
+    * Otherwise, check the one which doesn't accept an explicit <i>rName</i> parameter.
+    *
+    * @param _construct <i>None</i> returned by this function is handled as a failed construction.
+    *                   Check the documentation of the methods defined by
+    *                   [[com.github.cerst.structible.core.Constructible Constructible]] for details.
+    * @param _destruct  Expected to never throw an exception.
+    * @param constraint Checked by the returned [[com.github.cerst.structible.core.Structible Structible]] instance
+    *                   before invoking the provided <i>_construct</i> function.
+    * @param rName      Name of the type <i>R</i> which is used to wrap/ enhance error messages produced by the provided
+    *                   <i>_construct</i> function.
+    * @see [[com.github.cerst.structible.core.Constraint Constraint]]<br/>
+    *      [[com.github.cerst.structible.core.constraint.syntax.ConstraintSyntax$ ConstraintSyntax]]<br/>
+    *      [[com.github.cerst.structible.core.DefaultConstraints$ DefaultConstraints]]
+    */
   def structibleOption[C, R](_construct: C => Option[R],
                              _destruct: R => C,
                              constraint: Constraint[C],
@@ -295,12 +356,44 @@ object Structible {
     }
   }
 
+  /**
+    * Creates a structible instance.<br/>
+    * Use this overload if the compiler <u>cannot</u> provide a [[scala.reflect.ClassTag ClassTag]] for <i>R</i>.
+    * Otherwise, check the one which doesn't accept an explicit <i>rName</i> parameter.
+    *
+    * @param _construct <i>None</i> returned by this function is handled as a failed construction.
+    *                   Check the documentation of the methods defined by
+    *                   [[com.github.cerst.structible.core.Constructible Constructible]] for details.
+    * @param _destruct  Expected to never throw an exception.
+    * @param constraint Checked by the returned [[com.github.cerst.structible.core.Structible Structible]] instance
+    *                   before invoking the provided <i>_construct</i> function.
+    * @see [[com.github.cerst.structible.core.Constraint Constraint]]<br/>
+    *      [[com.github.cerst.structible.core.constraint.syntax.ConstraintSyntax$ ConstraintSyntax]]<br/>
+    *      [[com.github.cerst.structible.core.DefaultConstraints$ DefaultConstraints]]
+    */
   def structibleOption[C, R: ClassTag](_construct: C => Option[R],
                                        _destruct: R => C,
                                        constraint: Constraint[C]): Structible[C, R] = {
     structibleOption(_construct, _destruct, constraint, rName = RName[R])
   }
 
+  /**
+    * Creates a structible instance.<br/>
+    * Use this overload if the compiler <u>cannot</u> provide a [[scala.reflect.ClassTag ClassTag]] for <i>R</i>.
+    * Otherwise, check the one which doesn't accept an explicit <i>rName</i> parameter.
+    *
+    * @param _construct <i>Failure</i> returned by this function is handled as a failed construction.
+    *                   Check the documentation of the methods defined by
+    *                   [[com.github.cerst.structible.core.Constructible Constructible]] for details.
+    * @param _destruct  Expected to never throw an exception.
+    * @param constraint Checked by the returned [[com.github.cerst.structible.core.Structible Structible]] instance
+    *                   before invoking the provided <i>_construct</i> function.
+    * @param rName      Name of the type <i>R</i> which is used to wrap/ enhance error messages produced by the provided
+    *                   <i>_construct</i> function.
+    * @see [[com.github.cerst.structible.core.Constraint Constraint]]<br/>
+    *      [[com.github.cerst.structible.core.constraint.syntax.ConstraintSyntax$ ConstraintSyntax]]<br/>
+    *      [[com.github.cerst.structible.core.DefaultConstraints$ DefaultConstraints]]
+    */
   def structibleTry[C, R](_construct: C => Try[R],
                           _destruct: R => C,
                           constraint: Constraint[C],
@@ -360,6 +453,21 @@ object Structible {
     }
   }
 
+  /**
+    * Creates a structible instance.<br/>
+    * Use this overload if the compiler <u>cannot</u> provide a [[scala.reflect.ClassTag ClassTag]] for <i>R</i>.
+    * Otherwise, check the one which doesn't accept an explicit <i>rName</i> parameter.
+    *
+    * @param _construct <i>Failure</i> returned by this function is handled as a failed construction.
+    *                   Check the documentation of the methods defined by
+    *                   [[com.github.cerst.structible.core.Constructible Constructible]] for details.
+    * @param _destruct  Expected to never throw an exception.
+    * @param constraint Checked by the returned [[com.github.cerst.structible.core.Structible Structible]] instance
+    *                   before invoking the provided <i>_construct</i> function.
+    * @see [[com.github.cerst.structible.core.Constraint Constraint]]<br/>
+    *      [[com.github.cerst.structible.core.constraint.syntax.ConstraintSyntax$ ConstraintSyntax]]<br/>
+    *      [[com.github.cerst.structible.core.DefaultConstraints$ DefaultConstraints]]
+    */
   def structibleTry[C, R: ClassTag](_construct: C => Try[R],
                                     _destruct: R => C,
                                     constraint: Constraint[C]): Structible[C, R] = {
