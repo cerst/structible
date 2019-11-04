@@ -15,6 +15,7 @@ object DefaultConstraints
     with InstantConstraints
     with IntConstraints
     with JavaDurationConstraints
+    with LocalDateTimeConstraints
     with LongConstraints
     with OffsetDateTimeConstraints
     with ShortConstraints

@@ -1,8 +1,18 @@
 # Changelog
 
 ## 0.6.0
-* Integrate the _factories_ library into _structible_ to specify constraints - see the updated documentation
+**Breaking Changes**
 
+* Integrate the _factories_ library into _structible_ to specify construction constraints - see the updated documentation
+* Use a value class for handling manually passed-in names of the refined type _R_ and slightly improve its ergonomics
+
+**Other Changes**
+
+* add _structible-core_ support for _LocalDateTime_
+* (re-) add _structible-jsoniter-scala_ support for 
+    * _Byte_
+    * _Instant_
+    * _LocalDateTime_
 
 ## 0.5.2
 
