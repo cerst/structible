@@ -22,11 +22,18 @@
 package com.github.cerst.structible.configs
 
 import com.github.cerst.structible.core.Constructible
+import configs.Configs
 
 object ops {
 
-  implicit def toConstructibleConfigsOps[C, R](constructible: Constructible[C, R]): ConstructibleConfigsOps[C,R] = {
-    new ConstructibleConfigsOps(constructible)
+  implicit class ConstructibleConfigsOps[C, R](val constructible: Constructible[C, R]) extends AnyVal {
+
+    def toConfigs(implicit configs: Configs[C]): Configs[R] = {
+      Configs from { (config, path) =>
+        Configs[C].get(config, path) map constructible.construct
+      }
+    }
+
   }
 
 }

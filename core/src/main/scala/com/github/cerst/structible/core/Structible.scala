@@ -21,10 +21,11 @@
 
 package com.github.cerst.structible.core
 
+import com.github.cerst.structible.core.internal.{CheckConstraint, Error}
+
 import scala.reflect.ClassTag
 import scala.util.control.NonFatal
 import scala.util.{Failure, Success, Try}
-
 
 /**
   * @tparam C Common type
@@ -38,6 +39,7 @@ trait Constructible[C, R] {
     * [[scala.util.Failure Failure]], a [[scala.util.Left Left]] or a [[scala.None None]]).
     *
     */
+  @throws[IllegalArgumentException]
   def construct(c: C): R
 
   /**
@@ -83,409 +85,393 @@ trait Structible[C, R] extends Constructible[C, R] with Destructible[C, R]
 
 object Structible {
 
-  final def apply[P, W](implicit structible: Structible[P, W]): Structible[P, W] = structible
-
   /**
     * Creates a structible instance.<br/>
-    * Use this variant if and only if you <u>can</u> expect messages of exception thrown by the provided
-    * <i>_construct</i> function to be meaningful on their own. Otherwise, check out the overload with three
-    * parameters.
+    * Use this overload if the compiler <u>cannot</u> provide a [[scala.reflect.ClassTag ClassTag]] for <i>R</i>.
+    * Otherwise, check the one which doesn't accept an explicit <i>rName</i> parameter.
     *
-    * @param _construct NonFatal exceptions thrown by this function are caught and handled. Check the documentation of
-    *                   the methods defined by [[com.github.cerst.structible.core.Constructible Constructible]] for
-    *                   details.
-    *
+    * @param _construct <i>NonFatal</i> exceptions thrown by this function are handled as a failed construction.
+    *                   Check the documentation of the methods defined by
+    *                   [[com.github.cerst.structible.core.Constructible Constructible]] for details.
+    * @param _destruct  Expected to never throw an exception.
+    * @param constraint Checked by the returned [[com.github.cerst.structible.core.Structible Structible]] instance
+    *                   before invoking the provided <i>_construct</i> function.
+    * @param rName      Name of the type <i>R</i> which is used to wrap/ enhance error messages produced by the provided
+    *                   <i>_construct</i> function.
+    * @see [[com.github.cerst.structible.core.Constraint Constraint]]<br/>
+    *      [[com.github.cerst.structible.core.constraint.syntax.ConstraintSyntax$ ConstraintSyntax]]<br/>
+    *      [[com.github.cerst.structible.core.DefaultConstraints$ DefaultConstraints]]
     */
-  final def structible[C, R](_construct: C => R, _destruct: R => C): Structible[C, R] = {
-    new Structible[C, R] {
-      override def destruct(r: R): C = _destruct(r)
+  def structible[C, R](_construct: C => R,
+                       _destruct: R => C,
+                       constraint: Constraint[C],
+                       rName: RName): Structible[C, R] = new Structible[C, R] {
 
-      override def construct(c: C): R = _construct(c)
+    override def destruct(r: R): C = _destruct(r)
 
-      override def constructEither(c: C): Either[String, R] = {
-        try {
-          Right(_construct(c))
-        } catch {
-          case NonFatal(cause) =>
-            Left(getMessageNonNull(cause))
-        }
+    override def construct(c: C): R = {
+      CheckConstraint(c, constraint) match {
+        case None =>
+          try {
+            _construct(c)
+          } catch {
+            case NonFatal(cause) => Error.throwException(c, rName, cause)
+          }
+
+        case Some(value) =>
+          Error.throwException(c, rName, reason = value)
       }
-
-      override def constructOption(c: C): Option[R] = {
-        try {
-          Some(_construct(c))
-        } catch {
-          case NonFatal(_) =>
-            None
-        }
-      }
-
-      override def constructTry(c: C): Try[R] = Try(_construct(c))
     }
+
+    override def constructEither(c: C): Either[String, R] = {
+      CheckConstraint(c, constraint) match {
+        case None =>
+          try {
+            Right(_construct(c))
+          } catch {
+            case NonFatal(cause) => Error.left(c, rName, cause)
+          }
+
+        case Some(value) =>
+          Error.left(c, rName, reason = value)
+      }
+    }
+
+    override def constructOption(c: C): Option[R] = {
+      CheckConstraint(c, constraint) match {
+        case None =>
+          try {
+            Some(_construct(c))
+          } catch {
+            case NonFatal(_) => None
+          }
+
+        case Some(_) =>
+          None
+      }
+    }
+
+    override def constructTry(c: C): Try[R] = {
+      CheckConstraint(c, constraint) match {
+        case None =>
+          Try {
+            construct(c)
+          } recoverWith {
+            case NonFatal(cause) => Error.failure(c, rName, cause)
+          }
+
+        case Some(value) =>
+          Error.failure(c, rName, reason = value)
+      }
+    }
+
   }
 
   /**
     * Creates a structible instance.<br/>
-    * Use this variant if and only if you <u>cannot</u> expect messages of exception thrown by the provided
-    * <i>_construct</i> function to be meaningful on their own. Otherwise, check out the overload with only
-    * two parameters.
+    * Use this overload if the compiler <u>can</u> provide a [[scala.reflect.ClassTag ClassTag]] for <i>R</i>.
+    * Otherwise, check the one which accepts an explicit <i>rName</i> parameter.
     *
-    * @param _construct NonFatal exceptions thrown by this function are caught and handled. Check the documentation of
-    *                   the methods defined by [[com.github.cerst.structible.core.Constructible Constructible]] for
-    *                   details.
-    * @param rName      Name of the type <i>R</i> which is used to wrap/ enhance error messages produced by the provided
-    *                   <i>_construct</i> function. If you prefer the name being derived via
-    *                   [[scala.reflect.ClassTag ClassTag]], check out the respective overload.
-    *
+    * @param _construct <i>NonFatal</i> exceptions thrown by this function are handled as a failed construction.
+    *                   Check the documentation of the methods defined by
+    *                   [[com.github.cerst.structible.core.Constructible Constructible]] for details.
+    * @param _destruct  Expected to never throw an exception.
+    * @param constraint Checked by the returned [[com.github.cerst.structible.core.Structible Structible]] instance
+    *                   before invoking the provided <i>_construct</i> function.
+    * @see [[com.github.cerst.structible.core.Constraint Constraint]]<br/>
+    *      [[com.github.cerst.structible.core.constraint.syntax.ConstraintSyntax$ ConstraintSyntax]]<br/>
+    *      [[com.github.cerst.structible.core.DefaultConstraints$ DefaultConstraints]]
     */
-  final def structible[C, R](_construct: C => R, _destruct: R => C, rName: String): Structible[C, R] = {
-    new Structible[C, R] {
-      override def destruct(r: R): C = _destruct(r)
+  def structible[C, R: ClassTag](_construct: C => R, _destruct: R => C, constraint: Constraint[C]): Structible[C, R] = {
+    structible(_construct, _destruct, constraint, rName = RName[R])
+  }
 
-      override def construct(c: C): R = {
-        try {
+  /**
+    * Creates a structible instance.<br/>
+    * Use this overload if the compiler <u>cannot</u> provide a [[scala.reflect.ClassTag ClassTag]] for <i>R</i>.
+    * Otherwise, check the one which doesn't accept an explicit <i>rName</i> parameter.
+    *
+    * @param _construct <i>Left</i> returned by this function is handled as a failed construction.
+    *                   Check the documentation of the methods defined by
+    *                   [[com.github.cerst.structible.core.Constructible Constructible]] for details.
+    * @param _destruct  Expected to never throw an exception.
+    * @param constraint Checked by the returned [[com.github.cerst.structible.core.Structible Structible]] instance
+    *                   before invoking the provided <i>_construct</i> function.
+    * @param rName      Name of the type <i>R</i> which is used to wrap/ enhance error messages produced by the provided
+    *                   <i>_construct</i> function.
+    * @see [[com.github.cerst.structible.core.Constraint Constraint]]<br/>
+    *      [[com.github.cerst.structible.core.constraint.syntax.ConstraintSyntax$ ConstraintSyntax]]<br/>
+    *      [[com.github.cerst.structible.core.DefaultConstraints$ DefaultConstraints]]
+    */
+  def structibleEither[C, R](_construct: C => Either[String, R],
+                             _destruct: R => C,
+                             constraint: Constraint[C],
+                             rName: RName): Structible[C, R] = new Structible[C, R] {
+
+    override def destruct(r: R): C = _destruct(r)
+
+    override def construct(c: C): R = {
+      CheckConstraint(c, constraint) match {
+        case None =>
+          _construct(c) match {
+            case Left(value) => Error.throwException(c, rName, reason = value)
+            case Right(r)    => r
+          }
+
+        case Some(value) =>
+          Error.throwException(c, rName, reason = value)
+      }
+    }
+
+    override def constructEither(c: C): Either[String, R] = {
+      CheckConstraint(c, constraint) match {
+        case None =>
+          _construct(c) match {
+            case Left(value) => Error.left(c, rName, reason = value)
+            case Right(r)    => Right(r)
+          }
+
+        case Some(value) =>
+          Error.left(c, rName, reason = value)
+      }
+    }
+
+    override def constructOption(c: C): Option[R] = {
+      CheckConstraint(c, constraint) match {
+        case None =>
+          _construct(c) match {
+            case Left(_)  => None
+            case Right(r) => Some(r)
+          }
+
+        case Some(_) =>
+          None
+      }
+    }
+
+    override def constructTry(c: C): Try[R] = {
+      CheckConstraint(c, constraint) match {
+        case None =>
+          _construct(c) match {
+            case Left(value) => Error.failure(c, rName, reason = value)
+            case Right(r)    => Success(r)
+          }
+
+        case Some(value) =>
+          Error.failure(c, rName, reason = value)
+      }
+    }
+
+  }
+
+  /**
+    * Creates a structible instance.<br/>
+    * Use this overload if the compiler <u>cannot</u> provide a [[scala.reflect.ClassTag ClassTag]] for <i>R</i>.
+    * Otherwise, check the one which doesn't accept an explicit <i>rName</i> parameter.
+    *
+    * @param _construct <i>Left</i> returned by this function is handled as a failed construction.
+    *                   Check the documentation of the methods defined by
+    *                   [[com.github.cerst.structible.core.Constructible Constructible]] for details.
+    * @param _destruct  Expected to never throw an exception.
+    * @param constraint Checked by the returned [[com.github.cerst.structible.core.Structible Structible]] instance
+    *                   before invoking the provided <i>_construct</i> function.
+    * @see [[com.github.cerst.structible.core.Constraint Constraint]]<br/>
+    *      [[com.github.cerst.structible.core.constraint.syntax.ConstraintSyntax$ ConstraintSyntax]]<br/>
+    *      [[com.github.cerst.structible.core.DefaultConstraints$ DefaultConstraints]]
+    */
+  def structibleEither[C, R: ClassTag](_construct: C => Either[String, R],
+                                       _destruct: R => C,
+                                       constraint: Constraint[C]): Structible[C, R] = {
+    structibleEither(_construct, _destruct, constraint, rName = RName[R])
+  }
+
+  /**
+    * Creates a structible instance.<br/>
+    * Use this overload if the compiler <u>cannot</u> provide a [[scala.reflect.ClassTag ClassTag]] for <i>R</i>.
+    * Otherwise, check the one which doesn't accept an explicit <i>rName</i> parameter.
+    *
+    * @param _construct <i>None</i> returned by this function is handled as a failed construction.
+    *                   Check the documentation of the methods defined by
+    *                   [[com.github.cerst.structible.core.Constructible Constructible]] for details.
+    * @param _destruct  Expected to never throw an exception.
+    * @param constraint Checked by the returned [[com.github.cerst.structible.core.Structible Structible]] instance
+    *                   before invoking the provided <i>_construct</i> function.
+    * @param rName      Name of the type <i>R</i> which is used to wrap/ enhance error messages produced by the provided
+    *                   <i>_construct</i> function.
+    * @see [[com.github.cerst.structible.core.Constraint Constraint]]<br/>
+    *      [[com.github.cerst.structible.core.constraint.syntax.ConstraintSyntax$ ConstraintSyntax]]<br/>
+    *      [[com.github.cerst.structible.core.DefaultConstraints$ DefaultConstraints]]
+    */
+  def structibleOption[C, R](_construct: C => Option[R],
+                             _destruct: R => C,
+                             constraint: Constraint[C],
+                             rName: RName): Structible[C, R] = new Structible[C, R] {
+
+    override def destruct(r: R): C = _destruct(r)
+
+    override def construct(c: C): R = {
+      CheckConstraint(c, constraint) match {
+        case None =>
+          _construct(c) match {
+            case None    => Error.throwException(c, rName, reason = "")
+            case Some(r) => r
+          }
+
+        case Some(value) =>
+          Error.throwException(c, rName, reason = value)
+      }
+    }
+
+    override def constructEither(c: C): Either[String, R] = {
+      CheckConstraint(c, constraint) match {
+        case None =>
+          _construct(c) match {
+            case None    => Error.left(c, rName)
+            case Some(r) => Right(r)
+          }
+
+        case Some(value) =>
+          Error.left(c, rName, reason = value)
+      }
+    }
+
+    override def constructOption(c: C): Option[R] = {
+      CheckConstraint(c, constraint) match {
+        case None =>
           _construct(c)
-        } catch {
-          case NonFatal(cause) =>
-            def msg = errorMsg(c, rName)
 
-            throw new IllegalArgumentException(msg, cause)
-        }
-      }
-
-      override def constructEither(c: C): Either[String, R] = {
-        try {
-          Right(_construct(c))
-        } catch {
-          case NonFatal(cause) =>
-            def msg = errorMsg(c, rName, cause)
-
-            Left(msg)
-        }
-      }
-
-      override def constructOption(c: C): Option[R] = {
-        try {
-          Some(_construct(c))
-        } catch {
-          case NonFatal(_) =>
-            None
-        }
-      }
-
-      override def constructTry(c: C): Try[R] = {
-        Try(_construct(c)) recoverWith {
-          case cause =>
-            def msg = errorMsg(c, rName)
-
-            Failure(new IllegalArgumentException(msg, cause))
-        }
-      }
-    }
-  }
-
-  /**
-    * Creates a structible instance.<br/>
-    * Use this variant if and only if you <u>cannot</u> expect messages of exception thrown by the provided
-    * <i>_construct</i> function to be meaningful on their own. Otherwise, check out the overload with only two
-    * parameters.
-    *
-    * @param _construct NonFatal exceptions thrown by this function are caught and handled. Check the documentation of
-    *                   the methods defined by [[com.github.cerst.structible.core.Constructible Constructible]] for
-    *                   details.
-    * @param rClassTag  Used to derive the name of the type <i>R</i> which in turn is used to wrap/ enhance error
-    *                   messages produced by the provided <i>_construct</i> function. If you prefer passing in the name
-    *                   as [[java.lang.String String]], check out the respective overload.
-    */
-  final def structible[C, R](_construct: C => R, _destruct: R => C, rClassTag: ClassTag[R]): Structible[C, R] = {
-    structible(_construct, _destruct, rClassTag.runtimeClass.getSimpleName)
-  }
-
-  /**
-    * Creates a structible instance.<br/>
-    * Use this variant if and only if you <u>can</u> expect <i>>Left</i>>-values returned by the provided
-    * <i>_construct</i> function to be meaningful on their own. Otherwise, check out the overloads with three
-    * parameters.
-    *
-    * @param _construct <i>>Left</i>-values returned by this function are handled. Check the documentation of
-    *                   the methods defined by [[com.github.cerst.structible.core.Constructible Constructible]] for
-    *                   details.
-    *
-    */
-  final def structibleEither[C, R](_construct: C => Either[String, R], _destruct: R => C): Structible[C, R] = {
-    new Structible[C, R] {
-      override def destruct(r: R): C = _destruct(r)
-
-      override def construct(c: C): R = _construct(c) match {
-        case Left(value) =>
-          throw new IllegalArgumentException(value)
-        case Right(value) =>
-          value
-      }
-
-      override def constructEither(c: C): Either[String, R] = _construct(c)
-
-      override def constructOption(c: C): Option[R] = _construct(c) match {
-        case Left(_) =>
+        case Some(_) =>
           None
-        case Right(value) =>
-          Some(value)
       }
+    }
 
-      override def constructTry(c: C): Try[R] = _construct(c) match {
-        case Left(error) =>
-          Failure(new IllegalArgumentException(error))
-        case Right(value) =>
-          Success(value)
+    override def constructTry(c: C): Try[R] = {
+      CheckConstraint(c, constraint) match {
+        case None =>
+          Error.failure(c, rName)
+
+        case Some(value) =>
+          Error.failure(c, rName, reason = value)
       }
     }
   }
 
   /**
     * Creates a structible instance.<br/>
-    * Use this variant if and only if you <u>cannot</u> expect <i>Left</i>-values returned by the provided
-    * <i>_construct</i> function to be meaningful on their own. Otherwise, check out the overload with only two
-    * parameters.
+    * Use this overload if the compiler <u>cannot</u> provide a [[scala.reflect.ClassTag ClassTag]] for <i>R</i>.
+    * Otherwise, check the one which doesn't accept an explicit <i>rName</i> parameter.
     *
-    * @param _construct <i>>Left</i>-values returned by this function are handled. Check the documentation of
-    *                   the methods defined by [[com.github.cerst.structible.core.Constructible Constructible]] for
-    *                   details.
+    * @param _construct <i>None</i> returned by this function is handled as a failed construction.
+    *                   Check the documentation of the methods defined by
+    *                   [[com.github.cerst.structible.core.Constructible Constructible]] for details.
+    * @param _destruct  Expected to never throw an exception.
+    * @param constraint Checked by the returned [[com.github.cerst.structible.core.Structible Structible]] instance
+    *                   before invoking the provided <i>_construct</i> function.
+    * @see [[com.github.cerst.structible.core.Constraint Constraint]]<br/>
+    *      [[com.github.cerst.structible.core.constraint.syntax.ConstraintSyntax$ ConstraintSyntax]]<br/>
+    *      [[com.github.cerst.structible.core.DefaultConstraints$ DefaultConstraints]]
+    */
+  def structibleOption[C, R: ClassTag](_construct: C => Option[R],
+                                       _destruct: R => C,
+                                       constraint: Constraint[C]): Structible[C, R] = {
+    structibleOption(_construct, _destruct, constraint, rName = RName[R])
+  }
+
+  /**
+    * Creates a structible instance.<br/>
+    * Use this overload if the compiler <u>cannot</u> provide a [[scala.reflect.ClassTag ClassTag]] for <i>R</i>.
+    * Otherwise, check the one which doesn't accept an explicit <i>rName</i> parameter.
+    *
+    * @param _construct <i>Failure</i> returned by this function is handled as a failed construction.
+    *                   Check the documentation of the methods defined by
+    *                   [[com.github.cerst.structible.core.Constructible Constructible]] for details.
+    * @param _destruct  Expected to never throw an exception.
+    * @param constraint Checked by the returned [[com.github.cerst.structible.core.Structible Structible]] instance
+    *                   before invoking the provided <i>_construct</i> function.
     * @param rName      Name of the type <i>R</i> which is used to wrap/ enhance error messages produced by the provided
-    *                   <i>_construct</i> function. If you prefer the name being derived via
-    *                   [[scala.reflect.ClassTag ClassTag]], check out the respective overload.
-    *
+    *                   <i>_construct</i> function.
+    * @see [[com.github.cerst.structible.core.Constraint Constraint]]<br/>
+    *      [[com.github.cerst.structible.core.constraint.syntax.ConstraintSyntax$ ConstraintSyntax]]<br/>
+    *      [[com.github.cerst.structible.core.DefaultConstraints$ DefaultConstraints]]
     */
-  final def structibleEither[C, R](_construct: C => Either[String, R],
-                                   _destruct: R => C,
-                                   rName: String): Structible[C, R] = {
-    new Structible[C, R] {
-      override def destruct(r: R): C = _destruct(r)
+  def structibleTry[C, R](_construct: C => Try[R],
+                          _destruct: R => C,
+                          constraint: Constraint[C],
+                          rName: RName): Structible[C, R] = new Structible[C, R] {
 
-      override def construct(c: C): R = _construct(c) match {
-        case Left(reason) =>
-          def msg = errorMsg(c, rName, reason)
+    override def destruct(r: R): C = _destruct(r)
 
-          throw new IllegalArgumentException(msg)
-        case Right(value) =>
-          value
-      }
-
-      override def constructEither(c: C): Either[String, R] = _construct(c)
-
-      override def constructOption(c: C): Option[R] = _construct(c) match {
-        case Left(_) =>
-          None
-        case Right(value) =>
-          Some(value)
-      }
-
-      override def constructTry(c: C): Try[R] = _construct(c) match {
-        case Left(reason) =>
-          def msg = errorMsg(c, rName, reason)
-
-          Failure(new IllegalArgumentException(msg))
-        case Right(value) =>
-          Success(value)
-      }
-    }
-  }
-
-  /**
-    * Creates a structible instance.<br/>
-    * Use this variant if and only if you <u>cannot</u> expect <i>Left</i>-values returned by the provided
-    * <i>_construct</i> function to be meaningful on their own. Otherwise, check out the overload with only two
-    * parameters.
-    *
-    * @param _construct NonFatal exceptions thrown by this function are caught and handled. Check the documentation of
-    *                   the methods defined by [[com.github.cerst.structible.core.Constructible Constructible]] for
-    *                   details.
-    * @param rClassTag  Used to derive the name of the type <i>R</i> which in turn is used to wrap/ enhance error
-    *                   messages produced by the provided <i>_construct</i> function. If you prefer passing in the name
-    *                   as [[java.lang.String String]], check out the respective overload.
-    *
-    */
-  final def structibleEither[C, R](_construct: C => Either[String, R],
-                                   _destruct: R => C,
-                                   rClassTag: ClassTag[R]): Structible[C, R] = {
-    structibleEither(_construct, _destruct, rClassTag.runtimeClass.getSimpleName)
-  }
-
-  /**
-    * Creates a structible instance.<br/>
-    *
-    * @param _construct [[scala.None None]]-values returned by this function are handled. Check the documentation of
-    *                   the methods defined by [[com.github.cerst.structible.core.Constructible Constructible]] for
-    *                   details.
-    * @param rName      Name of the type <i>R</i> which is used to wrap/ enhance error messages in case of
-    *                   [[scala.None None]] being returned by  provided <i>_construct</i> function.
-    *
-    */
-  final def structibleOption[C, R](_construct: C => Option[R], _destruct: R => C, rName: String): Structible[C, R] = {
-    new Structible[C, R] {
-      override def destruct(r: R): C = _destruct(r)
-
-      override def construct(c: C): R = _construct(c) match {
+    override def construct(c: C): R = {
+      CheckConstraint(c, constraint) match {
         case None =>
-          def msg = errorMsg(c, rName)
+          _construct(c) match {
+            case Failure(cause) => Error.throwException(c, rName, cause)
+            case Success(r)     => r
+          }
 
-          throw new IllegalArgumentException(msg)
         case Some(value) =>
-          value
+          Error.throwException(c, rName, reason = value)
       }
+    }
 
-      override def constructEither(c: C): Either[String, R] = _construct(c) match {
+    override def constructEither(c: C): Either[String, R] = {
+      CheckConstraint(c, constraint) match {
         case None =>
-          def msg = errorMsg(c, rName)
-
-          Left(msg)
+          _construct(c) match {
+            case Failure(cause) => Error.left(c, rName, cause)
+            case Success(r)     => Right(r)
+          }
         case Some(value) =>
-          Right(value)
+          Error.left(c, rName, reason = value)
       }
+    }
 
-      override def constructOption(c: C): Option[R] = _construct(c)
-
-      override def constructTry(c: C): Try[R] = _construct(c) match {
+    override def constructOption(c: C): Option[R] = {
+      CheckConstraint(c, constraint) match {
         case None =>
-          def msg = errorMsg(c, rName)
+          _construct(c) match {
+            case Failure(_) => None
+            case Success(r) => Some(r)
+          }
 
-          Failure(new IllegalArgumentException(msg))
+        case Some(_) =>
+          None
+      }
+    }
+
+    override def constructTry(c: C): Try[R] = {
+      CheckConstraint(c, constraint) match {
+        case None =>
+          _construct(c) match {
+            case Failure(cause) => Error.failure(c, rName, cause)
+            case Success(r)     => Success(r)
+          }
+
         case Some(value) =>
-          Success(value)
+          Error.failure(c, rName, reason = value)
       }
     }
   }
 
   /**
     * Creates a structible instance.<br/>
-    * Use this variant if and only if you <u>can</u> expect messages of exceptions of <i>Failures</i>
-    * returned by the provided <i>_construct</i> function to be meaningful on their own. Otherwise, check out
-    * the overloads with three parameters.
+    * Use this overload if the compiler <u>cannot</u> provide a [[scala.reflect.ClassTag ClassTag]] for <i>R</i>.
+    * Otherwise, check the one which doesn't accept an explicit <i>rName</i> parameter.
     *
-    * @param _construct <i>>Failures</i> returned by this function are handled. Check the documentation of
-    *                   the methods defined by [[com.github.cerst.structible.core.Constructible Constructible]] for
-    *                   details.
-    *
+    * @param _construct <i>Failure</i> returned by this function is handled as a failed construction.
+    *                   Check the documentation of the methods defined by
+    *                   [[com.github.cerst.structible.core.Constructible Constructible]] for details.
+    * @param _destruct  Expected to never throw an exception.
+    * @param constraint Checked by the returned [[com.github.cerst.structible.core.Structible Structible]] instance
+    *                   before invoking the provided <i>_construct</i> function.
+    * @see [[com.github.cerst.structible.core.Constraint Constraint]]<br/>
+    *      [[com.github.cerst.structible.core.constraint.syntax.ConstraintSyntax$ ConstraintSyntax]]<br/>
+    *      [[com.github.cerst.structible.core.DefaultConstraints$ DefaultConstraints]]
     */
-  final def structibleTry[C, R](_construct: C => Try[R], _destruct: R => C): Structible[C, R] = {
-    new Structible[C, R] {
-      override def destruct(r: R): C = _destruct(r)
-
-      override def construct(c: C): R = _construct(c) match {
-        case Failure(cause) =>
-          throw new IllegalArgumentException(cause)
-        case Success(value) =>
-          value
-      }
-
-      override def constructEither(c: C): Either[String, R] = _construct(c) match {
-        case Failure(cause) =>
-          Left(getMessageNonNull(cause))
-        case Success(value) =>
-          Right(value)
-      }
-
-      override def constructOption(c: C): Option[R] = _construct(c) match {
-        case Failure(_) =>
-          None
-        case Success(value) =>
-          Some(value)
-      }
-
-      override def constructTry(c: C): Try[R] = _construct(c)
-    }
-  }
-
-  /**
-    * Creates a structible instance.<br/>
-    * Use this variant if and only if you <u>cannot</u> expect messages of exceptions of <i>>Failures</i>
-    * returned by the provided <i>_construct</i> function to be meaningful on their own. Otherwise, check out
-    * the overload with only two parameters.
-    *
-    * @param _construct <i>>Failures</i> returned by this function are handled. Check the documentation of
-    *                   the methods defined by [[com.github.cerst.structible.core.Constructible Constructible]] for
-    *                   details.
-    * @param rName      Name of the type <i>R</i> which is used to wrap/ enhance error messages produced by the provided
-    *                   <i>_construct</i> function. If you prefer the name being derived via
-    *                   [[scala.reflect.ClassTag ClassTag]], check out the respective overload.
-    *
-    */
-  final def structibleTry[C, R](_construct: C => Try[R], _destruct: R => C, rName: String): Structible[C, R] = {
-    new Structible[C, R] {
-      override def destruct(r: R): C = _destruct(r)
-
-      override def construct(c: C): R = _construct(c) match {
-        case Failure(cause) =>
-          def msg = errorMsg(c, rName)
-
-          throw new IllegalArgumentException(msg, cause)
-        case Success(value) =>
-          value
-      }
-
-      override def constructEither(c: C): Either[String, R] = _construct(c) match {
-        case Failure(cause) =>
-          def msg = errorMsg(c, rName, cause)
-
-          Left(msg)
-        case Success(value) =>
-          Right(value)
-      }
-
-      override def constructOption(c: C): Option[R] = _construct(c) match {
-        case Failure(_) =>
-          None
-        case Success(value) =>
-          Some(value)
-      }
-
-      override def constructTry(c: C): Try[R] = {
-        _construct(c) recoverWith {
-          case cause =>
-            def msg = errorMsg(c, rName)
-
-            Failure(new IllegalArgumentException(msg, cause))
-        }
-      }
-    }
-  }
-
-  /**
-    * Creates a structible instance.<br/>
-    * Use this variant if and only if you <u>cannot</u> expect messages of exceptions of <i>Failure</i>'s
-    * returned by the provided <i>_construct</i> function to be meaningful on their own. Otherwise, check out
-    * the overload with only two parameters.
-    *
-    * @param _construct <i>>Failures</i> returned by this function are handled. Check the documentation of
-    *                   the methods defined by [[com.github.cerst.structible.core.Constructible Constructible]] for
-    *                   details.
-    * @param rClassTag  Used to derive the name of the type <i>R</i> which in turn is used to wrap/ enhance error
-    *                   messages produced by the provided <i>_construct</i> function. If you prefer passing in the name
-    *                   as [[java.lang.String String]], check out the respective overload.
-    *
-    */
-  final def structibleTry[C, R](_construct: C => Try[R],
-                                _destruct: R => C,
-                                rClassTag: ClassTag[R]): Structible[C, R] = {
-    structibleTry(_construct, _destruct, rClassTag.runtimeClass.getSimpleName)
-  }
-
-  private final def errorMsg[C](c: C, rName: String): String = {
-    s"Failed to construct '$rName' from '$c'"
-  }
-
-  private final def errorMsg[C](c: C, rName: String, cause: Throwable): String = {
-    s"${errorMsg(c, rName)}. Cause: ${getMessageNonNull(cause)}"
-  }
-
-  private final def errorMsg[C](c: C, rName: String, reason: String): String = {
-    s"${errorMsg(c, rName)}. Reason: $reason"
-  }
-
-  /**
-    * Safe way to access [[java.lang.Throwable#getMessage()]] which may return null.
-    */
-  private final def getMessageNonNull(throwable: Throwable): String = {
-    if (throwable.getMessage == null) "<exception.getMessage was null>" else throwable.getMessage
+  def structibleTry[C, R: ClassTag](_construct: C => Try[R],
+                                    _destruct: R => C,
+                                    constraint: Constraint[C]): Structible[C, R] = {
+    structibleTry(_construct, _destruct, constraint, rName = RName[R])
   }
 
 }

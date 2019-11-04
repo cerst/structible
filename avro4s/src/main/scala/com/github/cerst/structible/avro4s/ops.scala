@@ -22,22 +22,59 @@
 package com.github.cerst.structible.avro4s
 
 import com.github.cerst.structible.core.{Constructible, Destructible, Structible}
-import com.sksamuel.avro4s.{Decoder, Encoder, SchemaFor}
+import com.sksamuel.avro4s.{Decoder, Encoder, FieldMapper, SchemaFor}
+import org.apache.avro.Schema
 
 object ops {
 
   trait BicoderWithSchemaFor[R] extends Decoder[R] with Encoder[R] with SchemaFor[R]
 
-  implicit def toConstructibleAvro4sOps[C,R](constructible: Constructible[C,R]): ConstructibleAvro4sOps[C,R] = {
-    new ConstructibleAvro4sOps[C,R](constructible)
+  // ===================================================================================================================
+  // CONSTRUCTIBLE
+  // ===================================================================================================================
+  implicit class ConstructibleAvro4sOps[C, R](val constructible: Constructible[C, R]) extends AnyVal {
+
+    def toDecoder(implicit cDecoder: Decoder[C]): Decoder[R] = cDecoder.map(constructible.construct)
+
   }
 
-  implicit def toDestructibleAvro4sOps[C,R](destructible: Destructible[C,R]): DestructibleAvro4sOps[C,R] = {
-    new DestructibleAvro4sOps[C,R](destructible)
+  // ===================================================================================================================
+  // DESTRUCTIBLE
+  // ===================================================================================================================
+  implicit class DestructibleAvro4sOps[C, R](val destructible: Destructible[C, R]) extends AnyVal {
+
+    def toEncoder(implicit cEncoder: Encoder[C]): Encoder[R] = cEncoder.comap(destructible.destruct)
+
+    // the SchemaFor for R is the same as for C because R is serialized just like C
+    // (unless we want to add custom Avro type refinements which are e.g. not supported by Schema Registry)
+    def toSchemaFor(implicit cSchemeFor: SchemaFor[C]): SchemaFor[R] = cSchemeFor.map(identity)
+
   }
 
-  implicit def toStructibleAvro4sOps[C,R](structible: Structible[C,R]): StructibleAvro4sOps[C,R] = {
-    new StructibleAvro4sOps[C,R](structible)
+  // ===================================================================================================================
+  // STRUCTIBLE
+  // ===================================================================================================================
+  implicit class StructibleAvro4sOps[C, R](val structible: Structible[C, R]) extends AnyVal {
+
+    def toBicoderWithSchemaFor(implicit cDecoder: Decoder[C],
+                               cEncoder: Encoder[C],
+                               cSchemaFor: SchemaFor[C]): BicoderWithSchemaFor[R] = {
+
+      new BicoderWithSchemaFor[R] {
+        override def encode(r: R, schema: Schema, fieldMapper: FieldMapper): AnyRef = {
+          def c = structible.destruct(r)
+          cEncoder.encode(c, schema, fieldMapper)
+        }
+
+        override def decode(value: Any, schema: Schema, fieldMapper: FieldMapper): R = {
+          def c = cDecoder.decode(value, schema, fieldMapper)
+          structible.construct(c)
+        }
+
+        override def schema(fieldMapper: FieldMapper): Schema = cSchemaFor.schema(fieldMapper)
+      }
+    }
+
   }
 
 }

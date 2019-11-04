@@ -22,32 +22,30 @@
 package usage.jsoniterscala
 
 // #example
-import com.github.cerst.structible.core.Structible
+import com.github.cerst.structible.core.DefaultConstraints._
+import com.github.cerst.structible.core._
 import com.github.cerst.structible.jsoniterscala.ops._
 import com.github.plokhotnyuk.jsoniter_scala.core._
 import com.github.plokhotnyuk.jsoniter_scala.macros._
 
 object JsonCodecExample {
 
-  final case class PersonId(value: Long) {
-    require(value >= 0, s"PersonId must be non-negative (got: '$value')")
+  final class UserId private (val value: Long) extends AnyVal
+
+  object UserId {
+
+    private val structible: Structible[Long, UserId] = Structible.structible(new UserId(_), _.value, c >= 0)
+
+    // jsoniter-scala uses a null value internally which you have to provide explicitly when using AnyVal due to a compiler bug:
+    // https://github.com/scala/bug/issues/8097
+    // otherwise, the created codec throws a NullPointerException at runtime
+    implicit val jsonCodecForUserId: JsonCodec[UserId] = structible.toJsonCodec(null.asInstanceOf[UserId])
   }
 
-  object PersonId {
+  final case class User(userId: UserId)
 
-    // you can also pass-in 'construct' functions returning Either[String, A], Option[A] or Try[A]
-    private val structible: Structible[Long, PersonId] = Structible.structible(PersonId.apply, _.value)
-
-    implicit val jsonCodecForPersonId: JsonCodec[PersonId] = structible.toJsonCodec
-
-  }
-
-  final case class Person(personId: PersonId)
-
-  object Person {
-
-    implicit val jsonCodecForPerson: JsonValueCodec[Person] = JsonCodecMaker.make(CodecMakerConfig())
-
+  object User {
+    implicit val jsonCodecForPerson: JsonValueCodec[User] = JsonCodecMaker.make(CodecMakerConfig())
   }
 
 }

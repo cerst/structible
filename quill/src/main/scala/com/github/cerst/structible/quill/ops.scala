@@ -22,15 +22,30 @@
 package com.github.cerst.structible.quill
 
 import com.github.cerst.structible.core.{Constructible, Destructible}
+import io.getquill.MappedEncoding
 
 object ops {
 
-  implicit def toConstructibleQuillOps[C, R](constructible: Constructible[C, R]): ConstructibleQuillOps[C, R] = {
-    new ConstructibleQuillOps(constructible)
+  // ===================================================================================================================
+  // CONSTRUCTIBLE
+  // ===================================================================================================================
+  implicit class ConstructibleQuillOps[C, R](val constructible: Constructible[C, R]) extends AnyVal {
+
+    def toDecode: MappedEncoding[C, R] = {
+      MappedEncoding(constructible.construct)
+    }
+
   }
 
-  implicit def toDestructibleQuillOps[C, R](destructible: Destructible[C, R]): DestructibleQuillOps[C, R] = {
-    new DestructibleQuillOps(destructible)
+  // ===================================================================================================================
+  // DESTRUCTIBLE
+  // ===================================================================================================================
+  implicit class DestructibleQuillOps[C, R](val destructible: Destructible[C, R]) extends AnyVal {
+
+    def toEncode: MappedEncoding[R, C] = {
+      MappedEncoding(destructible.destruct)
+    }
+
   }
 
 }

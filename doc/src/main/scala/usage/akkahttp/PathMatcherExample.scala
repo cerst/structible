@@ -25,27 +25,27 @@ package usage.akkahttp
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.{PathMatcher1, Route}
 import com.github.cerst.structible.akkahttp.ops._
-import com.github.cerst.structible.core.Structible
+import com.github.cerst.structible.core.DefaultConstraints._
+import com.github.cerst.structible.core._
 
 object PathMatcherExample {
 
-  final case class PersonId(value: Long) {
-    require(value >= 0, s"PersonId must be non-negative (got: '$value')")
-  }
+  final class ItemId private (val value: Long) extends AnyVal
 
-  object PersonId {
+  object ItemId {
 
-    // you can also pass-in 'construct' functions returning Either[String, A], Option[A] or Try[A]
-    private val structible: Structible[Long, PersonId] = Structible.structible(PersonId.apply, _.value)
+    private val structible: Structible[Long, ItemId] = Structible.structible(new ItemId(_), _.value, c >= 0)
 
     // not declared as implicit because you usually call patch matchers explicitly within the Akka routing Dsl
-    val pathMatcher: PathMatcher1[PersonId] = structible.toPathMatcher
+    val pathMatcher: PathMatcher1[ItemId] = structible.toPathMatcher
+
+    def apply(value: Long): ItemId = structible.construct(value)
 
   }
 
   val route: Route = {
-    path("persons" / PersonId.pathMatcher) { personId =>
-      complete(personId.toString)
+    path("items" / ItemId.pathMatcher) { itemId =>
+      complete(itemId.toString)
     }
   }
 

@@ -23,27 +23,27 @@ package usage.configs
 
 // #example
 import com.github.cerst.structible.configs.ops._
-import com.github.cerst.structible.core.Structible
+import com.github.cerst.structible.core.DefaultConstraints._
+import com.github.cerst.structible.core._
 import com.typesafe.config.Config
 import configs._
 import configs.syntax._
 
 object ConfigsExample {
 
-  final case class PersonId(value: Long) {
-    require(value >= 0, s"PersonId must be non-negative (got: '$value')")
+  final case class UserId private (value: Long) extends AnyVal
+
+  object UserId {
+
+    private val structible: Structible[Long, UserId] = Structible.structible(new UserId(_), _.value, c >= 0)
+
+    implicit val configsForUserId: Configs[UserId] = structible.toConfigs
+
+    def apply(value: Long): UserId = structible.construct(value)
   }
 
-  object PersonId {
-
-    // you can also pass-in 'construct' functions returning Either[String, A], Option[A] or Try[A]
-    private val structible: Structible[Long, PersonId] = Structible.structible(PersonId.apply, _.value)
-
-    implicit val configsForPersonId: Configs[PersonId] = structible.toConfigs
-  }
-
-  def readFromConfig(config: Config, path: String): Result[PersonId] = {
-    config.get[PersonId](path)
+  def readFromConfig(config: Config, path: String): Result[UserId] = {
+    config.get[UserId](path)
   }
 
 }

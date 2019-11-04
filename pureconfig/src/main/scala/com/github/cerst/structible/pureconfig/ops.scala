@@ -22,19 +22,41 @@
 package com.github.cerst.structible.pureconfig
 
 import com.github.cerst.structible.core.{Constructible, Destructible, Structible}
+import pureconfig.{ConfigConvert, ConfigReader, ConfigWriter}
 
 object ops {
 
-  implicit final def toConstructiblePureconfigOps[C, R](
-    constructible: Constructible[C, R]
-  ): ConstructiblePureconfigOps[C, R] = new ConstructiblePureconfigOps(constructible)
+  // ===================================================================================================================
+  // CONSTRUCTIBLE
+  // ===================================================================================================================
+  implicit class ConstructiblePureconfigOps[C, R](val constructible: Constructible[C, R]) extends AnyVal {
 
-  implicit final def toDestructiblePureconfigOps[C, R](
-    destructible: Destructible[C, R]
-  ): DestructiblePureconfigOps[C, R] = new DestructiblePureconfigOps(destructible)
+    def toConfigReader(implicit configReader: ConfigReader[C]): ConfigReader[R] = {
+      configReader.map(constructible.construct)
+    }
 
-  implicit final def toStructiblePureconfigOps[C,R](structible: Structible[C,R]): StructiblePureconfigOps[C,R] = {
-    new StructiblePureconfigOps(structible)
+  }
+
+  // ===================================================================================================================
+  // DESTRUCTIBLE
+  // ===================================================================================================================
+  implicit class DestructiblePureconfigOps[C, R](val destructible: Destructible[C, R]) extends AnyVal {
+
+    def toConfigWriter(implicit configWriter: ConfigWriter[C]): ConfigWriter[R] = {
+      configWriter.contramap(destructible.destruct)
+    }
+
+  }
+
+  // ===================================================================================================================
+  // STRUCTIBLE
+  // ===================================================================================================================
+  implicit class StructiblePureconfigOps[C, R](val structible: Structible[C, R]) extends AnyVal {
+
+    def toConfigConvert(implicit configConvert: ConfigConvert[C]): ConfigConvert[R] = {
+      configConvert.xmap(structible.construct, structible.destruct)
+    }
+
   }
 
 }

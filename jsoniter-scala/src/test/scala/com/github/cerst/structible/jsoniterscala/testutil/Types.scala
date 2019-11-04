@@ -24,196 +24,203 @@ package com.github.cerst.structible.jsoniterscala.testutil
 import java.time.{Duration, OffsetDateTime, ZonedDateTime}
 import java.util.UUID
 
-import com.github.cerst.structible.core.Structible
+import com.github.cerst.structible.core.DefaultConstraints._
+import com.github.cerst.structible.core._
 import com.github.cerst.structible.jsoniterscala.ops._
-import com.github.plokhotnyuk.jsoniter_scala.core.{JsonCodec, JsonValueCodec}
-import com.github.plokhotnyuk.jsoniter_scala.macros.{CodecMakerConfig, JsonCodecMaker}
-
-final case class Wrapper(bigDecimalValueClass: BigDecimalValueClass,
-                         bigIntValueClass: BigIntValueClass,
-                         booleanValueClass: BooleanValueClass,
-                         doubleValueClass: DoubleValueClass,
-                         durationValueClass: DurationValueClass,
-                         floatValueClass: FloatValueClass,
-                         intValueClass: IntValueClass,
-                         longValueClass: LongValueClass,
-                         offsetDateTimeValueClass: OffsetDateTimeValueClass,
-                         shortValueClass: ShortValueClass,
-                         stringValueClass: StringValueClass,
-                         uuidValueClass: UUIDValueClass,
-                         zonedDateTimeValueClass: ZonedDateTimeValueClass)
-
-object Wrapper {
-
-  implicit val jsonValueCodecForWrapper: JsonValueCodec[Wrapper] =
-    JsonCodecMaker.make[Wrapper](CodecMakerConfig())
-}
+import com.github.plokhotnyuk.jsoniter_scala.core._
 
 // =====================================================================================================================
 // BigDecimal
 // =====================================================================================================================
-final case class BigDecimalValueClass(value: BigDecimal)
+final class BigDecimalValueClass private (val value: BigDecimal) extends AnyVal
 
 object BigDecimalValueClass {
   private val structible: Structible[BigDecimal, BigDecimalValueClass] =
-    Structible.structible(BigDecimalValueClass.apply, _.value)
+    Structible.structible(new BigDecimalValueClass(_), _.value, c.unconstrained)
 
   implicit val jsonCodecForBigDecimalValueClass: JsonCodec[BigDecimalValueClass] =
-    BigDecimalValueClass.structible.toJsonCodec
+    structible.toJsonCodec(null.asInstanceOf[BigDecimalValueClass])
+
+  def apply(value: BigDecimal): BigDecimalValueClass = structible.construct(value)
+
 }
 
 // =====================================================================================================================
 // BigInt
 // =====================================================================================================================
-final case class BigIntValueClass(value: BigInt)
+final class BigIntValueClass private (val value: BigInt) extends AnyVal
 
 object BigIntValueClass {
   private val structible: Structible[BigInt, BigIntValueClass] =
-    Structible.structible(BigIntValueClass.apply, _.value)
+    Structible.structible(new BigIntValueClass(_), _.value, c.unconstrained)
 
   implicit val jsonCodecForBigIntValueClass: JsonCodec[BigIntValueClass] =
-    BigIntValueClass.structible.toJsonCodec
+    structible.toJsonCodec(null.asInstanceOf[BigIntValueClass])
+
+  def apply(value: BigInt): BigIntValueClass = structible.construct(value)
 }
 
 // =====================================================================================================================
 // BOOLEAN
 // =====================================================================================================================
-final case class BooleanValueClass(value: Boolean)
+final class BooleanValueClass private (val value: Boolean) extends AnyVal
 
 object BooleanValueClass {
   private val structible: Structible[Boolean, BooleanValueClass] =
-    Structible.structible(BooleanValueClass.apply, _.value)
+    Structible.structible(new BooleanValueClass(_), _.value, c.unconstrained)
 
   implicit val jsonCodecForBooleanValueClass: JsonCodec[BooleanValueClass] =
-    BooleanValueClass.structible.toJsonCodec
+    structible.toJsonCodec(null.asInstanceOf[BooleanValueClass])
+
+  def apply(value: Boolean): BooleanValueClass = structible.construct(value)
 }
 
 // =====================================================================================================================
 // DOUBLE
 // =====================================================================================================================
-final case class DoubleValueClass(value: Double)
+final class DoubleValueClass private (val value: Double) extends AnyVal
 
 object DoubleValueClass {
   private val structible: Structible[Double, DoubleValueClass] =
-    Structible.structible(DoubleValueClass.apply, _.value)
+    Structible.structible(new DoubleValueClass(_), _.value, c.unconstrained)
 
   implicit val jsonCodecForDoubleValueClass: JsonCodec[DoubleValueClass] =
-    DoubleValueClass.structible.toJsonCodec
+    structible.toJsonCodec(null.asInstanceOf[DoubleValueClass])
+
+  def apply(value: Double): DoubleValueClass = structible.construct(value)
 }
 
 // =====================================================================================================================
 // DURATION
 // =====================================================================================================================
-final case class DurationValueClass(value: Duration)
+final class DurationValueClass private (val value: Duration) extends AnyVal
 
 object DurationValueClass {
   private val structible: Structible[Duration, DurationValueClass] =
-    Structible.structible(DurationValueClass.apply, _.value)
+    Structible.structible(new DurationValueClass(_), _.value, c.unconstrained)
 
   implicit val jsonCodecForDurationValueClass: JsonCodec[DurationValueClass] =
-    DurationValueClass.structible.toJsonCodec
+    structible.toJsonCodec(null.asInstanceOf[DurationValueClass])
+
+  def apply(value: Duration): DurationValueClass = structible.construct(value)
 }
 
 // =====================================================================================================================
 // FLOAT
 // =====================================================================================================================
-final case class FloatValueClass(value: Float)
+final class FloatValueClass private (val value: Float) extends AnyVal
 
 object FloatValueClass {
   private val structible: Structible[Float, FloatValueClass] =
-    Structible.structible(FloatValueClass.apply, _.value)
+    Structible.structible(new FloatValueClass(_), _.value, c.unconstrained)
 
   implicit val jsonCodecForFloatValueClass: JsonCodec[FloatValueClass] =
-    FloatValueClass.structible.toJsonCodec
+    structible.toJsonCodec(null.asInstanceOf[FloatValueClass])
+
+  def apply(value: Float): FloatValueClass = structible.construct(value)
 }
 
 // =====================================================================================================================
 // INT
 // =====================================================================================================================
-final case class IntValueClass(value: Int)
+final class IntValueClass private (val value: Int) extends AnyVal
 
 object IntValueClass {
   private val structible: Structible[Int, IntValueClass] =
-    Structible.structible(IntValueClass.apply, _.value)
+    Structible.structible(new IntValueClass(_), _.value, c.unconstrained)
 
   implicit val jsonCodecForIntValueClass: JsonCodec[IntValueClass] =
-    IntValueClass.structible.toJsonCodec
+    structible.toJsonCodec(null.asInstanceOf[IntValueClass])
+
+  def apply(value: Int): IntValueClass = structible.construct(value)
 }
 
 // =====================================================================================================================
 // LONG
 // =====================================================================================================================
-final case class LongValueClass(value: Long)
+final class LongValueClass private (val value: Long) extends AnyVal
 
 object LongValueClass {
   private val structible: Structible[Long, LongValueClass] =
-    Structible.structible(LongValueClass.apply, _.value)
+    Structible.structible(new LongValueClass(_), _.value, c.unconstrained)
 
   implicit val jsonCodecForLongValueClass: JsonCodec[LongValueClass] =
-    LongValueClass.structible.toJsonCodec
+    structible.toJsonCodec(null.asInstanceOf[LongValueClass])
+
+  def apply(value: Long): LongValueClass = structible.construct(value)
 }
 
 // =====================================================================================================================
 // OFFSET DATE TIME
 // =====================================================================================================================
-final case class OffsetDateTimeValueClass(value: OffsetDateTime)
+final class OffsetDateTimeValueClass private (val value: OffsetDateTime) extends AnyVal
 
 object OffsetDateTimeValueClass {
   private val structible: Structible[OffsetDateTime, OffsetDateTimeValueClass] =
-    Structible.structible(OffsetDateTimeValueClass.apply, _.value)
+    Structible.structible(new OffsetDateTimeValueClass(_), _.value, c.unconstrained)
 
   implicit val jsonCodecForOffsetDateTimeValueClass: JsonCodec[OffsetDateTimeValueClass] =
-    OffsetDateTimeValueClass.structible.toJsonCodec
+    structible.toJsonCodec(null.asInstanceOf[OffsetDateTimeValueClass])
+
+  def apply(value: OffsetDateTime): OffsetDateTimeValueClass = structible.construct(value)
 }
 
 // =====================================================================================================================
 // SHORT
 // =====================================================================================================================
-final case class ShortValueClass(value: Short)
+final class ShortValueClass private (val value: Short) extends AnyVal
 
 object ShortValueClass {
   private val structible: Structible[Short, ShortValueClass] =
-    Structible.structible(ShortValueClass.apply, _.value)
+    Structible.structible(new ShortValueClass(_), _.value, c.unconstrained)
 
   implicit val jsonCodecForShortValueClass: JsonCodec[ShortValueClass] =
-    ShortValueClass.structible.toJsonCodec
+    structible.toJsonCodec(null.asInstanceOf[ShortValueClass])
+
+  def apply(value: Short): ShortValueClass = structible.construct(value)
 }
 
 // =====================================================================================================================
 // STRING
 // =====================================================================================================================
-final case class StringValueClass(value: String)
+final class StringValueClass private (val value: String) extends AnyVal
 
 object StringValueClass {
   private val structible: Structible[String, StringValueClass] =
-    Structible.structible(StringValueClass.apply, _.value)
+    Structible.structible(new StringValueClass(_), _.value, c.nonEmpty)
 
   implicit val jsonCodecForStringValueClass: JsonCodec[StringValueClass] =
-    StringValueClass.structible.toJsonCodec
+    structible.toJsonCodec(null.asInstanceOf[StringValueClass])
+
+  def apply(value: String): StringValueClass = structible.construct(value)
 }
 
 // =====================================================================================================================
 // UUID
 // =====================================================================================================================
-final case class UUIDValueClass(value: UUID)
+final class UUIDValueClass private (val value: UUID) extends AnyVal
 
 object UUIDValueClass {
   private val structible: Structible[UUID, UUIDValueClass] =
-    Structible.structible(UUIDValueClass.apply, _.value)
+    Structible.structible(new UUIDValueClass(_), _.value, c.unconstrained)
 
   implicit val jsonCodecForUUIDValueClass: JsonCodec[UUIDValueClass] =
-    UUIDValueClass.structible.toJsonCodec
+    structible.toJsonCodec(null.asInstanceOf[UUIDValueClass])
+
+  def apply(value: UUID): UUIDValueClass = structible.construct(value)
 }
 
 // =====================================================================================================================
 // ZONED DATE TIME
 // =====================================================================================================================
-final case class ZonedDateTimeValueClass(value: ZonedDateTime)
+final class ZonedDateTimeValueClass(val value: ZonedDateTime) extends AnyVal
 
 object ZonedDateTimeValueClass {
   private val structible: Structible[ZonedDateTime, ZonedDateTimeValueClass] =
-    Structible.structible(ZonedDateTimeValueClass.apply, _.value)
+    Structible.structible(new ZonedDateTimeValueClass(_), _.value, c.unconstrained)
 
   implicit val jsonCodecForZonedDateTimeValueClass: JsonCodec[ZonedDateTimeValueClass] =
-    ZonedDateTimeValueClass.structible.toJsonCodec
+    structible.toJsonCodec(null.asInstanceOf[ZonedDateTimeValueClass])
+
+  def apply(value: ZonedDateTime): ZonedDateTimeValueClass = structible.construct(value)
 }

@@ -22,38 +22,37 @@
 package usage.quill
 
 // #example
-import com.github.cerst.structible.core.Structible
+import com.github.cerst.structible.core.DefaultConstraints._
+import com.github.cerst.structible.core._
 import com.github.cerst.structible.quill.ops._
 import io.getquill.{MappedEncoding, PostgresJdbcContext, SnakeCase}
 
 object MappedEncodingExample {
 
-  final case class PersonId(value: Long) {
-    require(value >= 0, s"PersonId must be non-negative (got: '$value')")
+  final class UserId private (val value: Long) extends AnyVal
+
+  object UserId {
+
+    private val structible: Structible[Long, UserId] = Structible.structible(new UserId(_), _.value, c >= 0)
+
+    implicit val decodeForUserId: MappedEncoding[Long, UserId] = structible.toDecode
+
+    implicit val encodeForUserId: MappedEncoding[UserId, Long] = structible.toEncode
+
+    def apply(value: Long): UserId = structible.construct(value)
   }
 
-  object PersonId {
-
-    // you can also pass-in 'construct' functions returning Either[String, A], Option[A] or Try[A]
-    private val structible: Structible[Long, PersonId] = Structible.structible(PersonId.apply, _.value)
-
-    implicit val decodeForPersonId: MappedEncoding[Long, PersonId] = structible.toDecode
-
-    implicit val encodeForPersonId: MappedEncoding[PersonId, Long] = structible.toEncode
-
-  }
-
-  final case class Person(personId: PersonId)
+  final case class User(userId: UserId)
 
   // this specific context is solely for demonstration - any works
   object TestContext extends PostgresJdbcContext(SnakeCase, "configPrefix")
 
   import TestContext._
 
-  def findPersonById(personId: PersonId): List[Person] = {
+  def findUserById(userId: UserId): List[User] = {
     run(quote {
-      query[Person]
-        .filter(_.personId == lift(personId))
+      query[User]
+        .filter(_.userId == lift(userId))
     })
   }
 
