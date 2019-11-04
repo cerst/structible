@@ -47,6 +47,7 @@ ensure_master_branch() {
     fi
 }
 
+# super shell messes-up password queries in the terminal
 run_release_tasks() {
     echo "" \
     && echo "=====================" \
