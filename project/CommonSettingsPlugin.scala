@@ -1,6 +1,7 @@
 import de.heikoseeberger.sbtheader.HeaderPlugin.autoImport.{HeaderLicense, headerLicense}
 import sbt.Keys._
 import sbt._
+import xerial.sbt.Sonatype.autoImport.sonatypePublishToBundle
 
 object CommonSettingsPlugin extends CommonSettingsPluginTpl {
 
@@ -30,7 +31,7 @@ object CommonSettingsPlugin extends CommonSettingsPluginTpl {
     } else {
       Seq(
         publishMavenStyle := true,
-        publishTo := Some(if (isSnapshot.value) Opts.resolver.sonatypeSnapshots else Opts.resolver.sonatypeStaging)
+        publishTo := sonatypePublishToBundle.value
       )
     }
   }

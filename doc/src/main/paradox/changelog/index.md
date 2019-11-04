@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.1
+
+* Upgrade build
+
 ## 0.6.0
 **Breaking Changes**
 
