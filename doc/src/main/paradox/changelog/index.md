@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.3
+
+* Patch upgrade for dependencies
+
 ## 0.6.2
 
 * Upgrade to sbt 1.3.3

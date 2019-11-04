@@ -5,16 +5,16 @@ object Dependencies {
   val resolvers: Seq[Resolver] = Seq()
 
   object Version {
-    val Akka = "2.5.25"
-    val AkkaHttp = "10.1.9"
-    val Avro4s = "3.0.1"
+    val Akka = "2.5.26"
+    val AkkaHttp = "10.1.10"
+    val Avro4s = "3.0.3"
     val Configs = "0.4.4"
     val JsoniterScala = "0.55.4"
-    val Pureconfig = "0.12.0"
-    val Quill = "3.4.4" // 3.4.6 not on Maven as of 2019-09-17
-    val ScalaCheck = "1.14.0"
+    val Pureconfig = "0.12.1"
+    val Quill = "3.4.10" // 3.4.6 not on Maven as of 2019-09-17
+    val ScalaCheck = "1.14.2"
     val Scalatest = "3.0.8"
-    val Silencer = "1.4.1"
+    val Silencer = "1.4.2"
     val UTest = "0.7.1"
   }
 
