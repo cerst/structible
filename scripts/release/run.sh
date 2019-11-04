@@ -53,7 +53,7 @@ run_release_tasks() {
     && echo "Run sbt release tasks" \
     && echo "${RELEASE_TASKS}" \
     && echo "=====================" \
-    && ( cd ${PROJECT_ROOT_ABS_PATH} && sbt --warn ${RELEASE_TASKS} )
+    && ( cd ${PROJECT_ROOT_ABS_PATH} && sbt --warn --supershell=false ${RELEASE_TASKS} )
 }
 
 

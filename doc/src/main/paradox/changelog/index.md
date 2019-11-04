@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.2
+
+* Upgrade to sbt 1.3.3
+
 ## 0.6.1
 
 * Upgrade build
