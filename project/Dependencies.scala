@@ -9,9 +9,9 @@ object Dependencies {
     val AkkaHttp = "10.1.10"
     val Avro4s = "3.0.3"
     val Configs = "0.4.4"
-    val JsoniterScala = "0.55.4"
+    val JsoniterScala = "1.2.0"
     val Pureconfig = "0.12.1"
-    val Quill = "3.4.10" // 3.4.6 not on Maven as of 2019-09-17
+    val Quill = "3.4.10"
     val ScalaCheck = "1.14.2"
     val Scalatest = "3.0.8"
     val Silencer = "1.4.2"

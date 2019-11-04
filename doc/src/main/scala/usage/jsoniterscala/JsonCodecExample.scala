@@ -45,7 +45,7 @@ object JsonCodecExample {
   final case class User(userId: UserId)
 
   object User {
-    implicit val jsonCodecForPerson: JsonValueCodec[User] = JsonCodecMaker.make(CodecMakerConfig())
+    implicit val jsonCodecForPerson: JsonValueCodec[User] = JsonCodecMaker.make(CodecMakerConfig)
   }
 
 }

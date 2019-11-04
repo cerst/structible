@@ -63,7 +63,7 @@ private object StructibleJsonCodecSpec {
                            zonedDateTimeValueClass: ZonedDateTimeValueClass)
 
   object Wrapper {
-    implicit val jsonValueCodecForWrapper: JsonValueCodec[Wrapper] = JsonCodecMaker.make[Wrapper](CodecMakerConfig())
+    implicit val jsonValueCodecForWrapper: JsonValueCodec[Wrapper] = JsonCodecMaker.make[Wrapper](CodecMakerConfig)
   }
 
   private val wrapper = Wrapper(

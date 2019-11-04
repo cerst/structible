@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.4
+
+* Upgrade jsoniter-scala to 1.2.0
+
 ## 0.6.3
 
 * Patch upgrade for dependencies
