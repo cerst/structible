@@ -36,7 +36,8 @@ object Dependencies {
     // MIT
     val JsoniterScalaCore = "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-core" % Version.JsoniterScala
     // MIT
-    val JsoniterScalaMacros = "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros" % Version.JsoniterScala // required only at compile-time
+    // always only used for compilation
+    val JsoniterScalaMacros = "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros" % Version.JsoniterScala % Provided
     // MPL-2.0
     val Pureconfig = "com.github.pureconfig" %% "pureconfig" % Version.Pureconfig
     // Apache-2.0
@@ -47,43 +48,35 @@ object Dependencies {
     val ScalaCheck = "org.scalacheck" %% "scalacheck" % Version.ScalaCheck
     // Apache-2.0
     val Scalatest = "org.scalatest" %% "scalatest" % Version.Scalatest
+    // Apache-2.0
     val SilencerCompilerPlugin = compilerPlugin("com.github.ghik" %% "silencer-plugin" % Version.Silencer)
-    val SilencerLib = "com.github.ghik" %% "silencer-lib" % Version.Silencer
+    // Apache-2.0
+    // always only used for compilation
+    val SilencerLib = "com.github.ghik" %% "silencer-lib" % Version.Silencer % Provided
   }
 
-  val `akka-http`: Seq[ModuleID] = Seq(
-    Library.AkkaHttp % Provided,
-    Library.AkkaHttpTestkit % Test,
-    Library.AkkaStreamTeskit % Test,
-    Library.Scalatest % Test
-  )
+  val `akka-http`: Seq[ModuleID] =
+    Seq(Library.AkkaHttp, Library.AkkaHttpTestkit % Test, Library.AkkaStreamTeskit % Test, Library.Scalatest % Test)
 
   val avro4s: Seq[ModuleID] = Seq(Library.Avro4sCore, Library.Scalatest % Test)
 
-  val configs: Seq[ModuleID] = Seq(Library.Configs % Provided, Library.Scalatest % Test)
+  val configs: Seq[ModuleID] = Seq(Library.Configs, Library.Scalatest % Test)
 
-  val core: Seq[ModuleID] = Seq(
-    Library.SilencerCompilerPlugin,
-    Library.SilencerLib % Provided,
-    Library.Scalatest % Test,
-    Library.ScalaCheck % Test
-  )
+  val core: Seq[ModuleID] =
+    Seq(Library.SilencerCompilerPlugin, Library.SilencerLib, Library.Scalatest % Test, Library.ScalaCheck % Test)
 
   val doc: Seq[ModuleID] = Seq(
-    Library.AkkaHttp % Provided,
-    Library.AkkaStream % Provided,
-    Library.Configs % Provided,
-    Library.JsoniterScalaCore % Provided,
-    Library.JsoniterScalaMacros % Provided,
-    Library.QuillJdbc % Provided
+    Library.AkkaStream,
+    Library.JsoniterScalaMacros,
+    Library.QuillJdbc
   )
 
   val `jsoniter-scala`: Seq[ModuleID] =
-    Seq(Library.JsoniterScalaCore, Library.JsoniterScalaMacros % Provided, Library.Scalatest % Test)
+    Seq(Library.JsoniterScalaCore, Library.JsoniterScalaMacros, Library.Scalatest % Test)
 
   val pureconfig: Seq[ModuleID] = Seq(Library.Pureconfig, Library.Scalatest % Test)
 
   val quill: Seq[ModuleID] =
-    Seq(Library.QuillCore % Provided, Library.QuillJdbc % Test)
+    Seq(Library.QuillCore, Library.QuillJdbc % Test)
 
 }
