@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+
+<head>
+<title>Pureconfig · structible</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="description" content='structible-doc'/>
+<link rel="canonical" href="https://github.com/cerst/structibleusage/pureconfig/index.html"/>
+<link href="https://fonts.googleapis.com/css?family=Roboto:100normal,100italic,300normal,300italic,400normal,400italic,500normal,500italic,700normal,700italic,900normal,900italicc" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="../../lib/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="../../js/page.js"></script>
+<script type="text/javascript" src="../../js/warnOldVersion.js"></script>
+<script type="text/javascript" src="../../js/groups.js"></script>
+<link rel="stylesheet" type="text/css" href="../../lib/foundation/dist/foundation.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../css/page.css"/>
+
+<!--
+<link rel="shortcut icon" href="../../images/favicon.ico" />
+-->
+</head>
+
+<body>
+<div class="off-canvas-wrapper">
+<div class="off-canvas-wrapper-inner" data-off-canvas-wrapper>
+
+<div class="off-canvas position-left" id="off-canvas-menu" data-off-canvas>
+<nav class="off-canvas-nav">
+<div class="nav-home">
+<a href="../../index.html" >
+<span class="home-icon">⌂</span>structible
+</a>
+<div class="version-number">
+0.6.2
+</div>
+</div>
+<div class="nav-toc">
+<ul>
+  <li><a href="../../usage/index.html" class="page">Usage</a>
+  <ul>
+    <li><a href="../../usage/akka-http/index.html" class="page">Akka-Http</a></li>
+    <li><a href="../../usage/avro4s/index.html" class="page">Avro4s</a></li>
+    <li><a href="../../usage/configs/index.html" class="page">Configs</a></li>
+    <li><a href="../../usage/jsoniterscala/index.html" class="page">Jsoniter Scala</a></li>
+    <li><a href="../../usage/pureconfig/index.html" class="active page">Pureconfig</a></li>
+    <li><a href="../../usage/quill/index.html" class="page">Quill</a></li>
+  </ul></li>
+  <li><a href="../../changelog/index.html" class="page">Changelog</a></li>
+  <li><a href="../../licenses/index.html" class="page">Licenses</a>
+  <ul>
+    <li><a href="../../licenses/akka-http.html" class="page">structible-akka-http</a></li>
+    <li><a href="../../licenses/avro4s.html" class="page">structible-avro4s</a></li>
+    <li><a href="../../licenses/configs.html" class="page">structible-configs</a></li>
+    <li><a href="../../licenses/core.html" class="page">structible-core</a></li>
+    <li><a href="../../licenses/jsoniter-scala.html" class="page">structible-jsoniter-scala</a></li>
+    <li><a href="../../licenses/pureconfig.html" class="page">structible-pureconfig</a></li>
+    <li><a href="../../licenses/quill.html" class="page">structible-quill</a></li>
+  </ul></li>
+</ul>
+</div>
+
+</nav>
+</div>
+
+<div class="off-canvas-content" data-off-canvas-content>
+
+<header class="site-header expanded row">
+<div class="small-12 column">
+<a href="#" class="off-canvas-toggle hide-for-medium" data-toggle="off-canvas-menu"><svg class="svg-icon svg-icon-menu" version="1.1" id="Menu" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 20 20" enable-background="new 0 0 20 20" xml:space="preserve"> <path class="svg-icon-menu-path" fill="#53CDEC" d="M16.4,9H3.6C3.048,9,3,9.447,3,10c0,0.553,0.048,1,0.6,1H16.4c0.552,0,0.6-0.447,0.6-1C17,9.447,16.952,9,16.4,9z M16.4,13
+H3.6C3.048,13,3,13.447,3,14c0,0.553,0.048,1,0.6,1H16.4c0.552,0,0.6-0.447,0.6-1C17,13.447,16.952,13,16.4,13z M3.6,7H16.4
+C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.048,7,3.6,7z"/></svg>
+</a>
+<div class="title"><a href="../../index.html">structible</a></div>
+
+<!--
+<a href="https://www.example.com" class="logo show-for-medium">logo</a>
+-->
+</div>
+</header>
+
+<div class="expanded row">
+
+<div class="medium-3 large-2 show-for-medium column">
+<nav class="site-nav">
+<div class="nav-home">
+<a href="../../index.html" >
+<span class="home-icon">⌂</span>structible
+</a>
+<div class="version-number">
+0.6.2
+</div>
+</div>
+<div class="nav-toc">
+<ul>
+  <li><a href="../../usage/index.html" class="page">Usage</a>
+  <ul>
+    <li><a href="../../usage/akka-http/index.html" class="page">Akka-Http</a></li>
+    <li><a href="../../usage/avro4s/index.html" class="page">Avro4s</a></li>
+    <li><a href="../../usage/configs/index.html" class="page">Configs</a></li>
+    <li><a href="../../usage/jsoniterscala/index.html" class="page">Jsoniter Scala</a></li>
+    <li><a href="../../usage/pureconfig/index.html" class="active page">Pureconfig</a></li>
+    <li><a href="../../usage/quill/index.html" class="page">Quill</a></li>
+  </ul></li>
+  <li><a href="../../changelog/index.html" class="page">Changelog</a></li>
+  <li><a href="../../licenses/index.html" class="page">Licenses</a>
+  <ul>
+    <li><a href="../../licenses/akka-http.html" class="page">structible-akka-http</a></li>
+    <li><a href="../../licenses/avro4s.html" class="page">structible-avro4s</a></li>
+    <li><a href="../../licenses/configs.html" class="page">structible-configs</a></li>
+    <li><a href="../../licenses/core.html" class="page">structible-core</a></li>
+    <li><a href="../../licenses/jsoniter-scala.html" class="page">structible-jsoniter-scala</a></li>
+    <li><a href="../../licenses/pureconfig.html" class="page">structible-pureconfig</a></li>
+    <li><a href="../../licenses/quill.html" class="page">structible-quill</a></li>
+  </ul></li>
+</ul>
+</div>
+
+</nav>
+</div>
+
+<div class="small-12 medium-9 large-10 column">
+<section class="site-content">
+
+<span id="version-warning"></span>
+
+<div class="page-header row">
+<div class="medium-12 show-for-medium column">
+<div class="nav-breadcrumbs">
+<ul>
+  <li><a href="../../index.html">structible</a></li>
+  <li><a href="../../usage/index.html">Usage</a></li>
+  <li>Pureconfig</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div class="page-content row">
+<div class="small-12 large-9 column" id="docs">
+<h1><a href="#pureconfig" name="pureconfig" class="anchor"><span class="anchor-link"></span></a>Pureconfig</h1>
+<p>structible-pureconfig is available for Scala 2.12 and 2.13.</p>
+<p>It provides derivations for</p>
+<ul>
+  <li><em>ConfigConvert</em></li>
+  <li><em>ConfigReader</em></li>
+  <li><em>ConfigWriter</em></li>
+</ul>
+<p>Make sure to familiarize yourself with <a href="../index.html">creating <em>structible</em> instances</a> before looking at the examples below.</p>
+<h2><a href="#dependency" name="dependency" class="anchor"><span class="anchor-link"></span></a>Dependency</h2><dl class="dependency"><dt>sbt</dt><dd><pre class="prettyprint"><code class="language-scala">libraryDependencies += "com.github.cerst" % "structible-pureconfig" % "0.6.2"</code></pre></dd><dt>Maven</dt><dd><pre class="prettyprint"><code class="language-xml">&lt;dependency&gt;
+  &lt;groupId&gt;com.github.cerst&lt;/groupId&gt;
+  &lt;artifactId&gt;structible-pureconfig&lt;/artifactId&gt;
+  &lt;version&gt;0.6.2&lt;/version&gt;
+&lt;/dependency&gt;</code></pre></dd><dt>Gradle</dt><dd><pre class="prettyprint"><code class="language-gradle">dependencies {
+  compile group: 'com.github.cerst', name: 'structible-pureconfig', version: '0.6.2'
+}</code></pre></dd></dl>
+<h2><a href="#example-individual-" name="example-individual-" class="anchor"><span class="anchor-link"></span></a>Example (Individual)</h2>
+<p>You can derive <em>ConfigReader</em> and <em>ConfigWriter</em> individually like this (most of the time, only <em>ConfigReader</em> is required):</p>
+<pre class="prettyprint"><a class="icon go-to-source" href="https://github.com/cerst/structible/tree/v0.6.2/doc/src/main/scala/usage/pureconfig/IndividualExample.scala#L25-L54" target="_blank" title="Go to snippet source"></a><code class="language-scala">import com.github.cerst.structible.core.DefaultConstraints._
+import com.github.cerst.structible.core._
+import com.github.cerst.structible.pureconfig.ops._
+import com.typesafe.config.{Config, ConfigValue}
+import pureconfig.{ConfigReader, ConfigSource, ConfigWriter}
+
+object IndividualExample {
+
+  final class UserId private(val value: Long) extends AnyVal
+
+  object UserId {
+
+    private val structible: Structible[Long, UserId] = Structible.structible(new UserId(_), _.value, c &gt;= 0)
+
+    implicit val configReaderForUserId: ConfigReader[UserId] = structible.toConfigReader
+
+    implicit val configWriterForUserId: ConfigWriter[UserId] = structible.toConfigWriter
+
+    def apply(value: Long): UserId = structible.construct(value)
+  }
+
+  def fromConfig(config: Config): ConfigReader.Result[UserId] = {
+    ConfigSource.fromConfig(config).load[UserId]
+  }
+
+  def toConfigValue(personId: UserId): ConfigValue = {
+    ConfigWriter[UserId].to(personId)
+  }
+
+}</code></pre>
+<h2><a href="#example-compact-" name="example-compact-" class="anchor"><span class="anchor-link"></span></a>Example (Compact)</h2>
+<p>Whenever you need both of them, you can also create a <em>ConfigConvert</em> instance in their place.</p>
+<pre class="prettyprint"><a class="icon go-to-source" href="https://github.com/cerst/structible/tree/v0.6.2/doc/src/main/scala/usage/pureconfig/CompactExample.scala#L25-L52" target="_blank" title="Go to snippet source"></a><code class="language-scala">import com.github.cerst.structible.core._
+import DefaultConstraints._
+import com.github.cerst.structible.pureconfig.ops._
+import com.typesafe.config.{Config, ConfigValue}
+import pureconfig.{ConfigConvert, ConfigReader, ConfigSource, ConfigWriter}
+
+object CompactExample {
+
+  final class UserId private(val value: Long) extends AnyVal
+
+  object UserId {
+
+    private val structible: Structible[Long, UserId] = Structible.structible(new UserId(_), _.value, c &gt;= 0)
+
+    implicit val configConvertForUserId: ConfigConvert[UserId] = structible.toConfigConvert
+
+    def apply(value: Long): UserId = structible.construct(value)
+  }
+
+  def fromConfig(config: Config): ConfigReader.Result[UserId] = {
+    ConfigSource.fromConfig(config).load[UserId]
+  }
+
+  def toConfigValue(personId: UserId): ConfigValue = {
+    ConfigWriter[UserId].to(personId)
+  }
+
+}</code></pre>
+<div class="source-github">
+The source code for this page can be found <a href="https://github.com/cerst/structible/tree/v0.6.2/doc/src/main/paradox/usage/pureconfig/index.md">here</a>.
+</div>
+
+<div class="nav-next">
+<p><strong>Next:</strong> <a href="../../usage/quill/index.html">Quill</a></p>
+</div>
+</div>
+<div class="large-3 show-for-large column" data-sticky-container>
+<nav class="sidebar sticky" data-sticky data-anchor="docs" data-sticky-on="large">
+<div class="page-nav">
+<div class="nav-title">On this page:</div>
+<div class="nav-toc">
+<ul>
+  <li><a href="../../usage/pureconfig/index.html#pureconfig" class="header">Pureconfig</a>
+  <ul>
+    <li><a href="../../usage/pureconfig/index.html#dependency" class="header">Dependency</a></li>
+    <li><a href="../../usage/pureconfig/index.html#example-individual-" class="header">Example (Individual)</a></li>
+    <li><a href="../../usage/pureconfig/index.html#example-compact-" class="header">Example (Compact)</a></li>
+  </ul></li>
+</ul>
+</div>
+</div>
+</nav>
+</div>
+</div>
+
+</section>
+</div>
+
+</div>
+
+<footer class="site-footer">
+
+<section class="site-footer-nav">
+<div class="expanded row">
+<div class="small-12 large-offset-2 large-10 column">
+<div class="row site-footer-content">
+
+<div class="small-12 medium-4 large-3 text-center column">
+<div class="nav-links">
+<ul>
+<!-- <li><a href="https://www.example.com/products/">Products</a> -->
+</ul>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+</section>
+
+<section class="site-footer-base">
+<div class="expanded row">
+<div class="small-12 large-offset-2 large-10 column">
+<div class="row site-footer-content">
+
+<div class="small-12 text-center large-9 column">
+
+<!--
+<div class="copyright">
+<span class="text">&copy; 2019</span>
+<a href="https://www.example.com" class="logo">logo</a>
+</div>
+-->
+</div>
+
+</div>
+</div>
+</div>
+</section>
+</footer>
+
+</div>
+</div>
+</div>
+</body>
+
+<script type="text/javascript" src="../../lib/foundation/dist/foundation.min.js"></script>
+<script type="text/javascript">jQuery(document).foundation();</script>
+<script type="text/javascript" src="../../js/magellan.js"></script>
+
+<style type="text/css">@import "../../lib/prettify/prettify.css";</style>
+<script type="text/javascript" src="../../lib/prettify/prettify.js"></script>
+<script type="text/javascript" src="../../lib/prettify/lang-scala.js"></script>
+<script type="text/javascript">jQuery(function(){window.prettyPrint && prettyPrint()});</script>
+<script type="text/javascript">jQuery(function(jq){initOldVersionWarnings(jq, '0.6.2', 'https://github.com/cerst/structible')});</script>
+
+
+</html>
