@@ -15,7 +15,6 @@ object Dependencies {
     val ScalaCheck = "1.14.2"
     val Scalatest = "3.0.8"
     val Silencer = "1.4.2"
-    val UTest = "0.7.1"
   }
 
   // comment licenses for dependencies using the SPDX short identifier (see e.g. https://opensource.org/licenses/Apache-2.0)

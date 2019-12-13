@@ -2,6 +2,9 @@ import sbt._
 
 import scala.language.implicitConversions
 
+/**
+  * Import to allow for specifying more than one (sbt.librarymanagement) configuration such as: Provided, Test
+  */
 final class ModuleIDSyntax(moduleID: ModuleID) {
 
   def %(first: Configuration,

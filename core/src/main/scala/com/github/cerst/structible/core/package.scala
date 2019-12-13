@@ -34,12 +34,11 @@ package object core {
     */
   val c: ConstraintSyntax.type = ConstraintSyntax
 
-  /** Name resolution via companion object */
+  /** Name resolution via (companion) object */
   @silent // silence the parameter not being used (only required for its type to avoid library users needing to explicitly specify type parameters)
-  implicit def companionToRName[A](a: A)(implicit classTag: ClassTag[A]): RName = {
+  implicit def objectToRName[A](a: A)(implicit classTag: ClassTag[A]): RName = {
     // Nested classes don't have a simple name
-    val value = classTag.runtimeClass.getName.reverse.drop(1).takeWhile(_ != '.').reverse
-    RName(value)
+    RName(isObject = true)
   }
 
   /** Manually provided name */

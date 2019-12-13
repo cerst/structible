@@ -25,16 +25,39 @@ import org.scalatest.{FreeSpec, Matchers}
 
 final class PackageSpec extends FreeSpec with Matchers {
 
-  "regularSimpleName should work" in {
+  import PackageSpec._
+
+  "class to RName should work for top level declarations" in {
     val actual = RName[PackageSpec]
     val expected = RName("PackageSpec")
 
     assert(actual == expected)
   }
 
-  "companionSimpleName should work" in {
-    val actual = companionToRName(PackageSpec)
+  "class to RName should work for nested traits" in {
+    val actual = RName[NestedTrait]
+    val expected = RName("PackageSpec.NestedTrait")
+
+    assert(actual == expected)
+  }
+
+  "class to RName should work for nested classes" in {
+    val actual = RName[NestedClass]
+    val expected = RName("PackageSpec.NestedClass")
+
+    assert(actual == expected)
+  }
+
+  "object to RName should work for top level declarations" in {
+    val actual = objectToRName(PackageSpec)
     val expected = RName("PackageSpec")
+
+    assert(actual == expected)
+  }
+
+  "object To RName should work for nested objects" in {
+    val actual = objectToRName(NestedObject)
+    val expected = RName("PackageSpec.NestedObject")
 
     assert(actual == expected)
   }
@@ -42,4 +65,11 @@ final class PackageSpec extends FreeSpec with Matchers {
 }
 
 // needed for testing
-object PackageSpec
+object PackageSpec {
+
+  sealed trait NestedTrait
+
+  final class NestedClass
+
+  object NestedObject
+}

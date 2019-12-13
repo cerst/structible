@@ -12,9 +12,15 @@ src_managed/
 project/boot/
 project/plugins/project/
 
+# Bloop
+.bloop
+
 # Scala-IDE specific
 .scala_dependencies
 .worksheet
 
 # IntelliJ-IDE specific
 .idea
+
+# Mac
+.DS_Store

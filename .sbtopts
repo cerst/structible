@@ -1,2 +1,3 @@
-# got out of metaspace exception on '+test' with default settings
--mem 2048
+-J-Xmx4g
+-J-XX:ReservedCodeCacheSize=1g
+-J-XX:MaxMetaspaceSize=2g

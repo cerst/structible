@@ -3,7 +3,7 @@ lazy val root = (project in file("."))
   .enablePlugins(GitBranchPrompt, GitVersioning)
   .settings(
     // root intentionally does not contain any code, so don't publish
-    CommonSettingsPlugin.publishSettings(enabled = false),
+    PublishSettings(enabled = false),
     // crossScalaVersions must be set to Nil on the aggregating project
     // https: //www.scala-sbt.org/1.x/docs/Cross-Build.html#Cross+building+a+project
     crossScalaVersions := Nil,
@@ -14,8 +14,8 @@ lazy val `akka-http` = (project in file("akka-http"))
   .dependsOn(core)
   .enablePlugins(GitBranchPrompt, GitVersioning)
   .settings(
-    CommonSettingsPlugin.publishSettings(enabled = true),
-    crossScalaVersions := CommonSettingsPlugin.crossScalaVersions,
+    PublishSettings(enabled = true),
+    crossScalaVersions := CommonValues.crossScalaVersions,
     libraryDependencies ++= Dependencies.`akka-http`,
     name := "structible-akka-http"
   )
@@ -23,9 +23,9 @@ lazy val `akka-http` = (project in file("akka-http"))
 lazy val avro4s = (project in file("avro4s"))
   .dependsOn(core)
   .enablePlugins(GitBranchPrompt, GitVersioning)
-  .settings(CommonSettingsPlugin.publishSettings(enabled = true))
+  .settings(PublishSettings(enabled = true))
   .settings(
-    crossScalaVersions := CommonSettingsPlugin.crossScalaVersions,
+    crossScalaVersions := CommonValues.crossScalaVersions,
     libraryDependencies ++= Dependencies.avro4s,
     name := "structible-avro4s"
   )
@@ -34,7 +34,7 @@ lazy val configs = (project in file("configs"))
   .dependsOn(core)
   .enablePlugins(GitBranchPrompt, GitVersioning)
   .settings(
-    CommonSettingsPlugin.publishSettings(enabled = true),
+    PublishSettings(enabled = true),
 //    TODO: quill has not yet been published for Scala 2.13
 //    crossScalaVersions := List(CommonSettingsPlugin.scala212VersionValue),
 //    scalaVersion := CommonSettingsPlugin.scala212VersionValue,
@@ -45,8 +45,8 @@ lazy val configs = (project in file("configs"))
 lazy val core = (project in file("core"))
   .enablePlugins(GitBranchPrompt, GitVersioning)
   .settings(
-    CommonSettingsPlugin.publishSettings(enabled = true),
-    crossScalaVersions := CommonSettingsPlugin.crossScalaVersions,
+    PublishSettings(enabled = true),
+    crossScalaVersions := CommonValues.crossScalaVersions,
     libraryDependencies ++= Dependencies.core,
     name := "structible-core"
   )
@@ -58,9 +58,9 @@ lazy val doc = (project in file("doc"))
   // all these settings are only relevant to the "doc" project which is why they are not defined in CommonSettingsPlugin.scala
   .settings(
     // doc/src contains example code only to embedded in the documentation, so don't publish
-    CommonSettingsPlugin.publishSettings(enabled = false),
+    PublishSettings(enabled = false),
     // target for ghpages
-    git.remoteRepo := scmInfo.value.get.connection,
+    git.remoteRepo := CommonValues.connection,
     // make sure that the example codes compiles in all cross Scala versions
 //    TODO: configs, quill has not yet been published for Scala 2.13
 //    crossScalaVersions := CommonSettingsPlugin.crossScalaVersions,
@@ -107,8 +107,8 @@ lazy val `jsoniter-scala` = (project in file("jsoniter-scala"))
   .dependsOn(core)
   .enablePlugins(GitBranchPrompt, GitVersioning)
   .settings(
-    CommonSettingsPlugin.publishSettings(enabled = true),
-    crossScalaVersions := CommonSettingsPlugin.crossScalaVersions,
+    PublishSettings(enabled = true),
+    crossScalaVersions := CommonValues.crossScalaVersions,
     libraryDependencies ++= Dependencies.`jsoniter-scala`,
     name := "structible-jsoniter-scala"
   )
@@ -116,9 +116,9 @@ lazy val `jsoniter-scala` = (project in file("jsoniter-scala"))
 lazy val pureconfig = (project in file("pureconfig"))
   .dependsOn(core)
   .enablePlugins(GitBranchPrompt, GitVersioning)
-  .settings(CommonSettingsPlugin.publishSettings(enabled = true))
+  .settings(PublishSettings(enabled = true))
   .settings(
-    crossScalaVersions := CommonSettingsPlugin.crossScalaVersions,
+    crossScalaVersions := CommonValues.crossScalaVersions,
     libraryDependencies ++= Dependencies.pureconfig,
     name := "structible-pureconfig"
   )
@@ -127,7 +127,7 @@ lazy val quill = (project in file("quill"))
   .dependsOn(core)
   .enablePlugins(GitBranchPrompt, GitVersioning)
   .settings(
-    CommonSettingsPlugin.publishSettings(enabled = true),
+    PublishSettings(enabled = true),
 //    TODO: quill has not yet been published for Scala 2.13
 //    crossScalaVersions := CommonSettingsPlugin.crossScalaVersions,
 //    scalaVersion := CommonSettingsPlugin.scala212VersionValue,

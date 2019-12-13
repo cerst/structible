@@ -1,43 +1,44 @@
 import com.typesafe.sbt.SbtLicenseReport.autoImport._
+import de.heikoseeberger.sbtheader.HeaderPlugin.autoImport.{HeaderLicense, headerLicense}
 import sbt.Keys._
 import sbt._
 
-import scala.collection.immutable.Seq
+object DefaultSettingsPlugin extends AutoPlugin {
 
-trait CommonSettingsPluginTpl extends AutoPlugin {
+  override def trigger = allRequirements
 
-  lazy val versionToFile = taskKey[Unit]("Print the version into /target/version-to-file/version")
-
-  override def trigger: PluginTrigger = allRequirements
-
-  protected def tplProjectSettingsPlus(scalaVersionValue: String)(additional: Def.Setting[_]*) = {
-    licenseReportSettings ++
-      scalaSettings(scalaVersionValue) ++
-      scalacSettings(scalaVersionValue) ++
-      additional
+  // the rationale for placing settings defs here is that they should (or can) not be updated automatically using the scala-base-sync script
+  // in the following, organizationName and startYear would also be required by sbt-header to generate ready-made license headers
+  override lazy val projectSettings: Seq[Def.Setting[_]] = {
+    sbtHeaderSettings ++
+      sbtLicenseReportSettings ++
+      scalacSettings ++
+      versionToFileTaskSettings ++ {
+      organization := "com.github.cerst"
+      organizationName := CommonValues.organizationName
+      resolvers ++= Dependencies.resolvers
+      scalaVersion := CommonValues.scalaVersion
+      startYear := Some(CommonValues.startYear)
+    }
   }
 
-  private def licenseReportSettings: Seq[Def.Setting[_]] = Seq(
-    // The ivy configurations we'd like to grab licenses for.
-    licenseConfigurations := Set(Compile, Provided).map(_.name),
-    licenseReportStyleRules := Some("table, th, td {border: 1px solid black;}"),
-    licenseReportTitle := normalizedName.value,
-    licenseReportTypes := Seq(MarkDown)
-  )
+  def sbtHeaderSettings: Seq[Def.Setting[_]] = {
+    // keep consistent with PublishSettings.licenses
+    headerLicense := Some(HeaderLicense.MIT(CommonValues.startYear.toString, CommonValues.organizationName))
+  }
 
-  private def scalaSettings(scalaVersionValue: String): Seq[Def.Setting[_]] = Seq(
-    scalaVersion := scalaVersionValue,
-    // used to read the version during release ("sbt version" causes much noise which makes extraction error-prone)
-    versionToFile := {
-      val file = target.value / "version-to-file" / "version"
-      IO.write(file, version.value)
-    }
-  )
+  def sbtLicenseReportSettings: Seq[Def.Setting[_]] = {
+    // The ivy configurations we'd like to grab licenses for.
+    licenseConfigurations := Set(Compile, Provided).map(_.name)
+    licenseReportStyleRules := Some("table, th, td {border: 1px solid black;}")
+    licenseReportTitle := normalizedName.value
+    licenseReportTypes := Seq(MarkDown)
+  }
 
   // these settings are based on:
   //    http://tpolecat.github.io/2017/04/25/scalac-flags.html
   //    https://nathankleyn.com/2019/05/13/recommended-scalac-flags-for-2-13/
-  private def scalacSettings(scalaVersionValue: String): Seq[Def.Setting[_]] = Seq(
+  def scalacSettings: Seq[Def.Setting[_]] = {
     scalacOptions ++= Seq(
       "-deprecation", // Emit warning and location for usages of deprecated APIs.
       "-encoding",
@@ -79,13 +80,19 @@ trait CommonSettingsPluginTpl extends AutoPlugin {
       "8", // Enable paralellisation — change to desired number!
       "-Ycache-plugin-class-loader:last-modified", // Enables caching of classloaders for compiler plugins
       "-Ycache-macro-class-loader:last-modified" // and macro definitions. This can lead to performance improvements.
-    ),
+    )
     // "Note that the REPL can’t really cope with -Ywarn-unused:imports or -Xfatal-warnings so you should turn them off for the console."
-    scalacOptions in (Compile, console) ~= (_.filterNot(
-      Set(
-        "-Ywarn-unused:imports",
-        "-Xfatal-warnings"
-      )))
-  )
+    scalacOptions in (Compile, console) ~= (_.filterNot(Set("-Ywarn-unused:imports", "-Xfatal-warnings")))
+  }
+
+  lazy val versionToFile = taskKey[Unit]("Print the version into /target/version-to-file/version")
+
+  // used to read the version during release ("sbt version" causes much noise which makes extraction error-prone)
+  def versionToFileTaskSettings: Seq[Def.Setting[_]] = {
+    versionToFile := {
+      val file = target.value / "version-to-file" / "version"
+      IO.write(file, version.value)
+    }
+  }
 
 }

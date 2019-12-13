@@ -27,5 +27,16 @@ final case class RName(value: String)
 
 object RName {
 
-  def apply[A: ClassTag]: RName = RName(implicitly[ClassTag[A]].runtimeClass.getSimpleName)
+  def apply[A: ClassTag]: RName = apply(isObject = false)
+
+  def apply[A](isObject: Boolean)(implicit classTag: ClassTag[A]): RName = {
+    // the name of (companion) objects always end with '$'
+    // getSimpleName causes 'java.lang.InternalError: Malformed class name' for nested types
+    val name = if (isObject) classTag.runtimeClass.getName.dropRight(1) else classTag.runtimeClass.getName
+    val index = name.lastIndexOf(".")
+    // types nested in object have names such as 'Outer$Inner' but in code you refer to them as 'Outer.Inner'
+    val value = name.substring(index + 1).replaceAll("""\$""", ".")
+    RName(value)
+  }
+
 }
