@@ -13,32 +13,33 @@ object DefaultSettingsPlugin extends AutoPlugin {
     sbtHeaderSettings ++
       sbtLicenseReportSettings ++
       scalacSettings ++
-      versionToFileTaskSettings ++ {
-      organization := "com.github.cerst"
-      organizationName := CommonValues.organizationName
-      resolvers ++= Dependencies.resolvers
-      scalaVersion := CommonValues.scalaVersion
-      startYear := Some(CommonValues.startYear)
-    }
+      versionToFileTaskSettings ++
+      Seq(
+        organization := "com.github.cerst",
+        organizationName := CommonValues.organizationName,
+        resolvers ++= Dependencies.resolvers,
+        scalaVersion := CommonValues.scalaVersion,
+        startYear := Some(CommonValues.startYear)
+      )
   }
 
-  def sbtHeaderSettings: Seq[Def.Setting[_]] = {
+  def sbtHeaderSettings: Seq[Def.Setting[_]] = Seq(
     // keep consistent with PublishSettings.licenses
     headerLicense := Some(HeaderLicense.MIT(CommonValues.startYear.toString, CommonValues.organizationName))
-  }
+  )
 
-  def sbtLicenseReportSettings: Seq[Def.Setting[_]] = {
+  def sbtLicenseReportSettings: Seq[Def.Setting[_]] = Seq(
     // The ivy configurations we'd like to grab licenses for.
-    licenseConfigurations := Set(Compile, Provided).map(_.name)
-    licenseReportStyleRules := Some("table, th, td {border: 1px solid black;}")
-    licenseReportTitle := normalizedName.value
+    licenseConfigurations := Set(Compile, Provided).map(_.name),
+    licenseReportStyleRules := Some("table, th, td {border: 1px solid black;}"),
+    licenseReportTitle := normalizedName.value,
     licenseReportTypes := Seq(MarkDown)
-  }
+  )
 
   // these settings are based on:
   //    http://tpolecat.github.io/2017/04/25/scalac-flags.html
   //    https://nathankleyn.com/2019/05/13/recommended-scalac-flags-for-2-13/
-  def scalacSettings: Seq[Def.Setting[_]] = {
+  def scalacSettings: Seq[Def.Setting[_]] = Seq(
     scalacOptions ++= Seq(
       "-deprecation", // Emit warning and location for usages of deprecated APIs.
       "-encoding",
@@ -80,19 +81,19 @@ object DefaultSettingsPlugin extends AutoPlugin {
       "8", // Enable paralellisation — change to desired number!
       "-Ycache-plugin-class-loader:last-modified", // Enables caching of classloaders for compiler plugins
       "-Ycache-macro-class-loader:last-modified" // and macro definitions. This can lead to performance improvements.
-    )
+    ),
     // "Note that the REPL can’t really cope with -Ywarn-unused:imports or -Xfatal-warnings so you should turn them off for the console."
     scalacOptions in (Compile, console) ~= (_.filterNot(Set("-Ywarn-unused:imports", "-Xfatal-warnings")))
-  }
+  )
 
   lazy val versionToFile = taskKey[Unit]("Print the version into /target/version-to-file/version")
 
-  // used to read the version during release ("sbt version" causes much noise which makes extraction error-prone)
-  def versionToFileTaskSettings: Seq[Def.Setting[_]] = {
+  def versionToFileTaskSettings: Seq[Def.Setting[_]] = Seq(
+    // used to read the version during release ("sbt version" causes much noise which makes extraction error-prone)
     versionToFile := {
       val file = target.value / "version-to-file" / "version"
       IO.write(file, version.value)
     }
-  }
+  )
 
 }

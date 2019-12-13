@@ -9,7 +9,7 @@ object CommonValues {
   val homepage = url("https://github.com/cerst/structible")
   val organizationName = "Constantin Gerstberger"
   val scalaVersion = "2.12.10"
-  val crossScalaVersions = List(scalaVersion, "2.13.0")
+  val crossScalaVersions = List(scalaVersion, "2.13.1")
   val startYear = 2018
 
 }
