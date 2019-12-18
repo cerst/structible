@@ -6,21 +6,19 @@ addSbtPlugin("com.dwijnand" % "sbt-dynver" % "4.0.0")
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-ghpages" % "0.6.3")
 
-addSbtPlugin("de.heikoseeberger" % "sbt-header" % "5.2.0")
+addSbtPlugin("de.heikoseeberger" % "sbt-header" % "5.3.1")
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-license-report" % "1.2.0")
 
-addSbtPlugin("com.lightbend.paradox" % "sbt-paradox" % "0.6.6")
+addSbtPlugin("com.lightbend.paradox" % "sbt-paradox" % "0.6.8")
 
-addSbtPlugin("com.jsuereth" % "sbt-pgp" % "2.0.0")
+addSbtPlugin("com.jsuereth" % "sbt-pgp" % "2.0.1")
 
-addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.2.1")
-
-addSbtPlugin("com.typesafe.sbt" % "sbt-site" % "1.4.0")
+addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.3.0")
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-site" % "1.4.0")
 
-addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "3.8")
+addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "3.8.1")
 
 // when updating this version in the scala-base repo,
 // don't forget to change <project-root>/project/project/sbt-updates.sbt as well

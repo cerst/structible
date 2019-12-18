@@ -26,9 +26,10 @@ import com.github.cerst.structible.core._
 import com.typesafe.config.ConfigFactory
 import configs.Configs
 import configs.syntax._
-import org.scalatest.{FreeSpec, Matchers}
+import org.scalatest.Assertions
+import org.scalatest.freespec.AnyFreeSpec
 
-final class StructibleConfigsSpec extends FreeSpec with Matchers {
+final class StructibleConfigsSpec extends AnyFreeSpec with Assertions {
 
   import StructibleConfigsSpec._
 

@@ -21,9 +21,10 @@
 
 package com.github.cerst.structible.core
 
-import org.scalatest.{FreeSpec, Matchers}
+import org.scalatest.Assertions
+import org.scalatest.freespec.AnyFreeSpec
 
-final class PackageSpec extends FreeSpec with Matchers {
+final class PackageSpec extends AnyFreeSpec with Assertions {
 
   import PackageSpec._
 

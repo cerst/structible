@@ -26,12 +26,13 @@ import akka.http.scaladsl.unmarshalling.{Unmarshal, Unmarshaller}
 import akka.stream.{ActorMaterializer, Materializer}
 import akka.testkit.TestKit
 import com.github.cerst.structible.akkahttp.testutil.{NegDouble, NonEmptyString, NonNegInt, PosLong}
-import org.scalatest.{BeforeAndAfterAll, FreeSpec, Matchers}
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.{Assertions, BeforeAndAfterAll}
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
 
-object StructibleUnmarshallerSpec extends FreeSpec with Matchers with BeforeAndAfterAll {
+object StructibleUnmarshallerSpec extends AnyFreeSpec with Assertions with BeforeAndAfterAll {
 
   implicit val actorSystem: ActorSystem = ActorSystem("StructibleUnmarshallerTests")
   implicit val materializer: Materializer = ActorMaterializer()

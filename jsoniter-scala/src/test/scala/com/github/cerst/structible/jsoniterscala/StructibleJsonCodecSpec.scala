@@ -28,9 +28,10 @@ import java.util.UUID
 import com.github.cerst.structible.jsoniterscala.testutil._
 import com.github.plokhotnyuk.jsoniter_scala.core._
 import com.github.plokhotnyuk.jsoniter_scala.macros._
-import org.scalatest.{FreeSpec, Matchers}
+import org.scalatest.Assertions
+import org.scalatest.freespec.AnyFreeSpec
 
-final class StructibleJsonCodecSpec extends FreeSpec with Matchers {
+final class StructibleJsonCodecSpec extends AnyFreeSpec with Assertions {
 
   import StructibleJsonCodecSpec._
 

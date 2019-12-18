@@ -5,16 +5,17 @@ object Dependencies {
   val resolvers: Seq[Resolver] = Seq()
 
   object Version {
-    val Akka = "2.5.26"
-    val AkkaHttp = "10.1.10"
-    val Avro4s = "3.0.3"
+    val Akka = "2.5.27"
+    val AkkaHttp = "10.1.11"
+    val Avro4s = "3.0.4"
     val Configs = "0.4.4"
-    val JsoniterScala = "1.2.0"
+    val JsoniterScala = "2.0.4"
     val Pureconfig = "0.12.1"
-    val Quill = "3.4.10"
+    val Quill = "3.5.0"
     val ScalaCheck = "1.14.2"
-    val Scalatest = "3.0.8"
-    val Silencer = "1.4.2"
+    val Scalatest = "3.1.0"
+    val ScalatestPlusScalaCheck = "3.1.0.0"
+    val Silencer = "1.4.4"
   }
 
   // comment licenses for dependencies using the SPDX short identifier (see e.g. https://opensource.org/licenses/Apache-2.0)
@@ -44,14 +45,18 @@ object Dependencies {
     // Apache-2.0
     val QuillJdbc = "io.getquill" %% "quill-jdbc" % Version.Quill
     // BSD-3-Clause
-    val ScalaCheck = "org.scalacheck" %% "scalacheck" % Version.ScalaCheck
+//    val ScalaCheck = "org.scalacheck" %% "scalacheck" % Version.ScalaCheck
     // Apache-2.0
     val Scalatest = "org.scalatest" %% "scalatest" % Version.Scalatest
     // Apache-2.0
-    val SilencerCompilerPlugin = compilerPlugin("com.github.ghik" %% "silencer-plugin" % Version.Silencer)
+    val ScalatestPlusScalaCheck = "org.scalatestplus" %% "scalacheck-1-14" % Version.ScalatestPlusScalaCheck
+    // Apache-2.0
+    val SilencerCompilerPlugin = compilerPlugin(
+      "com.github.ghik" % "silencer-plugin" % Version.Silencer cross CrossVersion.full
+    )
     // Apache-2.0
     // always only used for compilation
-    val SilencerLib = "com.github.ghik" %% "silencer-lib" % Version.Silencer % Provided
+    val SilencerLib = "com.github.ghik" % "silencer-lib" % Version.Silencer % Provided cross CrossVersion.full
   }
 
   val `akka-http`: Seq[ModuleID] =
@@ -61,14 +66,14 @@ object Dependencies {
 
   val configs: Seq[ModuleID] = Seq(Library.Configs, Library.Scalatest % Test)
 
-  val core: Seq[ModuleID] =
-    Seq(Library.SilencerCompilerPlugin, Library.SilencerLib, Library.Scalatest % Test, Library.ScalaCheck % Test)
-
-  val doc: Seq[ModuleID] = Seq(
-    Library.AkkaStream,
-    Library.JsoniterScalaMacros,
-    Library.QuillJdbc
+  val core: Seq[ModuleID] = Seq(
+    Library.SilencerCompilerPlugin,
+    Library.SilencerLib,
+    Library.Scalatest % Test,
+    Library.ScalatestPlusScalaCheck % Test
   )
+
+  val doc: Seq[ModuleID] = Seq(Library.AkkaStream, Library.JsoniterScalaMacros, Library.QuillJdbc)
 
   val `jsoniter-scala`: Seq[ModuleID] =
     Seq(Library.JsoniterScalaCore, Library.JsoniterScalaMacros, Library.Scalatest % Test)

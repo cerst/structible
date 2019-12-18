@@ -27,10 +27,11 @@ import com.github.cerst.structible.core.constraint.instances.InstantConstraints.
 import com.github.cerst.structible.core.constraint.syntax.ConstraintSyntax
 import com.github.cerst.structible.core.testutil.NoShrink
 import org.scalacheck.Gen
-import org.scalatest.{FreeSpec, Matchers}
+import org.scalatest.Assertions
+import org.scalatest.freespec.AnyFreeSpec
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
-final class InstantConstraintsSpec extends FreeSpec with Matchers with ScalaCheckDrivenPropertyChecks with NoShrink {
+final class InstantConstraintsSpec extends AnyFreeSpec with Assertions with ScalaCheckDrivenPropertyChecks with NoShrink {
 
   import InstantConstraintsSpec._
 

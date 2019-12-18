@@ -24,7 +24,8 @@ package com.github.cerst.structible.core.testutil
 import com.github.cerst.structible.core.constraint.syntax.{ConstraintSyntax, GreaterThan, GreaterThanOrEqual, LessThan, LessThanOrEqual}
 import org.scalacheck.Gen
 import org.scalacheck.Gen.Choose
-import org.scalatest.{FreeSpec, Matchers}
+import org.scalatest.Assertions
+import org.scalatest.freespec.AnyFreeSpec
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
 abstract class NumericConstraintsSpec[A: Numeric: Choose](dec: A => A, inc: A => A, globalMax: A, globalMin: A)(
@@ -32,8 +33,8 @@ abstract class NumericConstraintsSpec[A: Numeric: Choose](dec: A => A, inc: A =>
   greaterThanOrEqualForA: GreaterThanOrEqual[A],
   lessThanForA: LessThan[A],
   lessThanOrEqualForA: LessThanOrEqual[A]
-) extends FreeSpec
-    with Matchers
+) extends AnyFreeSpec
+    with Assertions
     with ScalaCheckDrivenPropertyChecks
     with NoShrink {
 

@@ -128,9 +128,7 @@ lazy val quill = (project in file("quill"))
   .enablePlugins(GitBranchPrompt, GitVersioning)
   .settings(
     PublishSettings(enabled = true),
-//    TODO: quill has not yet been published for Scala 2.13
-//    crossScalaVersions := CommonSettingsPlugin.crossScalaVersions,
-//    scalaVersion := CommonSettingsPlugin.scala212VersionValue,
+    crossScalaVersions := CommonValues.crossScalaVersions,
     libraryDependencies ++= Dependencies.quill,
     name := "structible-quill"
   )

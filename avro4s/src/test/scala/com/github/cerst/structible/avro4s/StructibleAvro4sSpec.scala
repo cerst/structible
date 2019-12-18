@@ -28,9 +28,10 @@ import com.github.cerst.structible.core.DefaultConstraints._
 import com.github.cerst.structible.core._
 import com.sksamuel.avro4s._
 import org.apache.avro.Schema
-import org.scalatest.{FreeSpec, Matchers}
+import org.scalatest.Assertions
+import org.scalatest.freespec.AnyFreeSpec
 
-final class StructibleAvro4sSpec extends FreeSpec with Matchers {
+final class StructibleAvro4sSpec extends AnyFreeSpec with Assertions {
 
   import StructibleAvro4sSpec._
 

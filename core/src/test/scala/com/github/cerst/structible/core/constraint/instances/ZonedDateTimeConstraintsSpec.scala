@@ -28,12 +28,13 @@ import com.github.cerst.structible.core.constraint.syntax.ConstraintSyntax
 import com.github.cerst.structible.core.testutil.NoShrink
 import com.github.ghik.silencer.silent
 import org.scalacheck.Gen
-import org.scalatest.{FreeSpec, Matchers}
+import org.scalatest.Assertions
+import org.scalatest.freespec.AnyFreeSpec
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
 final class ZonedDateTimeConstraintsSpec
-    extends FreeSpec
-    with Matchers
+    extends AnyFreeSpec
+    with Assertions
     with ScalaCheckDrivenPropertyChecks
     with NoShrink {
 

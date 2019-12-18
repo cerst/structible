@@ -22,9 +22,10 @@
 package com.github.cerst.structible.core
 
 import com.github.cerst.structible.core.DefaultConstraints._
-import org.scalatest.{FreeSpec, Matchers}
+import org.scalatest.Assertions
+import org.scalatest.freespec.AnyFreeSpec
 
-final class ConstraintSpec extends FreeSpec with Matchers {
+final class ConstraintSpec extends AnyFreeSpec with Assertions {
 
   "&& fails if this fails" in {
     val constraint = c > 0 && c < 10

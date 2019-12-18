@@ -24,11 +24,12 @@ package com.github.cerst.structible.pureconfig
 import com.github.cerst.structible.core._
 import com.github.cerst.structible.pureconfig.ops._
 import com.typesafe.config.{Config, ConfigFactory}
-import org.scalatest.{FreeSpec, Matchers}
+import org.scalatest.Assertions
+import org.scalatest.freespec.AnyFreeSpec
 import pureconfig.generic.semiauto._
 import pureconfig.{ConfigReader, ConfigWriter, _}
 
-final class IndividualSpec extends FreeSpec with Matchers {
+final class IndividualSpec extends AnyFreeSpec with Assertions {
 
   import IndividualSpec._
 

@@ -26,9 +26,10 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.PathMatcher1
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import com.github.cerst.structible.akkahttp.testutil._
-import org.scalatest.{FreeSpec, Matchers}
+import org.scalatest.Assertions
+import org.scalatest.freespec.AnyFreeSpec
 
-final class StructiblePathMatcherSpec extends FreeSpec with Matchers with ScalatestRouteTest {
+final class StructiblePathMatcherSpec extends AnyFreeSpec with Assertions with ScalatestRouteTest {
 
   private def test[R](pathMatcher1: PathMatcher1[R], matchable: (String, R), unmatchable: String): Unit = {
     val route = path(pathMatcher1) { refined =>

@@ -25,11 +25,12 @@ import com.github.cerst.structible.core.DefaultConstraints._
 import com.github.cerst.structible.core._
 import com.github.cerst.structible.pureconfig.ops._
 import com.typesafe.config._
-import org.scalatest.{FreeSpec, Matchers}
+import org.scalatest.Assertions
+import org.scalatest.freespec.AnyFreeSpec
 import pureconfig._
 import pureconfig.generic.semiauto._
 
-final class CompactSpec extends FreeSpec with Matchers {
+final class CompactSpec extends AnyFreeSpec with Assertions {
 
   import CompactSpec._
 
