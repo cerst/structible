@@ -39,6 +39,7 @@ object DefaultSettingsPlugin extends AutoPlugin {
   // these settings are based on:
   //    http://tpolecat.github.io/2017/04/25/scalac-flags.html
   //    https://nathankleyn.com/2019/05/13/recommended-scalac-flags-for-2-13/
+  //    https://medium.com/life-at-hopper/make-your-scala-compiler-work-harder-971be53ae914
   def scalacSettings: Seq[Def.Setting[_]] = Seq(
     scalacOptions ++= Seq(
       "-deprecation", // Emit warning and location for usages of deprecated APIs.
@@ -57,6 +58,7 @@ object DefaultSettingsPlugin extends AutoPlugin {
       "-Xlint:constant", // Evaluation of a constant arithmetic expression results in an error.
       "-Xlint:delayedinit-select", // Selecting member of DelayedInit.
       "-Xlint:doc-detached", // A Scaladoc comment appears to be detached from its element.
+      "-Xlint:inaccessible",  // Inaccessible types in method signatures.
       "-Xlint:infer-any", // Warn when a type argument is inferred to be `Any`.
       "-Xlint:missing-interpolator", // A string literal appears to be missing an interpolator id.
       "-Xlint:nullary-override", // Warn when non-nullary `def f()' overrides nullary `def f'.
