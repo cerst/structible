@@ -1,5 +1,7 @@
 # Structible
 
+Structible has been superseded by [Vacade](https://github.com/cerst/vacade).
+
 **Documentation**
 
 * [latest](https://cerst.github.io/structible)
